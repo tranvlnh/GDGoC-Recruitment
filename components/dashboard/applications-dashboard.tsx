@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { departmentLabel, majorLabel, majors, questions } from "@/lib/config";
+import {
+    departmentLabel,
+    departments,
+    majorLabel,
+    majors,
+    questions,
+} from "@/lib/config";
 import { displayAnswer } from "@/lib/export";
 import type {
     Application,
@@ -36,6 +42,7 @@ export function ApplicationsDashboard() {
     const [result, setResult] = useState<PaginatedApplications | null>(null);
     const [status, setStatus] = useState("");
     const [major, setMajor] = useState("");
+    const [department, setDepartment] = useState("");
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -49,6 +56,7 @@ export function ApplicationsDashboard() {
         const params = new URLSearchParams({ page: String(page) });
         if (status) params.set("status", status);
         if (major) params.set("major", major);
+        if (department) params.set("department", department);
         if (search) params.set("search", search);
         const response = await fetch(`/api/dashboard/applications?${params}`);
         const body = await response.json();
@@ -58,7 +66,7 @@ export function ApplicationsDashboard() {
             return;
         }
         setResult(body);
-    }, [status, major, search, page]);
+    }, [status, major, department, search, page]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(() => {
@@ -138,13 +146,14 @@ export function ApplicationsDashboard() {
                 >
                     <div className="mb-3 flex items-center justify-between">
                         <p className="font-serif text-lg font-semibold">Tìm hồ sơ</p>
-                        {(search || status || major) && (
+                        {(search || status || major || department) && (
                             <button
                                 type="button"
                                 onClick={() => {
                                     setSearch("");
                                     setStatus("");
                                     setMajor("");
+                                    setDepartment("");
                                     setPage(1);
                                 }}
                                 className="text-xs text-[#6c6861] underline underline-offset-2 transition hover:text-[#292724]"
@@ -153,7 +162,7 @@ export function ApplicationsDashboard() {
                             </button>
                         )}
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                         <label className="sm:col-span-2">
                             <span className="mb-1.5 block text-xs font-medium text-[#6c6861]">Tìm kiếm</span>
                             <input
@@ -185,6 +194,19 @@ export function ApplicationsDashboard() {
                             >
                                 <option value="">Tất cả ngành</option>
                                 {majors.map((item) => (
+                                    <option key={item.id} value={item.id}>{item.label}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label>
+                            <span className="mb-1.5 block text-xs font-medium text-[#6c6861]">Ban chuyên môn</span>
+                            <select
+                                value={department}
+                                onChange={(event) => updateFilters(() => setDepartment(event.target.value))}
+                                className="w-full rounded-md border border-[#d9d5cd] bg-[#fffdf9] px-3 py-2.5 text-sm outline-none transition focus:border-[#a64f37] focus:ring-2 focus:ring-[#f0d7cd]"
+                            >
+                                <option value="">Tất cả ban</option>
+                                {departments.map((item) => (
                                     <option key={item.id} value={item.id}>{item.label}</option>
                                 ))}
                             </select>
@@ -419,7 +441,20 @@ function ApplicationModal({
                     {details.map(([label, value]) => (
                         <div key={label}>
                             <dt className="text-xs font-medium text-zinc-500">{label}</dt>
-                            <dd className="mt-1 wrap-break-word font-medium text-zinc-800">{value}</dd>
+                            <dd className="mt-1 wrap-break-word font-medium text-zinc-800">
+                                {label === "Facebook" ? (
+                                    <a
+                                        href={value}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[#a64f37] underline decoration-[#d8b6a9] underline-offset-4 transition hover:text-[#7f3c2b]"
+                                    >
+                                        Mở trang Facebook
+                                    </a>
+                                ) : (
+                                    value
+                                )}
+                            </dd>
                         </div>
                     ))}
                 </dl>

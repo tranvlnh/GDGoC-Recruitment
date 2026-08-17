@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { majors } from "@/lib/config";
+import { departments, majors } from "@/lib/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { applicationStatuses } from "@/types/application";
 
@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const status = params.get("status");
   const major = params.get("major");
+  const department = params.get("department");
   const search = params.get("search")?.trim();
   const page = Math.max(1, Number(params.get("page")) || 1);
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, Number(params.get("pageSize")) || DEFAULT_PAGE_SIZE));
@@ -20,11 +21,15 @@ export async function GET(request: NextRequest) {
   if (major && !majors.some((item) => item.id === major)) {
     return NextResponse.json({ error: "Ngành không hợp lệ" }, { status: 400 });
   }
+  if (department && !departments.some((item) => item.id === department)) {
+    return NextResponse.json({ error: "Ban chuyên môn không hợp lệ" }, { status: 400 });
+  }
 
   const supabase = createSupabaseAdminClient();
   let query = supabase.from("applications").select("*", { count: "exact" });
   if (status) query = query.eq("status", status);
   if (major) query = query.eq("major", major);
+  if (department) query = query.eq("department", department);
   if (search) {
     const escaped = search.replace(/[%_,()]/g, "");
     query = query.or(`full_name.ilike.%${escaped}%,email.ilike.%${escaped}%`);
