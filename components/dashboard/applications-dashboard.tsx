@@ -449,7 +449,7 @@ function ApplicationModal({
                                         rel="noreferrer"
                                         className="text-[#a64f37] underline decoration-[#d8b6a9] underline-offset-4 transition hover:text-[#7f3c2b]"
                                     >
-                                        Mở trang Facebook
+                                        {value}
                                     </a>
                                 ) : (
                                     value
