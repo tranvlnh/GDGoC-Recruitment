@@ -1,0 +1,7 @@
+[
+  { "id": "cntt", "label": "Công nghệ thông tin" },
+  { "id": "attt", "label": "An toàn thông tin" },
+  { "id": "dtvt", "label": "Điện tử viễn thông" },
+  { "id": "qtkd", "label": "Quản trị kinh doanh" },
+  { "id": "other", "label": "Khác" }
+]
