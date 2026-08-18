@@ -1,0 +1,6 @@
+[
+  { "id": "tech", "label": "Technical" },
+  { "id": "hr-lg", "label": "HR-LG" },
+  { "id": "design", "label": "Design" },
+  { "id": "pr", "label": "PR" }
+]
