@@ -87,10 +87,14 @@ export function ApplicationsDashboard() {
                 body: JSON.stringify({ status: nextStatus }),
             },
         );
+        const body = await response.json();
         if (!response.ok) {
-            setError("Không thể cập nhật trạng thái");
+            setError(body.error ?? "Không thể cập nhật trạng thái");
             return;
         }
+        setSelectedApplication((current) =>
+            current?.id === application.id ? body.data : current,
+        );
         void load();
     }
 
@@ -292,6 +296,7 @@ export function ApplicationsDashboard() {
                 <ApplicationModal
                     application={selectedApplication}
                     onClose={() => setSelectedApplication(null)}
+                    onStatus={setApplicationStatus}
                 />
                 )}
             </div>
@@ -368,9 +373,14 @@ function ApplicationRow({
 function ApplicationModal({
     application,
     onClose,
+    onStatus,
 }: {
     application: Application;
     onClose: () => void;
+    onStatus: (
+        application: Application,
+        status: "approved" | "rejected",
+    ) => void;
 }) {
     const answers = new Map(
         application.answers.map((answer) => [answer.question_id, answer]),
@@ -435,6 +445,24 @@ function ApplicationModal({
                         className="rounded-md border border-[#cfc9bf] px-3 py-1.5 text-sm font-medium text-[#5d5953] transition hover:bg-[#eeeae2]"
                     >
                         Đóng
+                    </button>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2 border-y border-[#ded9d0] py-4">
+                    <button
+                        type="button"
+                        onClick={() => onStatus(application, "approved")}
+                        disabled={application.status === "approved"}
+                        className="rounded-md bg-[#a64f37] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#873f2c] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        Duyệt hồ sơ
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onStatus(application, "rejected")}
+                        disabled={application.status === "rejected"}
+                        className="rounded-md border border-[#cfc9bf] px-3 py-2 text-sm font-medium text-[#5d5953] transition hover:border-[#a64f37] hover:text-[#a64f37] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        Từ chối hồ sơ
                     </button>
                 </div>
                 <dl className="mt-6 grid gap-x-8 gap-y-4 border-y border-[#ded9d0] py-5 text-sm sm:grid-cols-2">

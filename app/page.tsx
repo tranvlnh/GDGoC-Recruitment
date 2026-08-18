@@ -4,8 +4,7 @@ export default function Home() {
             <div className="max-w-md text-center">
                 <h1 className="text-2xl font-bold">GDGoC PTIT Gen 5</h1>
                 <p className="mt-2 text-zinc-600">
-                    Recruitment backend is ready. Landing page and public form
-                    UI will be added later.
+                    Comming soon.
                 </p>
             </div>
         </main>
