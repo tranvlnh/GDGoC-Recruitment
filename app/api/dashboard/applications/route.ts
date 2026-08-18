@@ -35,9 +35,21 @@ export async function GET(request: NextRequest) {
     query = query.or(`full_name.ilike.%${escaped}%,email.ilike.%${escaped}%`);
   }
 
-  const { data, error, count } = await query
-    .order("submitted_at", { ascending: false })
-    .range((page - 1) * pageSize, page * pageSize - 1);
+  const [
+    { data, error, count },
+    totalCountRes,
+    pendingCountRes,
+    approvedCountRes,
+    rejectedCountRes,
+  ] = await Promise.all([
+    query
+      .order("submitted_at", { ascending: false })
+      .range((page - 1) * pageSize, page * pageSize - 1),
+    supabase.from("applications").select("*", { count: "exact", head: true }),
+    supabase.from("applications").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("applications").select("*", { count: "exact", head: true }).eq("status", "approved"),
+    supabase.from("applications").select("*", { count: "exact", head: true }).eq("status", "rejected"),
+  ]);
 
   if (error) {
     console.error("Failed to list applications", error);
@@ -51,5 +63,11 @@ export async function GET(request: NextRequest) {
     pageSize,
     total,
     totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    stats: {
+      total: totalCountRes.count ?? 0,
+      pending: pendingCountRes.count ?? 0,
+      approved: approvedCountRes.count ?? 0,
+      rejected: rejectedCountRes.count ?? 0,
+    },
   });
 }

@@ -28,7 +28,11 @@ export function getApplicationWindowStatus(now = new Date()) {
 }
 
 export function majorLabel(majorId: string) {
-    return majors.find((major) => major.id === majorId)?.label ?? majorId;
+    return (
+        majors.find(
+            (major) => major.id === majorId || major.label === majorId,
+        )?.label ?? majorId
+    );
 }
 
 export function departmentLabel(departmentId: string) {

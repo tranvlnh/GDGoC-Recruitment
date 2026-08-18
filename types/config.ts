@@ -56,6 +56,7 @@ export const settingsSchema = z
     .object({
         applicationOpenAt: z.string().datetime({ offset: true }),
         applicationCloseAt: z.string().datetime({ offset: true }),
+        fallbackGoogleFormUrl: z.string().url().optional().or(z.literal("")),
     })
     .refine(
         (settings) =>

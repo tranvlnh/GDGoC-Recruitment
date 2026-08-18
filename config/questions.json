@@ -2,36 +2,75 @@
   {
     "id": "motivation",
     "type": "essay",
-    "label": "Vì sao bạn muốn trở thành thành viên GDGoC PTIT?",
+    "label": "Vì sao bạn muốn đồng hành cùng GDGoC PTIT trong nhiệm kỳ Gen 5?",
     "required": true,
     "order": 1,
     "minLength": 50,
     "maxLength": 1000
   },
   {
-    "id": "interests",
+    "id": "tech_interests",
     "type": "multiple_choice",
-    "label": "Bạn quan tâm đến những mảng nào?",
+    "label": "Bạn có thế mạnh hoặc quan tâm đến những lĩnh vực công nghệ nào?",
     "required": true,
     "order": 2,
     "multiple": true,
     "options": [
-      { "id": "technology", "label": "Công nghệ" },
-      { "id": "community", "label": "Cộng đồng" },
-      { "id": "design", "label": "Thiết kế" },
-      { "id": "media", "label": "Truyền thông" }
+      { "id": "web", "label": "Lập trình Web (Frontend/Backend)" },
+      { "id": "mobile", "label": "Lập trình Mobile (Flutter/Android)" },
+      { "id": "ai_ml", "label": "Trí tuệ nhân tạo (AI / Machine Learning)" },
+      { "id": "cloud_devops", "label": "Cloud & DevOps (Google Cloud)" }
+    ]
+  },
+  {
+    "id": "expectations",
+    "type": "multiple_choice",
+    "label": "Bạn mong muốn nhận được những giá trị gì khi tham gia GDGoC PTIT?",
+    "required": true,
+    "order": 3,
+    "multiple": true,
+    "options": [
+      { "id": "skill_growth", "label": "Nâng cao kỹ năng chuyên môn" },
+      { "id": "networking", "label": "Mở rộng kết nối bạn bè & Mentor" },
+      { "id": "hackathon", "label": "Tham gia Solution Challenge & Hackathon" },
+      { "id": "soft_skills", "label": "Kỹ năng mềm và làm việc nhóm" },
+      { "id": "leadership", "label": "Kinh nghiệm quản lý dự án & sự kiện" },
+      { "id": "google_perks", "label": "Cơ hội nhận Swag & chứng chỉ Google" }
+    ]
+  },
+  {
+    "id": "past_project",
+    "type": "essay",
+    "label": "Kể tên một dự án, hoạt động hoặc thử thách đáng nhớ nhất mà bạn từng tham gia:",
+    "required": false,
+    "order": 4,
+    "minLength": 20,
+    "maxLength": 500
+  },
+  {
+    "id": "time_commitment",
+    "type": "multiple_choice",
+    "label": "Thời gian bạn có thể dành cho các hoạt động của câu lạc bộ mỗi tuần:",
+    "required": true,
+    "order": 5,
+    "multiple": false,
+    "options": [
+      { "id": "time_under_5h", "label": "Dưới 5 giờ / tuần" },
+      { "id": "time_5_10h", "label": "Từ 5 – 10 giờ / tuần" },
+      { "id": "time_10_15h", "label": "Từ 10 – 15 giờ / tuần" },
+      { "id": "time_over_15h", "label": "Trên 15 giờ / tuần" }
     ]
   },
   {
     "id": "commitment",
     "type": "multiple_choice",
-    "label": "Bạn có thể cam kết tham gia hoạt động thường xuyên không?",
+    "label": "Bạn có cam kết tham gia đầy đủ các buổi sinh hoạt định kỳ và sự kiện chính không?",
     "required": true,
-    "order": 3,
+    "order": 6,
     "multiple": false,
     "options": [
-      { "id": "yes", "label": "Có" },
-      { "id": "no", "label": "Chưa chắc chắn" }
+      { "id": "yes", "label": "Cam kết tham gia đầy đủ" },
+      { "id": "flexible", "label": "Cần linh hoạt theo lịch thi/học" }
     ]
   }
 ]
