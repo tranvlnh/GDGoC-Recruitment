@@ -5,7 +5,7 @@ export function MissionGoalsSection() {
         {
             num: "01",
             title: "Nâng cao năng lực thực chiến",
-            desc: "Trang bị cho sinh viên kiến thức thực tế về các công nghệ hiện đại như AI, Cloud, Mobile, Web thông qua các dự án thực tế và đào tạo chuyên sâu.",
+            desc: "Trang bị cho sinh viên kiến thức thực tế về các công nghệ hiện đại như AI, Cloud, Mobile, Web thông qua các dự án thực tế và đào tạo.",
             color: "border-l-[#4285F4]",
             badgeColor: "bg-blue-50 text-[#4285F4] border-blue-200",
             bgHover: "hover:bg-blue-50/40",
@@ -13,7 +13,7 @@ export function MissionGoalsSection() {
         {
             num: "02",
             title: "Cầu nối chuyên gia & Doanh nghiệp",
-            desc: "Mở rộng cơ hội giao lưu, thực tập và việc làm thông qua mạng lưới Google Developer Experts (GDE) và các đối tác công nghệ hàng đầu.",
+            desc: "Mở rộng cơ hội giao lưu, thực tập và việc làm thông qua mạng lưới Google Developer Groups (GDG) và các đối tác công nghệ hàng đầu.",
             color: "border-l-[#EA4335]",
             badgeColor: "bg-red-50 text-[#EA4335] border-red-200",
             bgHover: "hover:bg-red-50/40",
@@ -21,7 +21,7 @@ export function MissionGoalsSection() {
         {
             num: "03",
             title: "Xây dựng các giải pháp tác động xã hội",
-            desc: "Khuyến khích sinh viên sáng tạo các sản phẩm công nghệ hữu ích giải quyết các bài toán thực tiễn trong cuộc sống (Google Solution Challenge).",
+            desc: "Khuyến khích sinh viên sáng tạo các sản phẩm công nghệ hữu ích giải quyết các bài toán thực tiễn trong cuộc sống.",
             color: "border-l-[#FBBC05]",
             badgeColor: "bg-amber-50 text-[#B06000] border-amber-200",
             bgHover: "hover:bg-amber-50/40",
