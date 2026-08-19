@@ -208,11 +208,15 @@ export function AboutActivitiesSection() {
                             Về chúng tôi • About GDGoC PTIT
                         </div>
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
-                            Cộng đồng lập trình viên sinh viên <br className="hidden sm:inline" />
-                            tiên phong tại PTIT
+                            Cộng đồng <span className="text-[#FBBC05]">lập trình viên sinh viên</span> <br className="hidden sm:inline" />
+                            tiên phong tại <span className="text-[#60a5fa]">PTIT</span>
                         </h2>
-                        <p className="text-base sm:text-lg text-white/85 leading-relaxed font-normal">
-                            <strong className="text-white">GDGoC PTIT</strong> là bệ phóng công nghệ hàng đầu tại Học viện Công nghệ Bưu chính Viễn thông – nơi sinh viên cùng học tập, kiến tạo các sản phẩm thực chiến và kết nối trực tiếp với hệ sinh thái Google Developers.
+                        <p className="text-base sm:text-lg text-white/90 leading-relaxed font-normal drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
+                            <strong className="text-white font-bold bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC05] to-[#34A853] bg-clip-text text-transparent">GDGoC PTIT</strong> là{" "}
+                            <span className="text-white font-semibold">bệ phóng công nghệ hàng đầu</span> tại{" "}
+                            <span className="text-white font-semibold">Học viện Công nghệ Bưu chính Viễn thông</span> – nơi sinh viên cùng học tập, kiến tạo các{" "}
+                            <span className="text-[#FBBC05] font-semibold">sản phẩm thực chiến</span> và kết nối trực tiếp với hệ sinh thái{" "}
+                            <span className="text-[#60a5fa] font-semibold">Google Developers</span>.
                         </p>
                     </div>
                 </div>
