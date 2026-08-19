@@ -5,7 +5,7 @@ export function GdgocLogo({ className = "h-8 w-auto" }: { className?: string }) 
     return (
         <div className={`flex items-center select-none ${className}`}>
             <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="Google Developer Groups on Campus - PTIT"
                 width={642}
                 height={55}
