@@ -492,44 +492,6 @@ export function RecruitmentForm({
                             </p>
                         </div>
 
-                        {/* Recruitment Process Roadmap */}
-                        <div className="space-y-4">
-                            <h4 className="text-sm font-bold text-zinc-900 uppercase tracking-wider text-center sm:text-left">
-                                🚀 Các bước tiếp theo trong quy trình tuyển dụng:
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/70 space-y-1.5">
-                                    <div className="flex items-center gap-2 text-xs font-bold text-[#4285F4]">
-                                        <span className="w-5 h-5 rounded-full bg-[#4285F4] text-white flex items-center justify-center text-[10px]">1</span>
-                                        <span>Vòng 1: Xét hồ sơ</span>
-                                    </div>
-                                    <p className="text-xs text-zinc-600">
-                                        Ban chủ nhiệm sẽ đánh giá chi tiết đơn đăng ký và câu trả lời chuyên sâu.
-                                    </p>
-                                </div>
-
-                                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/70 space-y-1.5">
-                                    <div className="flex items-center gap-2 text-xs font-bold text-[#B06000]">
-                                        <span className="w-5 h-5 rounded-full bg-[#FBBC05] text-white flex items-center justify-center text-[10px]">2</span>
-                                        <span>Vòng 2: Phỏng vấn</span>
-                                    </div>
-                                    <p className="text-xs text-zinc-600">
-                                        Trao đổi trực tiếp, kiểm tra kỹ năng và độ phù hợp văn hóa CLB.
-                                    </p>
-                                </div>
-
-                                <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 space-y-1.5">
-                                    <div className="flex items-center gap-2 text-xs font-bold text-[#34A853]">
-                                        <span className="w-5 h-5 rounded-full bg-[#34A853] text-white flex items-center justify-center text-[10px]">3</span>
-                                        <span>Vòng 3: Onboarding</span>
-                                    </div>
-                                    <p className="text-xs text-zinc-600">
-                                        Công bố danh sách trúng tuyển và tham gia buổi gặp mặt thành viên Gen 5.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Action Buttons */}
                         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
                             <a

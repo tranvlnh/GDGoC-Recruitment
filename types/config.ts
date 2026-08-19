@@ -53,11 +53,25 @@ export const questionsSchema = z
         }
     });
 
+export const siteSchema = z.object({
+    url: z.string().url(),
+    name: z.string().min(1),
+    fullName: z.string().min(1),
+    description: z.string().min(1),
+    ogDescription: z.string().min(1),
+    ogImage: z.string().min(1),
+    locale: z.string().min(1),
+    themeColor: z.string().min(1),
+    keywords: z.array(z.string().min(1)),
+    socialLinks: z.array(z.string().url()).optional(),
+});
+
 export const settingsSchema = z
     .object({
         applicationOpenAt: z.string().datetime({ offset: true }),
         applicationCloseAt: z.string().datetime({ offset: true }),
         fallbackGoogleFormUrl: z.string().url().optional().or(z.literal("")),
+        site: siteSchema,
     })
     .refine(
         (settings) =>
@@ -74,4 +88,5 @@ export type MultipleChoiceQuestion = z.infer<
     typeof multipleChoiceQuestionSchema
 >;
 export type EssayQuestion = z.infer<typeof essayQuestionSchema>;
+export type Site = z.infer<typeof siteSchema>;
 export type Settings = z.infer<typeof settingsSchema>;

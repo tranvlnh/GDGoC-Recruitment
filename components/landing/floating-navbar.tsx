@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GdgocLogo, ArrowRightIcon } from "./google-icons";
+import Image from "next/image";
 
 export function FloatingNavbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -80,18 +80,37 @@ export function FloatingNavbar() {
             <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 lg:px-10 pointer-events-none">
                 <nav
                     aria-label="Main Navigation"
-                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
+                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
                         ? "bg-white/90 backdrop-blur-lg border-zinc-200/90 shadow-lg shadow-zinc-900/5"
                         : "bg-white/80 backdrop-blur-md border-zinc-200/60 shadow-sm"
                         }`}
                 >
-                    {/* Logo */}
+                    {/* Logo: Small on Mobile (< md), Full on Desktop (>= md) */}
                     <a
                         href="#"
                         aria-label="GDGoC PTIT - Trang chủ"
-                        className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+                        className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg flex items-center shrink-0"
                     >
-                        <GdgocLogo />
+                        <div className="flex md:hidden items-center">
+                            <Image
+                                src="/logo_small.svg"
+                                alt="GDGoC PTIT"
+                                width={1125}
+                                height={622}
+                                priority
+                                className="h-6 sm:h-7 w-auto object-contain"
+                            />
+                        </div>
+                        <div className="hidden md:flex items-center">
+                            <Image
+                                src="/logo.svg"
+                                alt="Google Developer Groups on Campus - PTIT"
+                                width={642}
+                                height={55}
+                                priority
+                                className="h-7 lg:h-8 w-auto object-contain"
+                            />
+                        </div>
                     </a>
 
                     {/* Right Group: Desktop Nav Links with ScrollSpy */}
@@ -114,32 +133,40 @@ export function FloatingNavbar() {
                             })}
                         </div>
 
-                        {/* CTA Button */}
+                        {/* Desktop CTA Button */}
                         <a
                             href="#apply"
-                            className="inline-flex items-center gap-2 px-4.5 py-2 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-full shadow-sm hover:shadow-md hover:shadow-blue-500/25 transition-all active:scale-95 shrink-0"
+                            className="inline-flex items-center justify-center px-4.5 py-2 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-full shadow-sm hover:shadow-md hover:shadow-blue-500/25 transition-all active:scale-95 shrink-0"
                         >
                             <span>Đăng ký ngay</span>
-                            <ArrowRightIcon className="w-4 h-4" />
                         </a>
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        type="button"
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden shrink-0 p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                        aria-label="Mở danh mục điều hướng"
-                        aria-expanded={mobileMenuOpen}
-                    >
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            {mobileMenuOpen ? (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            ) : (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            )}
-                        </svg>
-                    </button>
+                    {/* Mobile Right Group: Register Button & Hamburger Menu Button */}
+                    <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+                        <a
+                            href="#apply"
+                            className="inline-flex items-center justify-center px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-full shadow-xs hover:shadow-sm active:scale-95 transition-all shrink-0"
+                        >
+                            <span>Đăng ký</span>
+                        </a>
+
+                        <button
+                            type="button"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="shrink-0 p-1.5 sm:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            aria-label="Mở danh mục điều hướng"
+                            aria-expanded={mobileMenuOpen}
+                        >
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                {mobileMenuOpen ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                )}
+                            </svg>
+                        </button>
+                    </div>
                 </nav>
 
                 {/* Mobile Dropdown Menu */}
@@ -167,10 +194,9 @@ export function FloatingNavbar() {
                                 <a
                                     href="#apply"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-xl shadow-sm transition-all"
+                                    className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-xl shadow-sm transition-all"
                                 >
                                     <span>Đăng ký thành viên</span>
-                                    <ArrowRightIcon className="w-4 h-4" />
                                 </a>
                             </div>
                         </div>

@@ -6,6 +6,7 @@ import { MissionGoalsSection } from "@/components/landing/mission-goals-section"
 import { DepartmentsSection } from "@/components/landing/departments-section";
 import { RecruitmentForm } from "@/components/landing/recruitment-form";
 import { Footer } from "@/components/landing/footer";
+import { JsonLd } from "@/components/json-ld";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-zinc-900 selection:bg-blue-100 selection:text-blue-900">
+            <JsonLd />
             {/* Floating Top Navbar */}
             <FloatingNavbar />
 
