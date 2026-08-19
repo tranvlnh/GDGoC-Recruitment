@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { departments, majors, questions } from "@/lib/config";
+import { departments, getQuestionsForDepartment } from "@/lib/config";
 import type { Answer } from "@/types/application";
 
 const applicationBaseSchema = z.object({
@@ -28,9 +28,9 @@ export function validateApplicationSubmission(
     input: unknown,
 ): ApplicationSubmission {
     const parsed = applicationBaseSchema.parse(input);
-    if (!majors.some((major) => major.id === parsed.major)) {
+    if (!parsed.major || !parsed.major.trim()) {
         throw new z.ZodError([
-            { code: "custom", path: ["major"], message: "Ngành không hợp lệ" },
+            { code: "custom", path: ["major"], message: "Vui lòng nhập ngành học" },
         ]);
     }
     if (
@@ -45,6 +45,8 @@ export function validateApplicationSubmission(
         ]);
     }
 
+    const applicableQuestions = getQuestionsForDepartment(parsed.department);
+
     const answerMap = new Map(
         parsed.answers.map((answer) => [answer.question_id, answer.value]),
     );
@@ -58,7 +60,7 @@ export function validateApplicationSubmission(
         ]);
     }
     for (const answer of parsed.answers) {
-        if (!questions.some((question) => question.id === answer.question_id)) {
+        if (!applicableQuestions.some((question) => question.id === answer.question_id)) {
             throw new z.ZodError([
                 {
                     code: "custom",
@@ -69,11 +71,12 @@ export function validateApplicationSubmission(
         }
     }
 
-    for (const question of questions) {
+    for (const question of applicableQuestions) {
         const value = answerMap.get(question.id);
         const isEmpty =
             value === undefined ||
-            value === "" ||
+            value === null ||
+            (typeof value === "string" && value.trim() === "") ||
             (Array.isArray(value) && value.length === 0);
         if (question.required && isEmpty) {
             throw new z.ZodError([

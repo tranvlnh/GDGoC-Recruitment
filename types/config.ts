@@ -10,6 +10,7 @@ const baseQuestionSchema = z.object({
     label: z.string().min(1),
     required: z.boolean(),
     order: z.number().int().nonnegative(),
+    departments: z.array(z.string().min(1)).optional(),
 });
 
 export const multipleChoiceQuestionSchema = baseQuestionSchema.extend({
@@ -56,6 +57,7 @@ export const settingsSchema = z
     .object({
         applicationOpenAt: z.string().datetime({ offset: true }),
         applicationCloseAt: z.string().datetime({ offset: true }),
+        fallbackGoogleFormUrl: z.string().url().optional().or(z.literal("")),
     })
     .refine(
         (settings) =>

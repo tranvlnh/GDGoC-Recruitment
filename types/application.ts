@@ -24,10 +24,19 @@ export type Application = {
     gender: "male" | "female" | "other" | "prefer_not_to_say";
 };
 
+export type DashboardStats = {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+};
+
 export type PaginatedApplications = {
     data: Application[];
     page: number;
     pageSize: number;
     total: number;
     totalPages: number;
+    stats?: DashboardStats;
 };
+
