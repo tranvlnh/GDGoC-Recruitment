@@ -10,7 +10,7 @@ export function GdgocLogo({ className = "h-8 w-auto" }: { className?: string }) 
                 width={642}
                 height={55}
                 priority
-                className="h-6 sm:h-7 md:h-8 w-auto object-contain"
+                className="h-5 sm:h-7 md:h-8 w-auto max-w-full object-contain"
             />
         </div>
     );

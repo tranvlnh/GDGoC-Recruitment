@@ -7,7 +7,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
                     {/* Column 1: Brand Info */}
                     <div className="md:col-span-5 space-y-4">
-                        <div className="bg-white px-3.5 py-2 rounded-xl inline-block shadow-xs">
+                        <div className="inline-block">
                             <GdgocLogo />
                         </div>
                         <p className="text-sm text-zinc-300 leading-relaxed max-w-sm">
@@ -65,14 +65,14 @@ export function Footer() {
                             </li>
                             <li className="flex items-center gap-2.5">
                                 <MailIcon className="w-4.5 h-4.5 text-[#4285F4] shrink-0" />
-                                <a href="mailto:gdgoc.ptit@gmail.com" className="hover:text-white transition-colors">
-                                    gdgoc.ptit@gmail.com
+                                <a href="mailto:contact@gdscptit.dev" className="hover:text-white transition-colors">
+                                    contact@gdscptit.dev
                                 </a>
                             </li>
                             <li className="flex items-center gap-2.5">
                                 <FacebookIcon className="w-4.5 h-4.5 text-[#1877F2] shrink-0" />
-                                <a href="https://facebook.com/gdgoc.ptit" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-                                    facebook.com/gdgoc.ptit
+                                <a href="https://www.facebook.com/gdsc.ptit" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+                                    facebook.com/gdsc.ptit
                                 </a>
                             </li>
                         </ul>

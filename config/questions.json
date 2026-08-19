@@ -20,7 +20,8 @@
       { "id": "mobile", "label": "Lập trình Mobile (Flutter/Android)" },
       { "id": "ai_ml", "label": "Trí tuệ nhân tạo (AI / Machine Learning)" },
       { "id": "cloud_devops", "label": "Cloud & DevOps (Google Cloud)" }
-    ]
+    ],
+    "departments": ["tech"]
   },
   {
     "id": "expectations",

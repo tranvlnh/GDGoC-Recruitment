@@ -317,11 +317,10 @@ export function ApplicationsDashboard() {
                     {/* Card 1: Total */}
                     <div
                         onClick={() => handleFilterChange(() => setStatus(""))}
-                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${
-                            status === ""
-                                ? "border-[#4285F4] bg-blue-50/40 shadow-sm ring-2 ring-blue-500/20"
-                                : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
-                        }`}
+                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${status === ""
+                            ? "border-[#4285F4] bg-blue-50/40 shadow-sm ring-2 ring-blue-500/20"
+                            : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
+                            }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -344,11 +343,10 @@ export function ApplicationsDashboard() {
                     {/* Card 2: Pending */}
                     <div
                         onClick={() => handleFilterChange(() => setStatus("pending"))}
-                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${
-                            status === "pending"
-                                ? "border-amber-500 bg-amber-50/40 shadow-sm ring-2 ring-amber-500/20"
-                                : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
-                        }`}
+                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${status === "pending"
+                            ? "border-amber-500 bg-amber-50/40 shadow-sm ring-2 ring-amber-500/20"
+                            : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
+                            }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
@@ -371,11 +369,10 @@ export function ApplicationsDashboard() {
                     {/* Card 3: Approved */}
                     <div
                         onClick={() => handleFilterChange(() => setStatus("approved"))}
-                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${
-                            status === "approved"
-                                ? "border-emerald-500 bg-emerald-50/40 shadow-sm ring-2 ring-emerald-500/20"
-                                : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
-                        }`}
+                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${status === "approved"
+                            ? "border-emerald-500 bg-emerald-50/40 shadow-sm ring-2 ring-emerald-500/20"
+                            : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
+                            }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
@@ -398,11 +395,10 @@ export function ApplicationsDashboard() {
                     {/* Card 4: Rejected / Rate */}
                     <div
                         onClick={() => handleFilterChange(() => setStatus("rejected"))}
-                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${
-                            status === "rejected"
-                                ? "border-rose-500 bg-rose-50/40 shadow-sm ring-2 ring-rose-500/20"
-                                : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
-                        }`}
+                        className={`cursor-pointer rounded-2xl border p-4.5 transition-all hover:shadow-md ${status === "rejected"
+                            ? "border-rose-500 bg-rose-50/40 shadow-sm ring-2 ring-rose-500/20"
+                            : "border-slate-200/80 bg-white shadow-sm hover:border-slate-300"
+                            }`}
                     >
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider">
@@ -432,11 +428,10 @@ export function ApplicationsDashboard() {
                         <div className="flex flex-wrap gap-2 sm:gap-3">
                             <button
                                 onClick={() => handleFilterChange(() => setStatus(""))}
-                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                                    status === ""
-                                        ? "border-[#4285F4] text-[#4285F4]"
-                                        : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                                }`}
+                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${status === ""
+                                    ? "border-[#4285F4] text-[#4285F4]"
+                                    : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                                    }`}
                             >
                                 <span>Tất cả hồ sơ</span>
                                 <span className="rounded-full bg-slate-200/80 px-2 py-0.5 text-[11px] font-bold text-slate-700">
@@ -446,11 +441,10 @@ export function ApplicationsDashboard() {
 
                             <button
                                 onClick={() => handleFilterChange(() => setStatus("pending"))}
-                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                                    status === "pending"
-                                        ? "border-amber-500 text-amber-700"
-                                        : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                                }`}
+                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${status === "pending"
+                                    ? "border-amber-500 text-amber-700"
+                                    : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                                    }`}
                             >
                                 <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                                 <span>Chờ duyệt</span>
@@ -461,11 +455,10 @@ export function ApplicationsDashboard() {
 
                             <button
                                 onClick={() => handleFilterChange(() => setStatus("approved"))}
-                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                                    status === "approved"
-                                        ? "border-emerald-500 text-emerald-700"
-                                        : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                                }`}
+                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${status === "approved"
+                                    ? "border-emerald-500 text-emerald-700"
+                                    : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                                    }`}
                             >
                                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                                 <span>Đã duyệt</span>
@@ -476,11 +469,10 @@ export function ApplicationsDashboard() {
 
                             <button
                                 onClick={() => handleFilterChange(() => setStatus("rejected"))}
-                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${
-                                    status === "rejected"
-                                        ? "border-rose-500 text-rose-700"
-                                        : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                                }`}
+                                className={`inline-flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-xs font-semibold transition-all ${status === "rejected"
+                                    ? "border-rose-500 text-rose-700"
+                                    : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                                    }`}
                             >
                                 <span className="h-2 w-2 rounded-full bg-rose-500" />
                                 <span>Từ chối</span>
@@ -720,13 +712,12 @@ export function ApplicationsDashboard() {
                 {toasts.map((toast) => (
                     <div
                         key={toast.id}
-                        className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-sm font-medium shadow-lg backdrop-blur-md transition-all animate-in slide-in-from-bottom-3 ${
-                            toast.type === "success"
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                                : toast.type === "error"
+                        className={`flex items-center gap-2.5 rounded-xl border px-4 py-3 text-sm font-medium shadow-lg backdrop-blur-md transition-all animate-in slide-in-from-bottom-3 ${toast.type === "success"
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                            : toast.type === "error"
                                 ? "border-rose-200 bg-rose-50 text-rose-800"
                                 : "border-blue-200 bg-blue-50 text-blue-800"
-                        }`}
+                            }`}
                     >
                         {toast.type === "success" && (
                             <svg className="h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
@@ -1077,12 +1068,87 @@ function ApplicationModal({
         application.answers.map((answer) => [answer.question_id, answer]),
     );
 
-    const gender = {
-        male: "Nam",
-        female: "Nữ",
-        other: "Khác",
-        prefer_not_to_say: "Không muốn trả lời",
-    }[application.gender];
+    const commonQuestions = questions.filter(
+        (q) => !q.departments || q.departments.length === 0,
+    );
+
+    const deptQuestions = questions.filter(
+        (q) =>
+            q.departments &&
+            q.departments.length > 0 &&
+            q.departments.includes(application.department),
+    );
+
+    const knownQuestionIds = new Set([
+        ...commonQuestions.map((q) => q.id),
+        ...deptQuestions.map((q) => q.id),
+    ]);
+
+    const otherAnsweredQuestions = application.answers.filter(
+        (ans) => !knownQuestionIds.has(ans.question_id),
+    );
+
+    const renderQuestionCard = (q: (typeof questions)[number]) => {
+        const answer = answers.get(q.id);
+        const answerText = displayAnswer(q.id, answer);
+        const hasAnswer = Boolean(
+            answer &&
+                ((typeof answer.value === "string" &&
+                    answer.value.trim().length > 0) ||
+                    (Array.isArray(answer.value) && answer.value.length > 0)),
+        );
+
+        return (
+            <div
+                key={q.id}
+                className="rounded-xl border border-slate-200 bg-slate-50/40 p-4 transition-colors hover:bg-slate-50/70"
+            >
+                <div className="flex items-start justify-between gap-3">
+                    <h4 className="text-xs font-semibold text-slate-800 leading-snug">
+                        {q.label}
+                    </h4>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        {q.required && (
+                            <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                                Bắt buộc
+                            </span>
+                        )}
+                        <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                            {q.type === "essay" ? "Tự luận" : "Trắc nghiệm"}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="mt-2.5 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs">
+                    {hasAnswer ? (
+                        q.type === "multiple_choice" &&
+                        Array.isArray(answer?.value) &&
+                        answer.value.length > 1 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                                {answer.value.map((valId) => {
+                                    const optLabel =
+                                        q.options?.find((o) => o.id === valId)
+                                            ?.label ?? valId;
+                                    return (
+                                        <span
+                                            key={valId}
+                                            className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200/80 px-2.5 py-1 rounded-md"
+                                        >
+                                            <span className="text-blue-500 font-bold">✓</span> {optLabel}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="whitespace-pre-wrap">{answerText}</div>
+                        )
+                    ) : (
+                        <span className="italic text-slate-400">Chưa trả lời</span>
+                    )}
+                </div>
+            </div>
+        );
+    };
 
     const initials = application.full_name
         .split(" ")
@@ -1092,20 +1158,12 @@ function ApplicationModal({
         .join("")
         .toUpperCase();
 
-    // Group questions into meaningful categories
-    const motivationQuestions = questions.filter((q) =>
-        ["motivation", "tech_interests", "expectations"].includes(q.id),
-    );
-    const essayQuestions = questions.filter((q) =>
-        ["past_project"].includes(q.id),
-    );
-    const commitmentQuestions = questions.filter((q) =>
-        ["time_commitment", "commitment"].includes(q.id),
-    );
-    const otherQuestions = questions.filter(
-        (q) =>
-            !["motivation", "tech_interests", "expectations", "past_project", "time_commitment", "commitment"].includes(q.id),
-    );
+    const gender = {
+        male: "Nam",
+        female: "Nữ",
+        other: "Khác",
+        prefer_not_to_say: "Không muốn trả lời",
+    }[application.gender];
 
     return (
         <div
@@ -1119,7 +1177,6 @@ function ApplicationModal({
                 onMouseDown={(event) => event.stopPropagation()}
                 className="max-h-[94vh] w-full overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white shadow-2xl sm:max-w-4xl border border-slate-200"
             >
-                {/* Modal Top Header */}
                 <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur-md sm:px-7">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-[#4285F4]">
@@ -1138,20 +1195,38 @@ function ApplicationModal({
                             <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
                                 <span>{application.email}</span>
                                 <span>•</span>
-                                <DepartmentBadge department={application.department} />
+                                <span>{application.phone}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                        {/* Prev / Next candidate switcher */}
-                        <div className="hidden sm:flex items-center gap-1 mr-2 border-r border-slate-200 pr-2">
+                    <div className="flex items-center gap-2">
+                        {application.status === "pending" && (
+                            <div className="flex items-center gap-1.5 mr-2">
+                                <button
+                                    type="button"
+                                    onClick={() => onStatus(application, "approved")}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                                >
+                                    <span>Duyệt</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onStatus(application, "rejected")}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+                                >
+                                    <span>Từ chối</span>
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5">
                             <button
                                 type="button"
                                 disabled={!hasPrev}
                                 onClick={onPrev}
-                                title="Ứng viên trước (Phím ←)"
-                                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                                className="rounded p-1.5 text-slate-500 hover:bg-white hover:text-slate-800 disabled:opacity-30 disabled:hover:bg-transparent"
+                                title="Hồ sơ trước (Phím ←)"
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -1161,8 +1236,8 @@ function ApplicationModal({
                                 type="button"
                                 disabled={!hasNext}
                                 onClick={onNext}
-                                title="Ứng viên kế tiếp (Phím →)"
-                                className="rounded-lg border border-slate-200 p-1.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                                className="rounded p-1.5 text-slate-500 hover:bg-white hover:text-slate-800 disabled:opacity-30 disabled:hover:bg-transparent"
+                                title="Hồ sơ tiếp theo (Phím →)"
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -1173,8 +1248,8 @@ function ApplicationModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl border border-slate-200 bg-slate-50 p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-                            title="Đóng (Esc)"
+                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+                            aria-label="Đóng modal (Esc)"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1183,69 +1258,24 @@ function ApplicationModal({
                     </div>
                 </div>
 
-                {/* Modal Body */}
-                <div className="p-5 sm:p-7 space-y-7">
-                    {/* Action Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
-                        <span className="text-xs font-semibold text-slate-600">
-                            Trạng thái hiện tại: <strong className="text-slate-900">{statusText[application.status]}</strong>
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => onStatus(application, "approved")}
-                                disabled={application.status === "approved"}
-                                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span>Duyệt hồ sơ này</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => onStatus(application, "rejected")}
-                                disabled={application.status === "rejected"}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-4 py-2 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-50 hover:border-rose-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                <span>Từ chối</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Section 1: Candidate Overview & Quick Contact */}
+                <div className="p-5 sm:p-7 space-y-6">
                     <div>
                         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                             Thông tin cá nhân & Học vấn
                         </h3>
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                            {/* Email */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {/* Department */}
                             <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-2xs">
-                                <span className="text-[11px] font-medium text-slate-500">Email liên hệ</span>
-                                <div className="mt-1 flex items-center justify-between gap-1">
-                                    <span className="truncate text-sm font-semibold text-slate-900">
-                                        {application.email}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => copyToClipboard(application.email, "Email")}
-                                        className="shrink-0 text-slate-400 hover:text-[#4285F4]"
-                                        title="Sao chép email"
-                                    >
-                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                        </svg>
-                                    </button>
+                                <span className="text-[11px] font-medium text-slate-500">Ban chuyên môn ứng tuyển</span>
+                                <div className="mt-1">
+                                    <DepartmentBadge department={application.department} />
                                 </div>
                             </div>
 
                             {/* Phone */}
                             <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-2xs">
                                 <span className="text-[11px] font-medium text-slate-500">Số điện thoại</span>
-                                <div className="mt-1 flex items-center justify-between gap-1">
+                                <div className="mt-1 flex items-center justify-between">
                                     <a
                                         href={`tel:${application.phone}`}
                                         className="truncate text-sm font-semibold text-[#4285F4] hover:underline"
@@ -1332,101 +1362,73 @@ function ApplicationModal({
                         </div>
                     </div>
 
-                    {/* Section 2: Questions - Motivation & Expectations */}
-                    {motivationQuestions.length > 0 && (
+                    {/* Section 2: Common Questions */}
+                    {commonQuestions.length > 0 && (
                         <div className="border-t border-slate-100 pt-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-100 text-[#4285F4] text-xs font-bold">
                                     1
                                 </span>
                                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Nguyện vọng & Định hướng
+                                    Câu hỏi chung
                                 </h3>
-                            </div>
-                            <div className="space-y-4">
-                                {motivationQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50/40 p-4.5">
-                                        <h4 className="text-xs font-semibold text-slate-700">
-                                            {q.label}
-                                        </h4>
-                                        <div className="mt-2 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs whitespace-pre-wrap">
-                                            {displayAnswer(q.id, answers.get(q.id))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Section 3: Questions - Projects & Past Experience */}
-                    {essayQuestions.length > 0 && (
-                        <div className="border-t border-slate-100 pt-5">
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-100 text-amber-700 text-xs font-bold">
-                                    2
+                                <span className="text-xs text-slate-400 font-normal">
+                                    ({commonQuestions.length} câu)
                                 </span>
-                                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Dự án & Kinh nghiệm
-                                </h3>
                             </div>
-                            <div className="space-y-4">
-                                {essayQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50/40 p-4.5">
-                                        <h4 className="text-xs font-semibold text-slate-700">
-                                            {q.label}
-                                        </h4>
-                                        <div className="mt-2 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs whitespace-pre-wrap">
-                                            {displayAnswer(q.id, answers.get(q.id))}
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="space-y-3.5">
+                                {commonQuestions.map((q) => renderQuestionCard(q))}
                             </div>
                         </div>
                     )}
 
-                    {/* Section 4: Questions - Commitment & Availability */}
-                    {commitmentQuestions.length > 0 && (
+                    {/* Section 3: Department Specific Questions */}
+                    {deptQuestions.length > 0 && (
                         <div className="border-t border-slate-100 pt-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 text-xs font-bold">
-                                    3
+                                    2
                                 </span>
                                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Thời gian & Cam kết
+                                    Câu hỏi chuyên môn — {departmentLabel(application.department)}
                                 </h3>
+                                <span className="text-xs text-slate-400 font-normal">
+                                    ({deptQuestions.length} câu)
+                                </span>
                             </div>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                {commitmentQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50/40 p-4">
-                                        <h4 className="text-xs font-semibold text-slate-700">
-                                            {q.label}
-                                        </h4>
-                                        <div className="mt-2 rounded-lg bg-white p-3 text-sm font-medium text-slate-800 shadow-2xs">
-                                            {displayAnswer(q.id, answers.get(q.id))}
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="space-y-3.5">
+                                {deptQuestions.map((q) => renderQuestionCard(q))}
                             </div>
                         </div>
                     )}
 
-                    {/* Other remaining questions */}
-                    {otherQuestions.length > 0 && (
+                    {/* Section 4: Other Answered Questions */}
+                    {otherAnsweredQuestions.length > 0 && (
                         <div className="border-t border-slate-100 pt-5">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                                Các câu trả lời khác
-                            </h3>
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-100 text-purple-700 text-xs font-bold">
+                                    3
+                                </span>
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Các câu trả lời khác
+                                </h3>
+                            </div>
                             <div className="space-y-3">
-                                {otherQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50/40 p-4">
-                                        <h4 className="text-xs font-semibold text-slate-700">
-                                            {q.label}
-                                        </h4>
-                                        <div className="mt-2 rounded-lg bg-white p-3 text-sm text-slate-800 shadow-2xs whitespace-pre-wrap">
-                                            {displayAnswer(q.id, answers.get(q.id))}
+                                {otherAnsweredQuestions.map((ans) => {
+                                    const matchingQ = questions.find((q) => q.id === ans.question_id);
+                                    const qLabel = matchingQ?.label || ans.question_id;
+                                    const formattedVal = displayAnswer(ans.question_id, ans);
+                                    return (
+                                        <div key={ans.question_id} className="rounded-xl border border-slate-200 bg-slate-50/40 p-4">
+                                            <h4 className="text-xs font-semibold text-slate-700">
+                                                {qLabel}
+                                            </h4>
+                                            <div className="mt-2 rounded-lg bg-white p-3 text-sm text-slate-800 shadow-2xs whitespace-pre-wrap">
+                                                {formattedVal}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     )}

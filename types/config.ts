@@ -10,6 +10,7 @@ const baseQuestionSchema = z.object({
     label: z.string().min(1),
     required: z.boolean(),
     order: z.number().int().nonnegative(),
+    departments: z.array(z.string().min(1)).optional(),
 });
 
 export const multipleChoiceQuestionSchema = baseQuestionSchema.extend({

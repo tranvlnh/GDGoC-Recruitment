@@ -77,10 +77,10 @@ export function FloatingNavbar() {
                 />
             )}
 
-            <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 lg:px-10 max-w-[1840px] mx-auto pointer-events-none">
+            <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 lg:px-10 pointer-events-none">
                 <nav
                     aria-label="Main Navigation"
-                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between ${scrolled
+                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
                         ? "bg-white/90 backdrop-blur-lg border-zinc-200/90 shadow-lg shadow-zinc-900/5"
                         : "bg-white/80 backdrop-blur-md border-zinc-200/60 shadow-sm"
                         }`}
@@ -89,7 +89,7 @@ export function FloatingNavbar() {
                     <a
                         href="#"
                         aria-label="GDGoC PTIT - Trang chủ"
-                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
+                        className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
                     >
                         <GdgocLogo />
                     </a>
@@ -128,7 +128,7 @@ export function FloatingNavbar() {
                     <button
                         type="button"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        className="md:hidden shrink-0 p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         aria-label="Mở danh mục điều hướng"
                         aria-expanded={mobileMenuOpen}
                     >

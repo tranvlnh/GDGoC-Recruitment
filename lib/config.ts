@@ -7,6 +7,20 @@ import { optionSchema, questionsSchema, settingsSchema } from "@/types/config";
 export const questions = questionsSchema
     .parse(rawQuestions)
     .sort((a, b) => a.order - b.order);
+
+export const commonQuestions = questions.filter((q) => !q.departments || q.departments.length === 0);
+
+export function getQuestionsForDepartment(departmentId: string) {
+    return questions
+        .filter((q) => !q.departments || q.departments.length === 0 || q.departments.includes(departmentId))
+        .sort((a, b) => a.order - b.order);
+}
+
+export function getDepartmentSpecificQuestions(departmentId: string) {
+    return questions
+        .filter((q) => q.departments && q.departments.length > 0 && q.departments.includes(departmentId))
+        .sort((a, b) => a.order - b.order);
+}
 export const majors = optionSchema.array().parse(rawMajors);
 export const departments = optionSchema.array().parse(rawDepartments);
 export const settings = settingsSchema.parse(rawSettings);
