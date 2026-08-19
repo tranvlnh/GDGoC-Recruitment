@@ -1,10 +1,86 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { settings } from "@/lib/config";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import "./globals.css";
 
+const { site } = settings;
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    themeColor: site.themeColor,
+};
+
 export const metadata: Metadata = {
-    title: "Tuyển Thành Viên Gen 5 | GDGoC PTIT - Google Developer Groups on Campus",
-    description: "Trở thành thành viên của GDGoC PTIT ngay! Khám phá công nghệ Google, mở rộng mạng lưới quan hệ và bứt phá kỹ năng lập trình.",
-    keywords: ["GDGoC", "GDGoC PTIT", "Google Developer Groups on Campus", "PTIT", "Tuyển thành viên Gen 5", "Google Developers"],
+    metadataBase: new URL(site.url),
+
+    // ── Core ──
+    title: {
+        default: `Tuyển Thành Viên Gen 5 | ${site.name}`,
+        template: `%s | ${site.name}`,
+    },
+    description: site.description,
+    keywords: site.keywords,
+    authors: [{ name: site.name, url: site.url }],
+    creator: site.name,
+
+    // ── Canonical & Alternate ──
+    alternates: {
+        canonical: "/",
+    },
+
+    // ── Open Graph (Facebook, Zalo, LinkedIn …) ──
+    openGraph: {
+        type: "website",
+        locale: site.locale,
+        url: site.url,
+        siteName: site.name,
+        title: `Tuyển Thành Viên Gen 5 | ${site.name}`,
+        description: site.ogDescription,
+        images: [
+            {
+                url: site.ogImage,
+                width: 1200,
+                height: 630,
+                alt: `${site.name} - Tuyển Thành Viên Gen 5`,
+            },
+        ],
+    },
+
+    // ── Twitter / X Card ──
+    twitter: {
+        card: "summary_large_image",
+        title: `Tuyển Thành Viên Gen 5 | ${site.name}`,
+        description: site.ogDescription,
+        images: [site.ogImage],
+    },
+
+    // ── Robots ──
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+        },
+    },
+
+    // ── Icons ──
+    icons: {
+        icon: "/favicon.ico",
+        apple: "/favicon.ico",
+    },
+
+    // ── Verification (thêm ID khi có) ──
+    // verification: {
+    //     google: "YOUR_GOOGLE_SITE_VERIFICATION",
+    // },
+
+    // ── Category ──
+    category: "technology",
 };
 
 export default function RootLayout({
@@ -14,6 +90,7 @@ export default function RootLayout({
         <html lang="vi">
             <body className="min-h-screen bg-[#f8f9fa] text-zinc-900 antialiased">
                 {children}
+                <GoogleAnalytics />
             </body>
         </html>
     );

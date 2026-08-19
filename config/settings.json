@@ -1,5 +1,32 @@
 {
   "applicationOpenAt": "2026-08-01T00:00:00+07:00",
   "applicationCloseAt": "2026-09-30T23:59:59+07:00",
-  "fallbackGoogleFormUrl": "https://forms.gle/GDGoCPTITGen5"
+  "fallbackGoogleFormUrl": "https://forms.gle/GDGoCPTITGen5",
+  "site": {
+    "url": "https://gdscptit.dev",
+    "name": "GDGoC PTIT",
+    "fullName": "Google Developer Groups on Campus - PTIT",
+    "description": "Trở thành thành viên Gen 5 của GDGoC PTIT ngay! Khám phá công nghệ Google, mở rộng mạng lưới quan hệ và bứt phá kỹ năng lập trình cùng Google Developer Groups on Campus - PTIT.",
+    "ogDescription": "Gia nhập cộng đồng Google Developer Groups on Campus tại PTIT. Đăng ký ngay để khám phá công nghệ, phát triển kỹ năng và kết nối cùng bạn bè!",
+    "ogImage": "/og.svg",
+    "locale": "vi_VN",
+    "themeColor": "#4285F4",
+    "keywords": [
+      "GDGoC",
+      "GDGoC PTIT",
+      "GDSC PTIT",
+      "Google Developer Groups on Campus",
+      "PTIT",
+      "Tuyển thành viên Gen 5",
+      "Google Developers",
+      "Học viện Công nghệ Bưu chính Viễn thông",
+      "lập trình",
+      "công nghệ",
+      "cộng đồng sinh viên",
+      "tuyển dụng"
+    ],
+    "socialLinks": [
+      "https://www.facebook.com/gdscptit"
+    ]
+  }
 }
