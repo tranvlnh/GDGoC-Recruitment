@@ -55,7 +55,7 @@ const departmentMeta: Record<
     tech: {
         name: "Ban Chuyên Môn",
         short: "Technical",
-        tag: "Engineering & AI",
+        tag: "Engineering",
         activeBorder: "border-[#4285F4]",
         activeBg: "bg-blue-50/70",
         activeText: "text-[#4285F4]",

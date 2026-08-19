@@ -4,15 +4,12 @@ import {
     UsersIcon,
     SparklesIcon,
     RocketIcon,
+    TargetIcon,
     CheckCircleIcon,
     CalendarIcon,
     GoogleDots
 } from "./google-icons";
 
-/**
- * Kiểu dữ liệu cho từng cột mốc trong hành trình hoạt động thường niên.
- * Người dùng có thể dễ dàng thêm mốc mới hoặc đổi ảnh chỉ bằng cách chỉnh sửa mảng ANNUAL_JOURNEY bên dưới.
- */
 export interface ActivityMilestone {
     id: string;
     period: string;
@@ -29,82 +26,119 @@ export interface ActivityMilestone {
     icon: React.ComponentType<{ className?: string }>;
 }
 
-
 export const ANNUAL_JOURNEY: ActivityMilestone[] = [
     {
         id: "phase-1",
-        period: "Tháng 10 – Tháng 11",
-        title: "Onboarding & Internal Bootcamp",
-        subtitle: "Hội nhập & Khởi động đam mê công nghệ",
-        desc: "Chuỗi hoạt động chào đón thành viên mới Gen 5, trang bị kiến thức nền tảng về văn hóa Google Developer Groups, quy trình làm việc Agile/Scrum và kết nối mentor 1-on-1.",
-        image: "/about.png",
-        imageAlt: "GDGoC PTIT Onboarding & Teambuilding",
-        photoBadge: "Khởi động Gen 5",
-        tags: ["#Onboarding", "#Bootcamp", "#Mentorship_1on1", "#Git_Flow"],
+        period: "08/2025 – 09/2025",
+        title: "Welcome Freshmen & Campus Booth",
+        subtitle: "Đồng hành & Khởi đầu đam mê công nghệ",
+        desc: "Chuỗi hoạt động tiếp sức tân sinh viên khóa mới, mở ra cánh cửa kết nối đầu tiên với thế giới lập trình và văn hóa đổi mới sáng tạo chuẩn Google.",
+        image: "/phase-1.png",
+        imageAlt: "Welcome Freshmen & Campus Booth - GDGoC PTIT",
+        photoBadge: "Chào đón Tân Sinh Viên",
+        tags: ["#Welcome_Freshmen", "#Campus_Booth", "#Onboarding", "#GDGoC_PTIT"],
         highlights: [
-            "Lễ chào đón tân thành viên & Định hướng phát triển cá nhân",
-            "Workshop đào tạo kỹ năng làm việc nhóm & Công cụ phối hợp",
-            "Ghép cặp Mentor - Mentee đồng hành trong suốt nhiệm kỳ",
+            "Tư vấn, hướng dẫn thủ tục nhập học trực tiếp tại quầy thông tin.",
+            "Trải nghiệm minigame công nghệ & nhận quà độc quyền từ Google.",
+            "Định hướng lộ trình học tập và cơ hội gia nhập đại gia đình GDGoC.",
         ],
         color: "blue",
-        badge: "Khởi động",
+        badge: "Khởi động & Chào đón",
         icon: UsersIcon,
     },
     {
         id: "phase-2",
-        period: "Tháng 12 – Tháng 02",
-        title: "Tech Workshops & Deep Dives",
-        subtitle: "Đào tạo chuyên môn & Tiếp cận công nghệ thực chiến",
-        desc: "Các chuỗi workshop chuyên sâu về Web Development, Mobile (Flutter), Cloud Computing và AI/ML do chính các Tech Leads và Google Developer Experts (GDE) trực tiếp hướng dẫn.",
-        image: "/internal _workshop.png",
-        imageAlt: "GDGoC Tech Workshop & CodeLab",
-        photoBadge: "Tech Workshop Thực chiến",
-        tags: ["#Flutter", "#Cloud_Computing", "#AI_Gemini", "#CodeLab"],
+        period: "10/2025 – 11/2025",
+        title: "First All-hands Meeting",
+        subtitle: "Hội quân toàn CLB & Khởi động nhiệm kỳ",
+        desc: "Cột mốc hội ngộ đầu tiên của toàn bộ thành viên, nơi thổi bùng ngọn lửa nhiệt huyết, xây dựng văn hóa gắn kết và sẵn sàng cho các dự án lớn.",
+        image: "/phase-2.png",
+        imageAlt: "First All-hands Meeting - GDGoC PTIT",
+        photoBadge: "Hội Quân Toàn CLB",
+        tags: ["#All_Hands", "#Team_Bonding", "#Culture", "#Kickoff"],
         highlights: [
-            "Chuỗi CodeLab thực hành trực tiếp cùng chuyên gia công nghệ",
-            "Tiếp cận hệ sinh thái công nghệ mới nhất từ Google",
-            "Chia sẻ kinh nghiệm phỏng vấn & Xây dựng CV công nghệ chuẩn",
+            "Gặp gỡ, kết nối các ban chuyên môn và chào đón tân thành viên.",
+            "Công bố chiến lược, lộ trình hoạt động trọng tâm trong nhiệm kỳ.",
+            "Xây dựng tinh thần đồng đội cởi mở và tư duy sáng tạo không giới hạn.",
         ],
         color: "red",
-        badge: "Chuyên môn",
-        icon: CodeIcon,
+        badge: "Hội quân & Gắn kết",
+        icon: UsersIcon,
     },
     {
         id: "phase-3",
-        period: "Tháng 03 – Tháng 05",
-        title: "Hackathons & Google Solution Challenge",
-        subtitle: "Tranh tài & Kiến tạo sản phẩm giải quyết bài toán xã hội",
-        desc: "Sân chơi bùng nổ năng lượng sáng tạo nơi các nhóm sinh viên phát triển sản phẩm công nghệ hoàn chỉnh tham gia cuộc thi quốc tế Google Solution Challenge và các Hackathon uy tín.",
-        image: "/hackathon.jpg",
-        imageAlt: "GDGoC Hackathon & Solution Challenge",
-        photoBadge: "Hackathon 48H",
-        tags: ["#Solution_Challenge", "#Hackathon", "#UN_17_Goals", "#Product_MVP"],
+        period: "11/2025",
+        title: "Tech Workshops & Codelabs",
+        subtitle: "Đào tạo chuyên môn & Công nghệ thực chiến",
+        desc: "Chuỗi workshop kỹ thuật chuyên sâu về Firebase, Cloud và AI do Tech Leads trực tiếp hướng dẫn, chuẩn bị bệ phóng vững chắc cho kỳ Probation.",
+        image: "/phase-3.png",
+        imageAlt: "Internal Tech Workshops & Codelabs - GDGoC PTIT",
+        photoBadge: "Tech Workshop Thực Chiến",
+        tags: ["#Tech_Workshop", "#Firebase", "#Google_Cloud", "#Codelabs"],
         highlights: [
-            "Thử thách lập trình liên tục 48 giờ kiến tạo MVP thực tế",
-            "Được cố vấn trực tiếp từ các kỹ sư cấp cao & Ban giám khảo GDE",
-            "Cơ hội nhận giải thưởng lớn, Google Swags và vinh danh quốc tế",
+            "Thực hành trực tiếp trên hệ sinh thái Google.",
+            "Trang bị tư duy phát triển sản phẩm chuẩn quy trình công nghệ.",
+            "Cố vấn one-on-one giải quyết bài toán kỹ thuật thực tế.",
         ],
         color: "yellow",
-        badge: "Thực chiến",
-        icon: SparklesIcon,
+        badge: "Workshop thực chiến",
+        icon: CodeIcon,
     },
     {
         id: "phase-4",
-        period: "Tháng 06 – Tháng 08",
-        title: "Google I/O Extended & Summer Camp",
-        subtitle: "Lan tỏa tri thức & Dã ngoại kết nối đại gia đình",
-        desc: "Sự kiện công nghệ thường niên quy mô lớn cập nhật toàn bộ đột phá từ sự kiện toàn cầu Google I/O, kết hợp cùng chuyến đi Summer Teambuilding tràn đầy năng lượng tuổi trẻ.",
-        image: "/cover.png",
-        imageAlt: "Google I/O Extended & Summer Camp GDGoC PTIT",
-        photoBadge: "Google I/O Extended",
-        tags: ["#Google_IO_Extended", "#Tech_Talks", "#Summer_Camp", "#Networking"],
+        period: "09/11/2025",
+        title: "Probation Demo Day",
+        subtitle: "Tranh tài dự án & Tốt nghiệp thử thách",
+        desc: "Sân khấu bùng nổ khép lại giai đoạn thử thách, nơi các đội thi tự tin demo sản phẩm công nghệ hoàn chỉnh trước Hội đồng Ban giám khảo.",
+        image: "/phase-4.png",
+        imageAlt: "Probation Demo Day - GDGoC PTIT",
+        photoBadge: "Chung Kết Probation",
+        tags: ["#Demo_Day", "#Project_Pitch", "#MVP", "#Graduation"],
         highlights: [
-            "Sự kiện quy tụ 500+ sinh viên và chuyên gia công nghệ miền Bắc",
-            "Trải nghiệm Demo Booth công nghệ mới và nhận quà Google độc quyền",
-            "Chuyến dã ngoại Summer Camp gắn kết toàn bộ thành viên câu lạc bộ",
+            "Thuyết trình và vận hành trực tiếp MVP sản phẩm công nghệ.",
+            "Nhận đánh giá và phản biện chuyên sâu từ các chuyên gia đầu ngành.",
+            "Vinh danh dự án xuất sắc và trao chứng nhận thành viên chính thức.",
         ],
         color: "green",
-        badge: "Lan toả",
+        badge: "Chung kết Probation",
+        icon: TargetIcon,
+    },
+    {
+        id: "phase-5",
+        period: "08/03/2026",
+        title: "Internal Bonding – Women's Day",
+        subtitle: "Gắn kết đại gia đình & Tôn vinh phái đẹp",
+        desc: "Chuyến dã ngoại ấm áp tôn vinh những bóng hồng GDGoC, lan tỏa thông điệp bình đẳng giới và thắt chặt tình cảm đồng đội trong đại gia đình.",
+        image: "/phase-5.png",
+        imageAlt: "Internal Bonding - Women's Day - GDGoC PTIT",
+        photoBadge: "Tôn Vinh Phái Đẹp 08/03",
+        tags: ["#Womens_Day", "#Internal_Bonding", "#Women_In_Tech", "#GDGoC_Family"],
+        highlights: [
+            "Teambuilding bùng nổ năng lượng, gia tăng sự thấu hiểu nội bộ.",
+            "Gửi gắm những món quà bất ngờ và lời chúc ý nghĩa đến các bạn nữ.",
+            "Nuôi dưỡng văn hóa CLB thân thiện, đoàn kết và sẻ chia.",
+        ],
+        color: "red",
+        badge: "Gắn kết & Tôn vinh",
+        icon: SparklesIcon,
+    },
+    {
+        id: "phase-6",
+        period: "03/2026",
+        title: "GDGoC Hackathon Vietnam Finale",
+        subtitle: "Đấu trường lập trình sinh viên toàn quốc",
+        desc: "Đêm chung kết cuộc thi Hackathon quy mô toàn quốc do GDGoC PTIT đồng tổ chức – bệ phóng đưa các giải pháp công nghệ sinh viên vươn tầm thực tế.",
+        image: "/phase-6.png",
+        imageAlt: "GDGoC Hackathon Vietnam 2026 Finale",
+        photoBadge: "Chung Kết Toàn Quốc",
+        tags: ["#Hackathon_2026", "#Grand_Finale", "#Tech_Talent", "#Google_Solutions"],
+        highlights: [
+            "Tranh tài đỉnh cao giữa các đội thi xuất sắc nhất trên toàn quốc.",
+            "Giao lưu và mở rộng mạng lưới với các GDG Chapters trường bạn.",
+            "Khẳng định năng lực tổ chức sự kiện công nghệ quy mô chuyên nghiệp.",
+        ],
+        color: "blue",
+        badge: "Đấu trường toàn quốc",
         icon: RocketIcon,
     },
 ];
@@ -178,7 +212,7 @@ export function AboutActivitiesSection() {
                             tiên phong tại PTIT
                         </h2>
                         <p className="text-base sm:text-lg text-white/85 leading-relaxed font-normal">
-                            <strong className="text-white">Google Developer Groups on Campus - PTIT (GDGoC PTIT)</strong> là cộng đồng công nghệ tại Học viện Công nghệ Bưu chính Viễn thông, hướng đến việc xây dựng một môi trường năng động dành cho những người yêu thích công nghệ.
+                            <strong className="text-white">GDGoC PTIT</strong> là bệ phóng công nghệ hàng đầu tại Học viện Công nghệ Bưu chính Viễn thông – nơi sinh viên cùng học tập, kiến tạo các sản phẩm thực chiến và kết nối trực tiếp với hệ sinh thái Google Developers.
                         </p>
                     </div>
                 </div>
@@ -195,13 +229,13 @@ export function AboutActivitiesSection() {
                     <div className="text-center max-w-2xl mx-auto space-y-3">
                         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-xs font-bold text-[#4285F4] uppercase tracking-wider shadow-2xs">
                             <GoogleDots className="w-auto h-auto scale-90" />
-                            <span>Hoạt động nổi bật • 1 Year Journey</span>
+                            <span>Hành trình 1 năm • 1 Year Journey</span>
                         </div>
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-zinc-900 tracking-tight">
-                            Nhìn lại 1 năm hoạt động của GDGoC PTIT
+                            1 Năm Bứt Phá Cùng GDGoC PTIT
                         </h2>
                         <p className="text-base text-zinc-600 font-normal leading-relaxed">
-                            Cùng điểm lại các sự kiện, workshop công nghệ thực chiến và những khoảnh khắc đáng nhớ của câu lạc bộ trong năm học vừa qua.
+                            Những dấu ấn nổi bật, workshop công nghệ thực chiến và khoảnh khắc đáng nhớ kiến tạo nên bản sắc GDGoC PTIT.
                         </p>
                     </div>
 
@@ -209,7 +243,7 @@ export function AboutActivitiesSection() {
                     <div className="relative space-y-12 sm:space-y-20">
                         {/* Central Connecting Line (Desktop) */}
                         <div
-                            className="hidden lg:block absolute left-1/2 top-10 bottom-10 -translate-x-1/2 w-1 bg-gradient-to-b from-[#4285F4] via-[#EA4335] via-[#FBBC05] to-[#34A853] opacity-35 rounded-full pointer-events-none"
+                            className="hidden lg:block absolute left-1/2 top-10 bottom-10 -translate-x-1/2 w-1 bg-gradient-to-b from-[#4285F4] via-[#EA4335] via-[#FBBC05] via-[#34A853] via-[#EA4335] to-[#4285F4] opacity-35 rounded-full pointer-events-none"
                             aria-hidden="true"
                         />
 
