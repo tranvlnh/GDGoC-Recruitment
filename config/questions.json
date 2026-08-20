@@ -16,12 +16,27 @@
     "order": 2,
     "multiple": true,
     "options": [
-      { "id": "web", "label": "Lập trình Web (Frontend/Backend)" },
-      { "id": "mobile", "label": "Lập trình Mobile (Flutter/Android)" },
-      { "id": "ai_ml", "label": "Trí tuệ nhân tạo (AI / Machine Learning)" },
-      { "id": "cloud_devops", "label": "Cloud & DevOps (Google Cloud)" }
+      {
+        "id": "web",
+        "label": "Lập trình Web (Frontend/Backend)"
+      },
+      {
+        "id": "mobile",
+        "label": "Lập trình Mobile (Flutter/Android)"
+      },
+      {
+        "id": "ai_ml",
+        "label": "Trí tuệ nhân tạo (AI / Machine Learning)"
+      },
+      {
+        "id": "cloud_devops",
+        "label": "Cloud & DevOps (Google Cloud)"
+      }
     ],
-    "departments": ["tech"]
+    "allowOther": true,
+    "departments": [
+      "tech"
+    ]
   },
   {
     "id": "expectations",
@@ -31,13 +46,32 @@
     "order": 3,
     "multiple": true,
     "options": [
-      { "id": "skill_growth", "label": "Nâng cao kỹ năng chuyên môn" },
-      { "id": "networking", "label": "Mở rộng kết nối bạn bè & Mentor" },
-      { "id": "hackathon", "label": "Tham gia Solution Challenge & Hackathon" },
-      { "id": "soft_skills", "label": "Kỹ năng mềm và làm việc nhóm" },
-      { "id": "leadership", "label": "Kinh nghiệm quản lý dự án & sự kiện" },
-      { "id": "google_perks", "label": "Cơ hội nhận Swag & chứng chỉ Google" }
-    ]
+      {
+        "id": "skill_growth",
+        "label": "Nâng cao kỹ năng chuyên môn"
+      },
+      {
+        "id": "networking",
+        "label": "Mở rộng kết nối bạn bè & Mentor"
+      },
+      {
+        "id": "hackathon",
+        "label": "Tham gia Solution Challenge & Hackathon"
+      },
+      {
+        "id": "soft_skills",
+        "label": "Kỹ năng mềm và làm việc nhóm"
+      },
+      {
+        "id": "leadership",
+        "label": "Kinh nghiệm quản lý dự án & sự kiện"
+      },
+      {
+        "id": "google_perks",
+        "label": "Cơ hội nhận Swag & chứng chỉ Google"
+      }
+    ],
+    "allowOther": true
   },
   {
     "id": "past_project",
@@ -55,11 +89,24 @@
     "required": true,
     "order": 5,
     "multiple": false,
+    "allowOther": true,
     "options": [
-      { "id": "time_under_5h", "label": "Dưới 5 giờ / tuần" },
-      { "id": "time_5_10h", "label": "Từ 5 – 10 giờ / tuần" },
-      { "id": "time_10_15h", "label": "Từ 10 – 15 giờ / tuần" },
-      { "id": "time_over_15h", "label": "Trên 15 giờ / tuần" }
+      {
+        "id": "time_under_5h",
+        "label": "Dưới 5 giờ / tuần"
+      },
+      {
+        "id": "time_5_10h",
+        "label": "Từ 5 – 10 giờ / tuần"
+      },
+      {
+        "id": "time_10_15h",
+        "label": "Từ 10 – 15 giờ / tuần"
+      },
+      {
+        "id": "time_over_15h",
+        "label": "Trên 15 giờ / tuần"
+      }
     ]
   },
   {
@@ -70,8 +117,14 @@
     "order": 6,
     "multiple": false,
     "options": [
-      { "id": "yes", "label": "Cam kết tham gia đầy đủ" },
-      { "id": "flexible", "label": "Cần linh hoạt theo lịch thi/học" }
+      {
+        "id": "yes",
+        "label": "Cam kết tham gia đầy đủ"
+      },
+      {
+        "id": "flexible",
+        "label": "Cần linh hoạt theo lịch thi/học"
+      }
     ]
   }
 ]

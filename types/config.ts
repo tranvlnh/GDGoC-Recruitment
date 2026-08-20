@@ -17,6 +17,8 @@ export const multipleChoiceQuestionSchema = baseQuestionSchema.extend({
     type: z.literal("multiple_choice"),
     multiple: z.boolean(),
     options: z.array(optionSchema).min(1),
+    allowOther: z.boolean().optional(),
+    otherLabel: z.string().optional(),
 });
 
 export const essayQuestionSchema = baseQuestionSchema
