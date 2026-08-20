@@ -48,7 +48,7 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
                 <div className="text-center">
                     <div className="mx-auto mb-4 flex justify-center">
                         <Image
-                            src="/logo.png"
+                            src="/logo.svg"
                             alt="Google Developer Groups on Campus - PTIT"
                             width={320}
                             height={40}

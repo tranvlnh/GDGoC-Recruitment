@@ -230,7 +230,7 @@ export function ApplicationsDashboard() {
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3.5">
                         <Image
-                            src="/logo.png"
+                            src="/logo.svg"
                             alt="GDGoC PTIT"
                             width={220}
                             height={32}
@@ -1101,9 +1101,9 @@ function ApplicationModal({
         const answerText = displayAnswer(q.id, answer);
         const hasAnswer = Boolean(
             answer &&
-                ((typeof answer.value === "string" &&
-                    answer.value.trim().length > 0) ||
-                    (Array.isArray(answer.value) && answer.value.length > 0)),
+            ((typeof answer.value === "string" &&
+                answer.value.trim().length > 0) ||
+                (Array.isArray(answer.value) && answer.value.length > 0)),
         );
 
         return (
@@ -1130,8 +1130,8 @@ function ApplicationModal({
                 <div className="mt-2.5 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs">
                     {hasAnswer ? (
                         q.type === "multiple_choice" &&
-                        Array.isArray(answer?.value) &&
-                        answer.value.length > 1 ? (
+                            Array.isArray(answer?.value) &&
+                            answer.value.length > 1 ? (
                             <div className="flex flex-wrap gap-1.5">
                                 {answer.value.map((valId) => {
                                     const optLabel =
