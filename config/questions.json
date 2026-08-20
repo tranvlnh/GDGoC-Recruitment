@@ -278,5 +278,143 @@
     "departments": [
       "tech"
     ]
+  },
+  {
+    "id": "hrlg1",
+    "type": "multiple_choice",
+    "label": "Theo bạn, điều gì khiến một thành viên muốn gắn bó lâu dài với CLB?",
+    "required": true,
+    "order": 1,
+    "multiple": true,
+    "options": [
+      {
+        "id": "1",
+        "label": "Có cơ hội học hỏi và phát triển bản thân"
+      },
+      {
+        "id": "2",
+        "label": "Được làm việc trong môi trường tích cực, hòa đồng"
+      },
+      {
+        "id": "3",
+        "label": "Có cơ hội được thử sức với những vai trò mới"
+      },
+      {
+        "id": "4",
+        "label": "Được ghi nhận những đóng góp của mình"
+      },
+      {
+        "id": "5",
+        "label": "Thường xuyên tổ chức các hoạt động vui chơi, giải trí"
+      },
+      {
+        "id": "6",
+        "label": "Có nhiều mối quan hệ và bạn bè"
+      },
+      {
+        "id": "7",
+        "label": "Được giao thật nhiều công việc để luôn cảm thấy mình có ích"
+      }
+    ],
+    "allowOther": false,
+    "departments": [
+      "hr-lg"
+    ]
+  },
+  {
+    "id": "hrlg2",
+    "type": "multiple_choice",
+    "label": "Theo bạn, yếu tố nào quan trọng nhất để một team hoạt động hiệu quả?",
+    "required": true,
+    "order": 2,
+    "multiple": true,
+    "options": [
+      {
+        "id": "1",
+        "label": "Phân công công việc rõ ràng"
+      },
+      {
+        "id": "2",
+        "label": "Giao tiếp và cập nhật thông tin thường xuyên"
+      },
+      {
+        "id": "3",
+        "label": "Có người chịu trách nhiệm điều phối và kết nối team"
+      },
+      {
+        "id": "4",
+        "label": "Tất cả thành viên đều có năng lực tương đương nhau"
+      },
+      {
+        "id": "5",
+        "label": "Mọi thành viên đều làm theo cùng một cách để tránh xảy ra bất đồng"
+      }
+    ],
+    "allowOther": false,
+    "departments": [
+      "hr-lg"
+    ]
+  },
+  {
+    "id": "hrlg3",
+    "type": "multiple_choice",
+    "label": "Nếu một thành viên liên tục không hoàn thành nhiệm vụ được giao, theo bạn HRLG nên làm gì?",
+    "required": true,
+    "order": 3,
+    "multiple": true,
+    "options": [
+      {
+        "id": "1",
+        "label": "Tìm hiểu nguyên nhân trước khi đưa ra đánh giá"
+      },
+      {
+        "id": "2",
+        "label": "Trao đổi trực tiếp để lắng nghe vấn đề của thành viên"
+      },
+      {
+        "id": "3",
+        "label": "Cùng thành viên tìm hướng giải quyết phù hợp"
+      },
+      {
+        "id": "4",
+        "label": "Theo dõi sự cải thiện sau khi trao đổi"
+      },
+      {
+        "id": "5",
+        "label": "Báo ngay cho leader và đề xuất loại thành viên khỏi team"
+      },
+      {
+        "id": "6",
+        "label": "Giao thêm nhiệm vụ để thành viên có trách nhiệm hơn"
+      }
+    ],
+    "allowOther": false,
+    "departments": [
+      "hr-lg"
+    ]
+  },
+  {
+    "id": "hrlg4",
+    "type": "essay",
+    "label": "Bạn mong muốn nhận được điều gì khi trở thành thành viên GDG On Campus PTIT?",
+    "required": true,
+    "order": 4,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "hr-lg"
+    ]
+  },
+  {
+    "id": "hrlg5",
+    "type": "essay",
+    "label": "Bạn mong muốn phát triển bản thân như thế nào khi tham gia HRLG?",
+    "required": true,
+    "order": 5,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "hr-lg"
+    ]
   }
 ]
