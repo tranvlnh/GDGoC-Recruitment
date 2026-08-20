@@ -30,7 +30,7 @@
     "id": "common_teamwork_experience",
     "type": "essay",
     "label": "Hãy chia sẻ ngắn gọn về một kỷ niệm/dự án làm việc nhóm đáng nhớ của bạn (hoặc một tình huống gặp khó khăn/bất đồng ý kiến và cách bạn đã cùng đồng đội vượt qua).",
-    "required": true,
+    "required": false,
     "order": 2,
     "minLength": 20,
     "maxLength": 1000,
