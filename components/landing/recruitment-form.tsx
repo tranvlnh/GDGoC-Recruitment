@@ -1370,6 +1370,31 @@ export function RecruitmentForm({
                             </div>
                         </div>
 
+                        {/* Submission Error Alert with Fallback Google Form */}
+                        {submitResult && !submitResult.success && (
+                            <div className="p-4 sm:p-5 rounded-2xl bg-red-50/90 border border-red-200 text-red-700 text-sm font-medium space-y-3 shadow-xs animate-in fade-in-50 duration-200">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xl">⚠️</span>
+                                    <span className="font-semibold">{submitResult.message}</span>
+                                </div>
+                                {fallbackGoogleFormUrl && (
+                                    <div className="pt-3 border-t border-red-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                        <span className="text-red-800">
+                                            Nếu sự cố vẫn tiếp diễn, bạn có thể nộp qua Google Form dự phòng:
+                                        </span>
+                                        <a
+                                            href={fallbackGoogleFormUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="font-bold underline text-[#4285F4] hover:text-blue-800 inline-flex items-center gap-1 shrink-0"
+                                        >
+                                            <span>Mở Google Form dự phòng ↗</span>
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Submit Button */}
                         <div className="pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="text-xs text-zinc-500 flex items-center gap-1.5">
@@ -1399,37 +1424,6 @@ export function RecruitmentForm({
                             </button>
                         </div>
                     </form>
-                )}
-
-                {/* Dedicated Fallback Google Form Banner */}
-                {fallbackGoogleFormUrl && (
-                    <div className="rounded-2xl p-5 bg-blue-50/60 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                        <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-[#4285F4] flex items-center justify-center font-bold text-lg shrink-0">
-                                📋
-                            </div>
-                            <div className="space-y-0.5">
-                                <p className="text-sm font-bold text-zinc-900">
-                                    Nộp qua Google Form dự phòng
-                                </p>
-                                <p className="text-xs text-zinc-500">
-                                    Nếu bạn gặp sự cố kỹ thuật trên website, hãy sử dụng biểu mẫu Google Form chính thức.
-                                </p>
-                            </div>
-                        </div>
-
-                        <a
-                            href={fallbackGoogleFormUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-zinc-50 border border-blue-200 text-[#4285F4] font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-xs transition-all shrink-0"
-                        >
-                            <span>Mở Google Form dự phòng</span>
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                        </a>
-                    </div>
                 )}
             </div>
         </section>
