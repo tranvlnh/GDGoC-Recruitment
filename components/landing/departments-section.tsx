@@ -45,7 +45,7 @@ export function DepartmentsSection({
                 </div>
 
                 {/* Departments Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-7 items-stretch">
                     {departments.map((dept) => {
                         const IconComponent = getDepartmentIcon(dept.icon);
                         const theme = getDepartmentTheme(dept);
@@ -53,14 +53,20 @@ export function DepartmentsSection({
                         return (
                             <div
                                 key={dept.id}
-                                className={`group rounded-2xl sm:rounded-3xl p-5 sm:p-6 bg-zinc-50/70 border ${theme.accentBorder} transition-all duration-300 hover:bg-white hover:-translate-y-1 ${theme.hoverShadow} flex flex-col justify-between`}
+                                className={`group relative rounded-2xl sm:rounded-3xl p-5 sm:p-6 bg-white border ${theme.accentBorder} transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${theme.hoverShadow} flex flex-col justify-between overflow-hidden shadow-xs`}
                             >
-                                <div className="space-y-4">
+                                {/* Top-right ambient glow */}
+                                <div
+                                    className="absolute -top-10 -right-10 w-36 h-36 rounded-full blur-3xl opacity-15 pointer-events-none transition-opacity duration-300 group-hover:opacity-25"
+                                    style={{ backgroundColor: dept.themeColor || theme.themeColor }}
+                                />
+
+                                <div className="space-y-4 sm:space-y-5 flex-1 flex flex-col">
                                     {/* Card Header: Mascot + Dept Info */}
-                                    <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-200/70">
+                                    <div className="flex items-center justify-between gap-3 pb-4 border-b border-zinc-100 sm:min-h-[72px]">
                                         <div className="flex items-center gap-3">
                                             <div
-                                                className="w-10 h-10 rounded-xl text-white flex items-center justify-center shrink-0 shadow-xs"
+                                                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl text-white flex items-center justify-center shrink-0 shadow-xs"
                                                 style={{ backgroundColor: dept.themeColor || theme.themeColor }}
                                             >
                                                 <IconComponent className="w-5 h-5" />
@@ -85,7 +91,7 @@ export function DepartmentsSection({
                                                     alt={dept.svgAlt || `${dept.name} Mascot`}
                                                     width={64}
                                                     height={64}
-                                                    className="w-full h-full object-contain filter drop-shadow-xs group-hover:scale-110 transition-transform duration-300"
+                                                    className="w-full h-full object-contain filter drop-shadow-xs group-hover:scale-110 group-hover:rotate-2 transition-all duration-300"
                                                 />
                                             </div>
                                         )}
@@ -93,25 +99,27 @@ export function DepartmentsSection({
 
                                     {/* Description */}
                                     {dept.desc && (
-                                        <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                                            {dept.desc}
-                                        </p>
+                                        <div className="sm:min-h-[44px] flex items-center">
+                                            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                                                {dept.desc}
+                                            </p>
+                                        </div>
                                     )}
 
                                     {/* Roles */}
                                     {dept.roles && dept.roles.length > 0 && (
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-2 flex-1 flex flex-col justify-start">
                                             <p className="text-xs font-bold uppercase tracking-wider text-zinc-700">
                                                 Nhiệm vụ chính:
                                             </p>
-                                            <ul className="space-y-1 text-xs sm:text-sm text-zinc-600">
+                                            <ul className="space-y-1.5 text-xs sm:text-sm text-zinc-600">
                                                 {dept.roles.map((role, i) => (
-                                                    <li key={i} className="flex items-start gap-2">
+                                                    <li key={i} className="flex items-start gap-2.5">
                                                         <span
                                                             className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
                                                             style={{ backgroundColor: dept.themeColor || theme.themeColor }}
                                                         />
-                                                        <span>{role}</span>
+                                                        <span className="leading-snug">{role}</span>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -120,15 +128,15 @@ export function DepartmentsSection({
 
                                     {/* Skills */}
                                     {dept.skills && dept.skills.length > 0 && (
-                                        <div className="space-y-1.5 pt-1">
+                                        <div className="space-y-2 pt-1">
                                             <p className="text-xs font-bold uppercase tracking-wider text-zinc-700">
                                                 Kỹ năng & Công cụ:
                                             </p>
-                                            <div className="flex flex-wrap gap-1.5">
+                                            <div className="flex flex-wrap gap-1.5 items-center sm:min-h-[56px] content-start">
                                                 {dept.skills.map((skill, i) => (
                                                     <span
                                                         key={i}
-                                                        className="px-2 py-0.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 shadow-2xs"
+                                                        className="px-2.5 py-1 rounded-lg bg-zinc-50 border border-zinc-200/80 text-xs font-medium text-zinc-700 shadow-2xs group-hover:bg-white transition-colors"
                                                     >
                                                         {skill}
                                                     </span>
@@ -139,14 +147,14 @@ export function DepartmentsSection({
                                 </div>
 
                                 {/* Footer CTA */}
-                                <div className="pt-4 mt-5 border-t border-zinc-200/60">
+                                <div className="pt-4 mt-5 border-t border-zinc-100">
                                     <button
                                         type="button"
                                         onClick={() => handleSelectDepartment(dept.id)}
-                                        className={`w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer ${theme.buttonClass}`}
+                                        className={`w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs ${theme.buttonClass}`}
                                     >
                                         <span>Ứng tuyển {dept.name}</span>
-                                        <ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                                        <ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform" />
                                     </button>
                                 </div>
                             </div>

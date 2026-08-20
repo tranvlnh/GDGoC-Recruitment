@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback, FormEvent, useId } from "react";
+import Image from "next/image";
 import type { Option, Question, Department } from "@/types/config";
-import { getDepartmentTheme, getDepartmentIcon } from "@/lib/departments";
+import { getDepartmentTheme } from "@/lib/departments";
+import { isQuestionApplicable } from "@/lib/config";
 import {
     CheckCircleIcon,
     ArrowRightIcon,
@@ -99,67 +101,143 @@ export function RecruitmentForm({
         message?: string;
     } | null>(null);
 
-    // Split questions into common and department-specific
+    const studentYearNum = parseInt(form.student_year, 10) || 1;
+    const isSubTechLeadEligible = form.department === "tech" && studentYearNum >= 2;
+
+    // Split questions into common, regular department-specific, and sub-tech lead
     const commonQuestions = useMemo(
-        () => questions.filter((q) => !q.departments || q.departments.length === 0),
-        [questions]
+        () =>
+            questions.filter(
+                (q) =>
+                    (!q.departments || q.departments.length === 0) &&
+                    isQuestionApplicable(q, {
+                        departmentId: form.department,
+                        studentYear: studentYearNum,
+                        answers: form.answers,
+                    }),
+            ),
+        [questions, form.department, studentYearNum, form.answers],
     );
 
-    const deptQuestions = useMemo(
-        () => questions.filter((q) => q.departments && q.departments.length > 0 && q.departments.includes(form.department)),
-        [questions, form.department]
+    const regularDeptQuestions = useMemo(
+        () =>
+            questions.filter(
+                (q) =>
+                    q.departments &&
+                    q.departments.length > 0 &&
+                    q.departments.includes(form.department) &&
+                    q.category !== "sub_tech_lead_web" &&
+                    isQuestionApplicable(q, {
+                        departmentId: form.department,
+                        studentYear: studentYearNum,
+                        answers: form.answers,
+                    }),
+            ),
+        [questions, form.department, studentYearNum, form.answers],
+    );
+
+    const subTechLeadQuestions = useMemo(
+        () =>
+            questions.filter(
+                (q) =>
+                    q.category === "sub_tech_lead_web" &&
+                    isQuestionApplicable(q, {
+                        departmentId: form.department,
+                        studentYear: studentYearNum,
+                        answers: form.answers,
+                    }),
+            ),
+        [questions, form.department, studentYearNum, form.answers],
     );
 
     const activeQuestions = useMemo(
-        () => [...commonQuestions, ...deptQuestions].sort((a, b) => a.order - b.order),
-        [commonQuestions, deptQuestions]
+        () =>
+            [
+                ...commonQuestions,
+                ...regularDeptQuestions,
+                ...subTechLeadQuestions,
+            ].sort((a, b) => a.order - b.order),
+        [commonQuestions, regularDeptQuestions, subTechLeadQuestions],
     );
 
-    // When department changes, reset department-specific answers
+    // When department or student year changes, reset non-applicable answers
     const prevDeptRef = useRef(form.department);
+    const prevYearRef = useRef(form.student_year);
+
     useEffect(() => {
-        if (prevDeptRef.current !== form.department) {
+        const deptChanged = prevDeptRef.current !== form.department;
+        const yearChanged = prevYearRef.current !== form.student_year;
+
+        if (deptChanged || yearChanged) {
             prevDeptRef.current = form.department;
+            prevYearRef.current = form.student_year;
+
             setForm((prev) => {
                 const newAnswers = { ...prev.answers };
-                // Remove answers for questions that no longer apply
-                for (const q of questions) {
-                    if (q.departments && q.departments.length > 0 && !q.departments.includes(prev.department)) {
-                        // Keep the answer key but reset it
-                    }
-                    if (q.departments && q.departments.length > 0) {
-                        if (!q.departments.includes(prev.department)) {
-                            continue;
-                        }
-                    }
-                }
-                // Ensure new department-specific questions have default answers
+                const currentYear = parseInt(prev.student_year, 10) || 1;
+
+                // Ensure department-specific questions have default answers
                 const newDeptQs = questions.filter(
-                    (q) => q.departments && q.departments.length > 0 && q.departments.includes(prev.department)
+                    (q) =>
+                        q.departments &&
+                        q.departments.length > 0 &&
+                        q.departments.includes(prev.department),
                 );
                 for (const q of newDeptQs) {
                     if (newAnswers[q.id] === undefined) {
-                        newAnswers[q.id] = q.type === "multiple_choice" && q.multiple ? [] : "";
+                        newAnswers[q.id] =
+                            q.type === "multiple_choice" && q.multiple ? [] : "";
                     }
                 }
+
+                // If no longer eligible for sub-tech lead, reset sub-tech lead answers
+                if (prev.department !== "tech" || currentYear < 2) {
+                    const subTechIds = [
+                        "tech_sublead_web_interest",
+                        "tech_sublead_web_exp",
+                        "tech_sublead_web_leadership",
+                        "tech_sublead_web_vision",
+                        "tech_sublead_web_portfolio",
+                    ];
+                    for (const id of subTechIds) {
+                        if (newAnswers[id]) {
+                            newAnswers[id] = "";
+                        }
+                    }
+                }
+
                 return { ...prev, answers: newAnswers };
             });
-            // Clear errors for department-specific questions
+
+            // Clear errors for non-applicable questions
             setErrors((prev) => {
                 const cleaned = { ...prev };
-                for (const key of Object.keys(cleaned)) {
-                    if (key.startsWith("answers.")) {
-                        const qId = key.replace("answers.", "");
-                        const q = questions.find((question) => question.id === qId);
-                        if (q?.departments && q.departments.length > 0) {
+                const currentYear = parseInt(form.student_year, 10) || 1;
+
+                if (deptChanged) {
+                    for (const key of Object.keys(cleaned)) {
+                        if (key.startsWith("answers.")) {
+                            const qId = key.replace("answers.", "");
+                            const q = questions.find((question) => question.id === qId);
+                            if (q?.departments && q.departments.length > 0) {
+                                delete cleaned[key];
+                            }
+                        }
+                    }
+                }
+
+                if (form.department !== "tech" || currentYear < 2) {
+                    for (const key of Object.keys(cleaned)) {
+                        if (key.includes("tech_sublead_web")) {
                             delete cleaned[key];
                         }
                     }
                 }
+
                 return cleaned;
             });
         }
-    }, [form.department, questions]);
+    }, [form.department, form.student_year, questions]);
 
     // Close major dropdown on click outside
     useEffect(() => {
@@ -219,17 +297,43 @@ export function RecruitmentForm({
     };
 
     const handleAnswerChange = (questionId: string, value: string | string[]) => {
-        setForm((prev) => ({
-            ...prev,
-            answers: {
+        setForm((prev) => {
+            const nextAnswers = {
                 ...prev.answers,
                 [questionId]: value,
-            },
-        }));
+            };
+            if (questionId === "tech_sublead_web_interest" && value === "no") {
+                const subLeadDetailKeys = [
+                    "tech_sublead_web_exp",
+                    "tech_sublead_web_leadership",
+                    "tech_sublead_web_vision",
+                    "tech_sublead_web_portfolio",
+                ];
+                for (const k of subLeadDetailKeys) {
+                    if (nextAnswers[k]) nextAnswers[k] = "";
+                }
+            }
+            return {
+                ...prev,
+                answers: nextAnswers,
+            };
+        });
+
         if (errors[`answers.${questionId}`]) {
             setErrors((prev) => {
                 const next = { ...prev };
                 delete next[`answers.${questionId}`];
+                return next;
+            });
+        }
+
+        if (questionId === "tech_sublead_web_interest" && value === "no") {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next["answers.tech_sublead_web_exp"];
+                delete next["answers.tech_sublead_web_leadership"];
+                delete next["answers.tech_sublead_web_vision"];
+                delete next["answers.tech_sublead_web_portfolio"];
                 return next;
             });
         }
@@ -423,6 +527,260 @@ export function RecruitmentForm({
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const renderQuestionField = (q: Question) => {
+        const errorKey = `answers.${q.id}`;
+        const hasError = !!errors[errorKey];
+
+        if (q.type === "essay") {
+            const currentText = (form.answers[q.id] as string) || "";
+            const currentLen = currentText.trim().length;
+            const minReq = q.minLength ?? 0;
+            const maxReq = q.maxLength ?? 1000;
+            const isMet = currentLen >= minReq;
+            const isExceeded = currentLen > maxReq;
+
+            return (
+                <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
+                            {q.label} {q.required && <span className="text-red-500">*</span>}
+                        </label>
+                        <span
+                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded
+                                    ? "bg-red-50 text-red-700 border-red-200 font-bold"
+                                    : isMet
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
+                                        : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                                }`}
+                        >
+                            {currentLen} / {maxReq} ký tự
+                        </span>
+                    </div>
+
+                    <textarea
+                        rows={4}
+                        placeholder="Nhập câu trả lời của bạn..."
+                        value={currentText}
+                        onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white ${hasError
+                                ? "border-red-500 bg-red-50/20"
+                                : "border-zinc-200 focus:border-blue-500"
+                            }`}
+                    />
+
+                    {hasError ? (
+                        <p className="text-xs text-red-600 font-medium leading-relaxed">
+                            {errors[errorKey]}
+                        </p>
+                    ) : currentLen > 0 && minReq > 0 && !isMet ? (
+                        <p className="text-xs text-amber-700 font-medium leading-relaxed">
+                            Cần viết ít nhất {minReq} ký tự.
+                        </p>
+                    ) : null}
+                </div>
+            );
+        }
+
+        if (q.type === "multiple_choice") {
+            if (q.multiple) {
+                const selectedArray = (form.answers[q.id] as string[]) || [];
+                return (
+                    <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
+                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
+                            {q.label} {q.required && <span className="text-red-500">*</span>}{" "}
+                            <span className="text-[11px] font-normal lowercase text-zinc-500">
+                                (chọn một hoặc nhiều)
+                            </span>
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                            {q.options.map((opt) => {
+                                const checked = selectedArray.includes(opt.id);
+                                return (
+                                    <button
+                                        type="button"
+                                        role="checkbox"
+                                        aria-checked={checked}
+                                        key={opt.id}
+                                        onClick={() => handleCheckboxToggle(q.id, opt.id)}
+                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
+                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                            }`}
+                                    >
+                                        <span
+                                            className={`text-xs sm:text-sm leading-snug break-words ${checked
+                                                    ? "text-[#4285F4] font-semibold"
+                                                    : "text-zinc-800 font-medium"
+                                                }`}
+                                        >
+                                            {opt.label}
+                                        </span>
+                                        <span
+                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked
+                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                    : "border-zinc-300 bg-white"
+                                                }`}
+                                        >
+                                            {checked && "✓"}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                            {q.allowOther && (() => {
+                                const otherChecked = selectedArray.includes("__other__");
+                                return (
+                                    <button
+                                        type="button"
+                                        role="checkbox"
+                                        aria-checked={otherChecked}
+                                        onClick={() => handleCheckboxToggle(q.id, "__other__")}
+                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
+                                            } ${otherChecked
+                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                            }`}
+                                    >
+                                        <span
+                                            className={`text-xs sm:text-sm leading-snug ${otherChecked
+                                                    ? "text-[#4285F4] font-semibold"
+                                                    : "text-zinc-800 font-medium"
+                                                }`}
+                                        >
+                                            {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                        </span>
+                                        <span
+                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked
+                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                    : "border-zinc-300 bg-white"
+                                                }`}
+                                        >
+                                            {otherChecked && "✓"}
+                                        </span>
+                                    </button>
+                                );
+                            })()}
+                        </div>
+                        {q.allowOther && selectedArray.includes("__other__") && (
+                            <input
+                                type="text"
+                                placeholder="Nhập lựa chọn khác của bạn..."
+                                value={form.otherTexts[q.id] || ""}
+                                onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                                autoFocus
+                            />
+                        )}
+                        {hasError && (
+                            <p className="text-xs text-red-600 font-medium leading-relaxed">
+                                {errors[errorKey]}
+                            </p>
+                        )}
+                    </div>
+                );
+            }
+
+            // Single Choice
+            const selectedValue = (form.answers[q.id] as string) || "";
+            return (
+                <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
+                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
+                        {q.label} {q.required && <span className="text-red-500">*</span>}
+                    </label>
+                    <div
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"
+                        role="radiogroup"
+                    >
+                        {q.options.map((opt) => {
+                            const checked = selectedValue === opt.id;
+                            return (
+                                <button
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={checked}
+                                    key={opt.id}
+                                    onClick={() => handleAnswerChange(q.id, opt.id)}
+                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
+                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                        }`}
+                                >
+                                    <span
+                                        className={`text-xs sm:text-sm leading-snug break-words ${checked
+                                                ? "text-[#4285F4] font-semibold"
+                                                : "text-zinc-800 font-medium"
+                                            }`}
+                                    >
+                                        {opt.label}
+                                    </span>
+                                    <span
+                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked
+                                                ? "border-[#4285F4] bg-[#4285F4]"
+                                                : "border-zinc-300 bg-white"
+                                            }`}
+                                    >
+                                        {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                    </span>
+                                </button>
+                            );
+                        })}
+                        {q.allowOther && (() => {
+                            const otherChecked = selectedValue === "__other__";
+                            return (
+                                <button
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={otherChecked}
+                                    onClick={() => {
+                                        handleAnswerChange(q.id, "__other__");
+                                    }}
+                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
+                                        } ${otherChecked
+                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                        }`}
+                                >
+                                    <span
+                                        className={`text-xs sm:text-sm leading-snug ${otherChecked
+                                                ? "text-[#4285F4] font-semibold"
+                                                : "text-zinc-800 font-medium"
+                                            }`}
+                                    >
+                                        {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                    </span>
+                                    <span
+                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked
+                                                ? "border-[#4285F4] bg-[#4285F4]"
+                                                : "border-zinc-300 bg-white"
+                                            }`}
+                                    >
+                                        {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                    </span>
+                                </button>
+                            );
+                        })()}
+                    </div>
+                    {q.allowOther && selectedValue === "__other__" && (
+                        <input
+                            type="text"
+                            placeholder="Nhập lựa chọn khác của bạn..."
+                            value={form.otherTexts[q.id] || ""}
+                            onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                            autoFocus
+                        />
+                    )}
+                    {hasError && (
+                        <p className="text-xs text-red-600 font-medium leading-relaxed">
+                            {errors[errorKey]}
+                        </p>
+                    )}
+                </div>
+            );
+        }
+
+        return null;
     };
 
     return (
@@ -741,10 +1099,20 @@ export function RecruitmentForm({
                                     {departments.map((dept) => {
                                         const isDeptObj = "name" in dept;
                                         const theme = getDepartmentTheme(dept as Department);
-                                        const IconComp = getDepartmentIcon(isDeptObj ? (dept as Department).icon : undefined);
                                         const isSelected = form.department === dept.id;
                                         const deptTitle = isDeptObj ? (dept as Department).name : dept.label;
                                         const deptTag = isDeptObj ? (dept as Department).tag : "";
+                                        const deptMascot = (isDeptObj && (dept as Department).svgImage)
+                                            ? (dept as Department).svgImage
+                                            : dept.id === "tech"
+                                                ? "/tech.svg"
+                                                : dept.id === "design"
+                                                    ? "/design.svg"
+                                                    : dept.id === "pr"
+                                                        ? "/pr.svg"
+                                                        : dept.id === "hr-lg"
+                                                            ? "/hr.svg"
+                                                            : "/logo.svg";
 
                                         return (
                                             <button
@@ -762,14 +1130,20 @@ export function RecruitmentForm({
                                                         });
                                                     }
                                                 }}
-                                                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${isSelected
+                                                className={`group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected
                                                     ? `${theme.activeBorder} ${theme.activeBg} shadow-sm border-2`
                                                     : "border-zinc-200/90 bg-white hover:bg-zinc-50/80 hover:border-zinc-300"
                                                     }`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-9 h-9 rounded-xl ${theme.iconBg} text-white flex items-center justify-center shadow-xs shrink-0`}>
-                                                        <IconComp className="w-4.5 h-4.5" />
+                                                <div className="flex items-center gap-3.5">
+                                                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                                                        <Image
+                                                            src={deptMascot}
+                                                            alt={deptTitle}
+                                                            width={56}
+                                                            height={56}
+                                                            className="w-full h-full object-contain filter drop-shadow-xs"
+                                                        />
                                                     </div>
                                                     <div>
                                                         <p className={`text-sm font-bold leading-tight ${isSelected ? theme.activeText : "text-zinc-900"}`}>
@@ -784,7 +1158,7 @@ export function RecruitmentForm({
                                                 </div>
 
                                                 <span
-                                                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSelected
+                                                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isSelected
                                                         ? `${theme.iconBg} border-transparent text-white`
                                                         : "border-zinc-300 bg-white"
                                                         }`}
@@ -956,428 +1330,44 @@ export function RecruitmentForm({
                             </div>
 
                             <div className="space-y-6">
-                                <div className="space-y-6">
-                                    {commonQuestions.map((q) => {
-                                        const errorKey = `answers.${q.id}`;
-                                        const hasError = errors[errorKey];
-
-                                        if (q.type === "essay") {
-                                            const currentText = (form.answers[q.id] as string) || "";
-                                            const currentLen = currentText.trim().length;
-                                            const minReq = q.minLength ?? 0;
-                                            const maxReq = q.maxLength ?? 1000;
-                                            const isMet = currentLen >= minReq;
-                                            const isExceeded = currentLen > maxReq;
-
-                                            return (
-                                                <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
-                                                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                            {q.label} {q.required && <span className="text-red-500">*</span>}
-                                                        </label>
-                                                        <span
-                                                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded
-                                                                ? "bg-red-50 text-red-700 border-red-200 font-bold"
-                                                                : isMet
-                                                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
-                                                                    : "bg-zinc-100 text-zinc-600 border-zinc-200"
-                                                                }`}
-                                                        >
-                                                            {currentLen} / {maxReq} ký tự
-                                                        </span>
-                                                    </div>
-
-                                                    <textarea
-                                                        rows={4}
-                                                        placeholder="Nhập câu trả lời của bạn..."
-                                                        value={currentText}
-                                                        onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${hasError ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
-                                                            }`}
-                                                    />
-
-                                                    {hasError ? (
-                                                        <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
-                                                    ) : currentLen > 0 && minReq > 0 && !isMet ? (
-                                                        <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                            Cần viết ít nhất {minReq} ký tự.
-                                                        </p>
-                                                    ) : null}
-                                                </div>
-                                            );
-                                        }
-
-                                        if (q.type === "multiple_choice") {
-                                            if (q.multiple) {
-                                                const selectedArray = (form.answers[q.id] as string[]) || [];
-                                                return (
-                                                    <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                                                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                            {q.label} {q.required && <span className="text-red-500">*</span>}{" "}
-                                                            <span className="text-[11px] font-normal lowercase text-zinc-500">(chọn một hoặc nhiều)</span>
-                                                        </label>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                                                            {q.options.map((opt) => {
-                                                                const checked = selectedArray.includes(opt.id);
-                                                                return (
-                                                                    <button
-                                                                        type="button"
-                                                                        role="checkbox"
-                                                                        aria-checked={checked}
-                                                                        key={opt.id}
-                                                                        onClick={() => handleCheckboxToggle(q.id, opt.id)}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                            }`}
-                                                                    >
-                                                                        <span className={`text-xs sm:text-sm leading-snug break-words ${checked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                            {opt.label}
-                                                                        </span>
-                                                                        <span
-                                                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
-                                                                                }`}
-                                                                        >
-                                                                            {checked && "✓"}
-                                                                        </span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                            {q.allowOther && (() => {
-                                                                const otherChecked = selectedArray.includes("__other__");
-                                                                return (
-                                                                    <button
-                                                                        type="button"
-                                                                        role="checkbox"
-                                                                        aria-checked={otherChecked}
-                                                                        onClick={() => handleCheckboxToggle(q.id, "__other__")}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
-                                                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                            }`}
-                                                                    >
-                                                                        <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                            {q.otherLabel || "Khác (vui lòng ghi rõ)"}
-                                                                        </span>
-                                                                        <span
-                                                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
-                                                                                }`}
-                                                                        >
-                                                                            {otherChecked && "✓"}
-                                                                        </span>
-                                                                    </button>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                        {q.allowOther && selectedArray.includes("__other__") && (
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Nhập lựa chọn khác của bạn..."
-                                                                value={form.otherTexts[q.id] || ""}
-                                                                onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                                                                className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
-                                                                autoFocus
-                                                            />
-                                                        )}
-                                                        {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
-                                                    </div>
-                                                );
-                                            }
-
-                                            // Single Choice
-                                            const selectedValue = (form.answers[q.id] as string) || "";
-                                            return (
-                                                <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                        {q.label} {q.required && <span className="text-red-500">*</span>}
-                                                    </label>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3" role="radiogroup">
-                                                        {q.options.map((opt) => {
-                                                            const checked = selectedValue === opt.id;
-                                                            return (
-                                                                <button
-                                                                    type="button"
-                                                                    role="radio"
-                                                                    aria-checked={checked}
-                                                                    key={opt.id}
-                                                                    onClick={() => handleAnswerChange(q.id, opt.id)}
-                                                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                                        ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
-                                                                        : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                        }`}
-                                                                >
-                                                                    <span className={`text-xs sm:text-sm leading-snug break-words ${checked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                        {opt.label}
-                                                                    </span>
-                                                                    <span
-                                                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
-                                                                            }`}
-                                                                    >
-                                                                        {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                                                    </span>
-                                                                </button>
-                                                            );
-                                                        })}
-                                                        {q.allowOther && (() => {
-                                                            const otherChecked = selectedValue === "__other__";
-                                                            return (
-                                                                <button
-                                                                    type="button"
-                                                                    role="radio"
-                                                                    aria-checked={otherChecked}
-                                                                    onClick={() => {
-                                                                        handleAnswerChange(q.id, "__other__");
-                                                                    }}
-                                                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
-                                                                        ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
-                                                                        : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                        }`}
-                                                                >
-                                                                    <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                        {q.otherLabel || "Khác (vui lòng ghi rõ)"}
-                                                                    </span>
-                                                                    <span
-                                                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
-                                                                            }`}
-                                                                    >
-                                                                        {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                                                    </span>
-                                                                </button>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                    {q.allowOther && selectedValue === "__other__" && (
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Nhập lựa chọn khác của bạn..."
-                                                            value={form.otherTexts[q.id] || ""}
-                                                            onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                                                            className="w-full px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-zinc-400"
-                                                            autoFocus
-                                                        />
-                                                    )}
-                                                    {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
-                                                </div>
-                                            );
-                                        }
-
-                                        return null;
-                                    })}
-                                </div>
-                            </div>
-
-                            {deptQuestions.length > 0 && (
-                                <div className="space-y-6 pt-4 border-t border-zinc-100">
+                                {commonQuestions.length > 0 && (
                                     <div className="space-y-6">
-                                        {deptQuestions.map((q) => {
-                                            const errorKey = `answers.${q.id}`;
-                                            const hasError = !!errors[errorKey];
-
-                                            if (q.type === "essay") {
-                                                const currentText = (form.answers[q.id] as string) || "";
-                                                const currentLen = currentText.trim().length;
-                                                const minReq = q.minLength ?? 0;
-                                                const maxReq = q.maxLength ?? 1000;
-                                                const isMet = currentLen >= minReq;
-                                                const isExceeded = currentLen > maxReq;
-
-                                                return (
-                                                    <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
-                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
-                                                            <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                                {q.label} {q.required && <span className="text-red-500">*</span>}
-                                                            </label>
-                                                            <span
-                                                                className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded
-                                                                    ? "bg-red-50 text-red-700 border-red-200 font-bold"
-                                                                    : isMet
-                                                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
-                                                                        : "bg-zinc-100 text-zinc-600 border-zinc-200"
-                                                                    }`}
-                                                            >
-                                                                {currentLen} / {maxReq} ký tự
-                                                            </span>
-                                                        </div>
-
-                                                        <textarea
-                                                            rows={4}
-                                                            placeholder="Nhập câu trả lời của bạn..."
-                                                            value={currentText}
-                                                            onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                                            className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${hasError ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
-                                                                }`}
-                                                        />
-
-                                                        {hasError ? (
-                                                            <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
-                                                        ) : currentLen > 0 && minReq > 0 && !isMet ? (
-                                                            <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                                Cần viết ít nhất {minReq} ký tự.
-                                                            </p>
-                                                        ) : null}
-                                                    </div>
-                                                );
-                                            }
-
-                                            if (q.type === "multiple_choice") {
-                                                if (q.multiple) {
-                                                    const selectedArray = (form.answers[q.id] as string[]) || [];
-                                                    return (
-                                                        <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                                                            <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                                {q.label} {q.required && <span className="text-red-500">*</span>}{" "}
-                                                                <span className="text-[11px] font-normal lowercase text-zinc-500">(chọn một hoặc nhiều)</span>
-                                                            </label>
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                                                                {q.options.map((opt) => {
-                                                                    const checked = selectedArray.includes(opt.id);
-                                                                    return (
-                                                                        <button
-                                                                            type="button"
-                                                                            role="checkbox"
-                                                                            aria-checked={checked}
-                                                                            key={opt.id}
-                                                                            onClick={() => handleCheckboxToggle(q.id, opt.id)}
-                                                                            className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                                }`}
-                                                                        >
-                                                                            <span className={`text-xs sm:text-sm leading-snug break-words ${checked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                                {opt.label}
-                                                                            </span>
-                                                                            <span
-                                                                                className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
-                                                                                    }`}
-                                                                            >
-                                                                                {checked && "✓"}
-                                                                            </span>
-                                                                        </button>
-                                                                    );
-                                                                })}
-                                                                {q.allowOther && (() => {
-                                                                    const otherChecked = selectedArray.includes("__other__");
-                                                                    return (
-                                                                        <button
-                                                                            type="button"
-                                                                            role="checkbox"
-                                                                            aria-checked={otherChecked}
-                                                                            onClick={() => handleCheckboxToggle(q.id, "__other__")}
-                                                                            className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
-                                                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                                }`}
-                                                                        >
-                                                                            <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                                {q.otherLabel || "Khác (vui lòng ghi rõ)"}
-                                                                            </span>
-                                                                            <span
-                                                                                className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
-                                                                                    }`}
-                                                                            >
-                                                                                {otherChecked && "✓"}
-                                                                            </span>
-                                                                        </button>
-                                                                    );
-                                                                })()}
-                                                            </div>
-                                                            {q.allowOther && selectedArray.includes("__other__") && (
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Nhập lựa chọn khác của bạn..."
-                                                                    value={form.otherTexts[q.id] || ""}
-                                                                    onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                                                                    className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
-                                                                    autoFocus
-                                                                />
-                                                            )}
-                                                            {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
-                                                        </div>
-                                                    );
-                                                }
-
-                                                // Single Choice
-                                                const selectedValue = (form.answers[q.id] as string) || "";
-                                                return (
-                                                    <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                                                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                                                            {q.label} {q.required && <span className="text-red-500">*</span>}
-                                                        </label>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3" role="radiogroup">
-                                                            {q.options.map((opt) => {
-                                                                const checked = selectedValue === opt.id;
-                                                                return (
-                                                                    <button
-                                                                        type="button"
-                                                                        role="radio"
-                                                                        aria-checked={checked}
-                                                                        key={opt.id}
-                                                                        onClick={() => handleAnswerChange(q.id, opt.id)}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                                            ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
-                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                            }`}
-                                                                    >
-                                                                        <span className={`text-xs sm:text-sm leading-snug break-words ${checked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                            {opt.label}
-                                                                        </span>
-                                                                        <span
-                                                                            className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
-                                                                                }`}
-                                                                        >
-                                                                            {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                                                        </span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                            {q.allowOther && (() => {
-                                                                const otherChecked = selectedValue === "__other__";
-                                                                return (
-                                                                    <button
-                                                                        type="button"
-                                                                        role="radio"
-                                                                        aria-checked={otherChecked}
-                                                                        onClick={() => {
-                                                                            handleAnswerChange(q.id, "__other__");
-                                                                        }}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
-                                                                            ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
-                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
-                                                                            }`}
-                                                                    >
-                                                                        <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
-                                                                            {q.otherLabel || "Khác (vui lòng ghi rõ)"}
-                                                                        </span>
-                                                                        <span
-                                                                            className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
-                                                                                }`}
-                                                                        >
-                                                                            {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                                                        </span>
-                                                                    </button>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                        {q.allowOther && selectedValue === "__other__" && (
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Nhập lựa chọn khác của bạn..."
-                                                                value={form.otherTexts[q.id] || ""}
-                                                                onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                                                                className="w-full px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-zinc-400"
-                                                                autoFocus
-                                                            />
-                                                        )}
-                                                        {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
-                                                    </div>
-                                                );
-                                            }
-
-                                            return null;
-                                        })}
+                                        {commonQuestions.map((q) => renderQuestionField(q))}
                                     </div>
-                                </div>
-                            )}
+                                )}
+
+                                {regularDeptQuestions.length > 0 && (
+                                    <div className={`space-y-6 ${commonQuestions.length > 0 ? "pt-4 border-t border-zinc-100" : ""}`}>
+                                        {regularDeptQuestions.map((q) => renderQuestionField(q))}
+                                    </div>
+                                )}
+
+                                {/* Sub-Tech Lead (Web) Special Recruitment Feature */}
+                                {isSubTechLeadEligible && subTechLeadQuestions.length > 0 && (
+                                    <div
+                                        id={`${formId}-sub-tech-lead-section`}
+                                        className="rounded-2xl sm:rounded-3xl border-2 border-blue-200/90 bg-gradient-to-br from-blue-50/80 via-white to-blue-50/40 p-5 sm:p-7 space-y-6 shadow-sm relative overflow-hidden transition-all duration-300 animate-in fade-in-50"
+                                    >
+                                        {/* Subtle background glow */}
+                                        <div className="absolute -top-10 -right-10 w-44 h-44 bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
+
+                                        {/* Header */}
+                                        <div className="space-y-2 pb-4 border-b border-blue-100/90 relative z-10">
+                                            <h4 className="text-base sm:text-lg font-bold text-zinc-900 flex items-center gap-2">
+                                                Ứng tuyển Sub-Tech Lead (Web)
+                                            </h4>
+                                            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl">
+                                                GDGoC PTIT mở cơ hội tuyển chọn <strong>Sub-Tech Lead mảng Web</strong> dành cho sinh viên có năng lực chuyên môn tốt, đam mê xây dựng sản phẩm và mong muốn dẫn dắt, định hướng kỹ thuật cho các dự án & thành viên trong CLB.
+                                            </p>
+                                        </div>
+
+                                        {/* Sub-Tech Lead Questions */}
+                                        <div className="space-y-6 relative z-10">
+                                            {subTechLeadQuestions.map((q) => renderQuestionField(q))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Submit Button */}
