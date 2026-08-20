@@ -5,6 +5,42 @@ export const optionSchema = z.object({
     label: z.string().min(1),
 });
 
+export const departmentColorPresetSchema = z.enum([
+    "blue",
+    "red",
+    "amber",
+    "green",
+    "purple",
+    "indigo",
+    "cyan",
+    "rose",
+    "slate",
+]);
+export type DepartmentColorPreset = z.infer<typeof departmentColorPresetSchema>;
+
+export const departmentSchema = z
+    .object({
+        id: z.string().min(1),
+        name: z.string().min(1),
+        label: z.string().optional(),
+        englishName: z.string().default(""),
+        tag: z.string().default(""),
+        desc: z.string().default(""),
+        themeColor: z.string().default("#4285F4"),
+        colorPreset: departmentColorPresetSchema.default("blue"),
+        svgImage: z.string().default("/logo.svg"),
+        svgAlt: z.string().default("Department Mascot"),
+        icon: z.string().default("users"),
+        roles: z.array(z.string()).default([]),
+        skills: z.array(z.string()).default([]),
+    })
+    .transform((dept) => ({
+        ...dept,
+        label: dept.label || dept.name,
+    }));
+
+export type Department = z.infer<typeof departmentSchema>;
+
 const baseQuestionSchema = z.object({
     id: z.string().min(1),
     label: z.string().min(1),
@@ -17,6 +53,8 @@ export const multipleChoiceQuestionSchema = baseQuestionSchema.extend({
     type: z.literal("multiple_choice"),
     multiple: z.boolean(),
     options: z.array(optionSchema).min(1),
+    allowOther: z.boolean().optional(),
+    otherLabel: z.string().optional(),
 });
 
 export const essayQuestionSchema = baseQuestionSchema

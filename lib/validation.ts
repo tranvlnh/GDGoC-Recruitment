@@ -125,19 +125,36 @@ export function validateApplicationSubmission(
                         message: "Chỉ được chọn một đáp án",
                     },
                 ]);
-            if (
-                selected.some(
-                    (id) =>
-                        !question.options.some((option) => option.id === id),
-                )
-            )
-                throw new z.ZodError([
-                    {
-                        code: "custom",
-                        path: ["answers", question.id],
-                        message: "Có lựa chọn không hợp lệ",
-                    },
-                ]);
+
+            const allowOther = question.allowOther === true;
+            for (const id of selected) {
+                const isKnownOption = question.options.some((option) => option.id === id);
+                const isOtherValue = allowOther && id.startsWith("other:");
+
+                if (!isKnownOption && !isOtherValue) {
+                    throw new z.ZodError([
+                        {
+                            code: "custom",
+                            path: ["answers", question.id],
+                            message: "Có lựa chọn không hợp lệ",
+                        },
+                    ]);
+                }
+
+                // Validate that "other" text is not empty
+                if (isOtherValue) {
+                    const otherText = id.slice("other:".length).trim();
+                    if (!otherText) {
+                        throw new z.ZodError([
+                            {
+                                code: "custom",
+                                path: ["answers", question.id],
+                                message: "Vui lòng nhập nội dung cho lựa chọn \"Khác\"",
+                            },
+                        ]);
+                    }
+                }
+            }
         }
     }
 

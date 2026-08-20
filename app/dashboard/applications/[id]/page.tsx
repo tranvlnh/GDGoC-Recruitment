@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { displayAnswer } from "@/lib/export";
-import { departmentLabel, majorLabel, questions } from "@/lib/config";
+import { departmentBadgeStyle, departmentLabel, majorLabel, questions } from "@/lib/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { GoogleDots } from "@/components/landing/google-icons";
 import type { Application, ApplicationStatus } from "@/types/application";
@@ -35,13 +35,6 @@ const statusStyles: Record<ApplicationStatus, { badge: string; dot: string }> = 
     },
 };
 
-const departmentStyles: Record<string, string> = {
-    tech: "bg-blue-50 text-blue-700 border-blue-200/80",
-    design: "bg-amber-50 text-amber-700 border-amber-200/80",
-    pr: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-    "hr-lg": "bg-purple-50 text-purple-700 border-purple-200/80",
-};
-
 export default async function ApplicationDetailPage({
     params,
 }: {
@@ -71,7 +64,7 @@ export default async function ApplicationDetailPage({
         .toUpperCase();
 
     const statusBadgeConfig = statusStyles[application.status] || statusStyles.pending;
-    const deptStyle = departmentStyles[application.department] || "bg-slate-100 text-slate-700 border-slate-200";
+    const deptStyle = departmentBadgeStyle(application.department);
 
     const motivationQuestions = questions.filter((q) =>
         ["motivation", "tech_interests", "expectations"].includes(q.id),

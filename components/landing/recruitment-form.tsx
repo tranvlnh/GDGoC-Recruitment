@@ -1,20 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback, FormEvent, useId } from "react";
-import type { Option, Question } from "@/types/config";
+import type { Option, Question, Department } from "@/types/config";
+import { getDepartmentTheme, getDepartmentIcon } from "@/lib/departments";
 import {
     CheckCircleIcon,
     ArrowRightIcon,
     ShieldCheckIcon,
-    CodeIcon,
-    PaletteIcon,
-    MegaphoneIcon,
-    UsersIcon,
     FacebookIcon,
 } from "./google-icons";
 
 type RecruitmentFormProps = {
-    departments: Option[];
+    departments: (Department | Option)[];
     majors: Option[];
     questions: Question[];
     isOpen: boolean;
@@ -37,61 +34,7 @@ type FormState = {
     gender: "male" | "female" | "other" | "prefer_not_to_say";
     major: string;
     answers: Record<string, string | string[]>;
-};
-
-const departmentMeta: Record<
-    string,
-    {
-        name: string;
-        short: string;
-        tag: string;
-        activeBorder: string;
-        activeBg: string;
-        activeText: string;
-        iconBg: string;
-        icon: typeof CodeIcon;
-    }
-> = {
-    tech: {
-        name: "Ban Chuyên Môn",
-        short: "Technical",
-        tag: "Engineering",
-        activeBorder: "border-[#4285F4]",
-        activeBg: "bg-blue-50/70",
-        activeText: "text-[#4285F4]",
-        iconBg: "bg-[#4285F4]",
-        icon: CodeIcon,
-    },
-    design: {
-        name: "Ban Thiết Kế",
-        short: "Design",
-        tag: "UI/UX & Visual Art",
-        activeBorder: "border-[#EA4335]",
-        activeBg: "bg-red-50/70",
-        activeText: "text-[#EA4335]",
-        iconBg: "bg-[#EA4335]",
-        icon: PaletteIcon,
-    },
-    pr: {
-        name: "Ban Truyền Thông",
-        short: "PR",
-        tag: "Media & Branding",
-        activeBorder: "border-[#FBBC05]",
-        activeBg: "bg-amber-50/70",
-        activeText: "text-[#B06000]",
-        iconBg: "bg-[#F29900]",
-        icon: MegaphoneIcon,
-    },
-    "hr-lg": {
-        name: "Ban Nhân Sự & Hậu Cần",
-        short: "HR-LG",
-        tag: "People & Operations",
-        activeBorder: "border-[#34A853]",
-        activeBg: "bg-emerald-50/70",
-        activeText: "text-[#34A853]",
-        iconBg: "bg-[#34A853]",
-        icon: UsersIcon,
-    },
+    otherTexts: Record<string, string>;
 };
 
 export function RecruitmentForm({
@@ -119,6 +62,16 @@ export function RecruitmentForm({
         return initial;
     };
 
+    const buildDefaultOtherTexts = (qs: Question[]) => {
+        const initial: Record<string, string> = {};
+        qs.forEach((q) => {
+            if (q.type === "multiple_choice" && q.allowOther) {
+                initial[q.id] = "";
+            }
+        });
+        return initial;
+    };
+
     const [form, setForm] = useState<FormState>({
         full_name: "",
         email: "",
@@ -132,6 +85,7 @@ export function RecruitmentForm({
         gender: "prefer_not_to_say",
         major: "",
         answers: buildDefaultAnswers(questions),
+        otherTexts: buildDefaultOtherTexts(questions),
     });
 
     const [isMajorOpen, setIsMajorOpen] = useState(false);
@@ -287,6 +241,27 @@ export function RecruitmentForm({
             ? current.filter((id) => id !== optionId)
             : [...current, optionId];
         handleAnswerChange(questionId, updated);
+        // Clear other text when "other" is deselected
+        if (optionId === "__other__" && current.includes(optionId)) {
+            setForm((prev) => ({
+                ...prev,
+                otherTexts: { ...prev.otherTexts, [questionId]: "" },
+            }));
+        }
+    };
+
+    const handleOtherTextChange = (questionId: string, text: string) => {
+        setForm((prev) => ({
+            ...prev,
+            otherTexts: { ...prev.otherTexts, [questionId]: text },
+        }));
+        if (errors[`answers.${questionId}`]) {
+            setErrors((prev) => {
+                const next = { ...prev };
+                delete next[`answers.${questionId}`];
+                return next;
+            });
+        }
     };
 
     const validateClient = (): { valid: boolean; errors: Record<string, string> } => {
@@ -336,6 +311,16 @@ export function RecruitmentForm({
                     newErrors[`answers.${q.id}`] = `Câu trả lời vượt quá tối đa ${q.maxLength} ký tự`;
                 }
             }
+
+            // Validate "other" text is not empty when "other" is selected
+            if (q.type === "multiple_choice" && q.allowOther) {
+                const hasOtherSelected = q.multiple
+                    ? (Array.isArray(val) && val.includes("__other__"))
+                    : val === "__other__";
+                if (hasOtherSelected && !form.otherTexts[q.id]?.trim()) {
+                    newErrors[`answers.${q.id}`] = "Vui lòng nhập nội dung cho lựa chọn \"Khác\"";
+                }
+            }
         });
 
         return {
@@ -368,10 +353,21 @@ export function RecruitmentForm({
         setSubmitting(true);
 
         try {
-            const answersArray = activeQuestions.map((q) => ({
-                question_id: q.id,
-                value: form.answers[q.id] ?? (q.type === "multiple_choice" && q.multiple ? [] : ""),
-            }));
+            const answersArray = activeQuestions.map((q) => {
+                let value = form.answers[q.id] ?? (q.type === "multiple_choice" && q.multiple ? [] : "");
+
+                // Replace __other__ with actual typed text
+                if (q.type === "multiple_choice" && q.allowOther) {
+                    const otherText = form.otherTexts[q.id]?.trim() || "";
+                    if (q.multiple && Array.isArray(value)) {
+                        value = value.map((v: string) => v === "__other__" ? `other:${otherText}` : v);
+                    } else if (value === "__other__") {
+                        value = `other:${otherText}`;
+                    }
+                }
+
+                return { question_id: q.id, value };
+            });
 
             const payload = {
                 full_name: form.full_name.trim(),
@@ -520,6 +516,7 @@ export function RecruitmentForm({
                                         gender: "prefer_not_to_say",
                                         major: "",
                                         answers: buildDefaultAnswers(questions),
+                                        otherTexts: buildDefaultOtherTexts(questions),
                                     });
                                 }}
                                 className="w-full sm:w-auto px-6 py-3 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold text-sm transition-colors text-center"
@@ -604,7 +601,7 @@ export function RecruitmentForm({
                                 {/* Email */}
                                 <div className="space-y-1.5" id={`${formId}-email`}>
                                     <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Email (Gmail / PTIT Mail) <span className="text-red-500">*</span>
+                                        Email <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="email"
@@ -742,18 +739,12 @@ export function RecruitmentForm({
                                 </label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Ban chuyên môn">
                                     {departments.map((dept) => {
-                                        const meta = departmentMeta[dept.id] || {
-                                            name: dept.label,
-                                            short: dept.id,
-                                            tag: "Department",
-                                            activeBorder: "border-[#4285F4]",
-                                            activeBg: "bg-blue-50/70",
-                                            activeText: "text-[#4285F4]",
-                                            iconBg: "bg-[#4285F4]",
-                                            icon: CodeIcon,
-                                        };
-                                        const IconComp = meta.icon;
+                                        const isDeptObj = "name" in dept;
+                                        const theme = getDepartmentTheme(dept as Department);
+                                        const IconComp = getDepartmentIcon(isDeptObj ? (dept as Department).icon : undefined);
                                         const isSelected = form.department === dept.id;
+                                        const deptTitle = isDeptObj ? (dept as Department).name : dept.label;
+                                        const deptTag = isDeptObj ? (dept as Department).tag : "";
 
                                         return (
                                             <button
@@ -772,27 +763,29 @@ export function RecruitmentForm({
                                                     }
                                                 }}
                                                 className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${isSelected
-                                                    ? `${meta.activeBorder} ${meta.activeBg} shadow-sm border-2`
+                                                    ? `${theme.activeBorder} ${theme.activeBg} shadow-sm border-2`
                                                     : "border-zinc-200/90 bg-white hover:bg-zinc-50/80 hover:border-zinc-300"
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-9 h-9 rounded-xl ${meta.iconBg} text-white flex items-center justify-center shadow-xs shrink-0`}>
+                                                    <div className={`w-9 h-9 rounded-xl ${theme.iconBg} text-white flex items-center justify-center shadow-xs shrink-0`}>
                                                         <IconComp className="w-4.5 h-4.5" />
                                                     </div>
                                                     <div>
-                                                        <p className={`text-sm font-bold leading-tight ${isSelected ? meta.activeText : "text-zinc-900"}`}>
-                                                            {dept.label}
+                                                        <p className={`text-sm font-bold leading-tight ${isSelected ? theme.activeText : "text-zinc-900"}`}>
+                                                            {deptTitle}
                                                         </p>
-                                                        <span className="text-[11px] text-zinc-500 font-medium">
-                                                            {meta.tag}
-                                                        </span>
+                                                        {deptTag && (
+                                                            <span className="text-[11px] text-zinc-500 font-medium">
+                                                                {deptTag}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
 
                                                 <span
                                                     className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSelected
-                                                        ? `${meta.iconBg} border-transparent text-white`
+                                                        ? `${theme.iconBg} border-transparent text-white`
                                                         : "border-zinc-300 bg-white"
                                                         }`}
                                                 >
@@ -962,21 +955,11 @@ export function RecruitmentForm({
                                 </div>
                             </div>
 
-                            {/* Subsection 3.1: Common Questions (All Departments) */}
                             <div className="space-y-6">
-                                <div className="flex items-center gap-2 pb-2 border-b border-zinc-100">
-                                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
-                                        Câu hỏi chung
-                                    </span>
-                                    <span className="text-xs text-zinc-400">
-                                        (Dành cho tất cả các ban)
-                                    </span>
-                                </div>
-
                                 <div className="space-y-6">
                                     {commonQuestions.map((q) => {
                                         const errorKey = `answers.${q.id}`;
-                                        const hasError = !errors[errorKey];
+                                        const hasError = errors[errorKey];
 
                                         if (q.type === "essay") {
                                             const currentText = (form.answers[q.id] as string) || "";
@@ -1017,7 +1000,7 @@ export function RecruitmentForm({
                                                         <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
                                                     ) : currentLen > 0 && minReq > 0 && !isMet ? (
                                                         <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                            ⚠️ Cần thêm {minReq - currentLen} ký tự nữa để đạt chuẩn ({minReq} ký tự).
+                                                            Cần viết ít nhất {minReq} ký tự.
                                                         </p>
                                                     ) : null}
                                                 </div>
@@ -1060,7 +1043,42 @@ export function RecruitmentForm({
                                                                     </button>
                                                                 );
                                                             })}
+                                                            {q.allowOther && (() => {
+                                                                const otherChecked = selectedArray.includes("__other__");
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        role="checkbox"
+                                                                        aria-checked={otherChecked}
+                                                                        onClick={() => handleCheckboxToggle(q.id, "__other__")}
+                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
+                                                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                                            }`}
+                                                                    >
+                                                                        <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
+                                                                            {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                                                        </span>
+                                                                        <span
+                                                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
+                                                                                }`}
+                                                                        >
+                                                                            {otherChecked && "✓"}
+                                                                        </span>
+                                                                    </button>
+                                                                );
+                                                            })()}
                                                         </div>
+                                                        {q.allowOther && selectedArray.includes("__other__") && (
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Nhập lựa chọn khác của bạn..."
+                                                                value={form.otherTexts[q.id] || ""}
+                                                                onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                                                                className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                                                                autoFocus
+                                                            />
+                                                        )}
                                                         {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
                                                     </div>
                                                 );
@@ -1100,7 +1118,44 @@ export function RecruitmentForm({
                                                                 </button>
                                                             );
                                                         })}
+                                                        {q.allowOther && (() => {
+                                                            const otherChecked = selectedValue === "__other__";
+                                                            return (
+                                                                <button
+                                                                    type="button"
+                                                                    role="radio"
+                                                                    aria-checked={otherChecked}
+                                                                    onClick={() => {
+                                                                        handleAnswerChange(q.id, "__other__");
+                                                                    }}
+                                                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
+                                                                        ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
+                                                                        : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                                        }`}
+                                                                >
+                                                                    <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
+                                                                        {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                                                    </span>
+                                                                    <span
+                                                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
+                                                                            }`}
+                                                                    >
+                                                                        {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                    </span>
+                                                                </button>
+                                                            );
+                                                        })()}
                                                     </div>
+                                                    {q.allowOther && selectedValue === "__other__" && (
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Nhập lựa chọn khác của bạn..."
+                                                            value={form.otherTexts[q.id] || ""}
+                                                            onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                                                            className="w-full px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-zinc-400"
+                                                            autoFocus
+                                                        />
+                                                    )}
                                                     {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
                                                 </div>
                                             );
@@ -1111,22 +1166,12 @@ export function RecruitmentForm({
                                 </div>
                             </div>
 
-                            {/* Subsection 3.2: Department Specific Questions */}
                             {deptQuestions.length > 0 && (
                                 <div className="space-y-6 pt-4 border-t border-zinc-100">
-                                    <div className="flex items-center gap-2 pb-2 border-b border-zinc-100">
-                                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                                            Câu hỏi chuyên môn
-                                        </span>
-                                        <span className="text-xs font-semibold text-zinc-600">
-                                            — {departmentMeta[form.department]?.name || form.department}
-                                        </span>
-                                    </div>
-
                                     <div className="space-y-6">
                                         {deptQuestions.map((q) => {
                                             const errorKey = `answers.${q.id}`;
-                                            const hasError = !errors[errorKey];
+                                            const hasError = !!errors[errorKey];
 
                                             if (q.type === "essay") {
                                                 const currentText = (form.answers[q.id] as string) || "";
@@ -1167,7 +1212,7 @@ export function RecruitmentForm({
                                                             <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
                                                         ) : currentLen > 0 && minReq > 0 && !isMet ? (
                                                             <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                                ⚠️ Cần thêm {minReq - currentLen} ký tự nữa để đạt chuẩn ({minReq} ký tự).
+                                                                Cần viết ít nhất {minReq} ký tự.
                                                             </p>
                                                         ) : null}
                                                     </div>
@@ -1210,7 +1255,42 @@ export function RecruitmentForm({
                                                                         </button>
                                                                     );
                                                                 })}
+                                                                {q.allowOther && (() => {
+                                                                    const otherChecked = selectedArray.includes("__other__");
+                                                                    return (
+                                                                        <button
+                                                                            type="button"
+                                                                            role="checkbox"
+                                                                            aria-checked={otherChecked}
+                                                                            onClick={() => handleCheckboxToggle(q.id, "__other__")}
+                                                                            className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
+                                                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                                                }`}
+                                                                        >
+                                                                            <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#4285F4] font-semibold" : "text-zinc-800 font-medium"}`}>
+                                                                                {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                                                            </span>
+                                                                            <span
+                                                                                className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked ? "bg-[#4285F4] border-[#4285F4] text-white" : "border-zinc-300 bg-white"
+                                                                                    }`}
+                                                                            >
+                                                                                {otherChecked && "✓"}
+                                                                            </span>
+                                                                        </button>
+                                                                    );
+                                                                })()}
                                                             </div>
+                                                            {q.allowOther && selectedArray.includes("__other__") && (
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Nhập lựa chọn khác của bạn..."
+                                                                    value={form.otherTexts[q.id] || ""}
+                                                                    onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                                                                    className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                                                                    autoFocus
+                                                                />
+                                                            )}
                                                             {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
                                                         </div>
                                                     );
@@ -1250,7 +1330,44 @@ export function RecruitmentForm({
                                                                     </button>
                                                                 );
                                                             })}
+                                                            {q.allowOther && (() => {
+                                                                const otherChecked = selectedValue === "__other__";
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        role="radio"
+                                                                        aria-checked={otherChecked}
+                                                                        onClick={() => {
+                                                                            handleAnswerChange(q.id, "__other__");
+                                                                        }}
+                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
+                                                                            ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
+                                                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                                            }`}
+                                                                    >
+                                                                        <span className={`text-xs sm:text-sm leading-snug ${otherChecked ? "text-[#34A853] font-semibold" : "text-zinc-800 font-medium"}`}>
+                                                                            {q.otherLabel || "Khác (vui lòng ghi rõ)"}
+                                                                        </span>
+                                                                        <span
+                                                                            className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked ? "border-[#34A853] bg-[#34A853]" : "border-zinc-300 bg-white"
+                                                                                }`}
+                                                                        >
+                                                                            {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                                        </span>
+                                                                    </button>
+                                                                );
+                                                            })()}
                                                         </div>
+                                                        {q.allowOther && selectedValue === "__other__" && (
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Nhập lựa chọn khác của bạn..."
+                                                                value={form.otherTexts[q.id] || ""}
+                                                                onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
+                                                                className="w-full px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-zinc-400"
+                                                                autoFocus
+                                                            />
+                                                        )}
                                                         {hasError && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>}
                                                     </div>
                                                 );

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
     departmentLabel,
+    departmentBadgeStyle,
     departments,
     majorLabel,
     majors,
@@ -39,13 +40,6 @@ const statusStyles: Record<ApplicationStatus, { badge: string; dot: string }> = 
     },
 };
 
-const departmentStyles: Record<string, string> = {
-    tech: "bg-blue-50 text-blue-700 border-blue-200/80",
-    design: "bg-amber-50 text-amber-700 border-amber-200/80",
-    pr: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-    "hr-lg": "bg-purple-50 text-purple-700 border-purple-200/80",
-};
-
 function StatusBadge({ status }: { status: ApplicationStatus }) {
     const config = statusStyles[status] || statusStyles.pending;
     return (
@@ -59,7 +53,7 @@ function StatusBadge({ status }: { status: ApplicationStatus }) {
 }
 
 function DepartmentBadge({ department }: { department: string }) {
-    const style = departmentStyles[department] || "bg-slate-100 text-slate-700 border-slate-200";
+    const style = departmentBadgeStyle(department);
     return (
         <span
             className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${style}`}
@@ -535,7 +529,7 @@ export function ApplicationsDashboard() {
                                 <select
                                     value={major}
                                     onChange={(e) => handleFilterChange(() => setMajor(e.target.value))}
-                                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-all focus:border-[#4285F4] focus:bg-white focus:ring-3 focus:ring-blue-100"
+                                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-all focus:border-[#4285F4] focus:bg-white focus:ring-3 focus:ring-blue-100 truncate"
                                 >
                                     <option value="">Tất cả ngành học</option>
                                     {majors.map((item) => (
@@ -595,15 +589,15 @@ export function ApplicationsDashboard() {
 
                     {/* 3c. Desktop Data Table View (Hidden on mobile < md) */}
                     <div className="hidden md:block overflow-x-auto">
-                        <table className="w-full text-left text-sm">
+                        <table className="w-full text-left text-sm min-w-[760px]">
                             <thead className="border-b border-slate-200 bg-slate-50/75 text-xs font-semibold uppercase tracking-wider text-slate-500">
                                 <tr>
-                                    <th className="px-6 py-3.5">Ứng viên</th>
-                                    <th className="px-5 py-3.5">Ban chuyên môn</th>
-                                    <th className="px-5 py-3.5">Ngành & Năm</th>
-                                    <th className="px-5 py-3.5">Ngày nộp</th>
-                                    <th className="px-5 py-3.5">Trạng thái</th>
-                                    <th className="px-6 py-3.5 text-right">Hành động</th>
+                                    <th className="w-[28%] min-w-[220px] px-6 py-3.5">Ứng viên</th>
+                                    <th className="w-[17%] min-w-[140px] px-5 py-3.5 whitespace-nowrap">Ban chuyên môn</th>
+                                    <th className="w-[24%] min-w-[180px] max-w-[240px] px-5 py-3.5">Ngành & Năm</th>
+                                    <th className="w-[11%] min-w-[95px] px-5 py-3.5 whitespace-nowrap">Ngày nộp</th>
+                                    <th className="w-[10%] min-w-[105px] px-5 py-3.5 whitespace-nowrap">Trạng thái</th>
+                                    <th className="w-[10%] min-w-[155px] px-6 py-3.5 text-right whitespace-nowrap">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -768,18 +762,21 @@ function ApplicationRow({
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-[#4285F4] shadow-xs">
                         {initials}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                         <button
                             type="button"
                             onClick={() => onView(application)}
                             className="block truncate text-left font-semibold text-slate-900 transition-colors hover:text-[#4285F4]"
+                            title={application.full_name}
                         >
                             {application.full_name}
                         </button>
                         <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span className="truncate">{application.email}</span>
+                            <span className="truncate max-w-[160px] sm:max-w-[200px]" title={application.email}>
+                                {application.email}
+                            </span>
                             {application.student_id && (
-                                <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[11px] text-slate-600">
+                                <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[11px] text-slate-600">
                                     {application.student_id}
                                 </span>
                             )}
@@ -794,9 +791,14 @@ function ApplicationRow({
             </td>
 
             {/* Major & Year */}
-            <td className="px-5 py-4 whitespace-nowrap">
-                <div className="font-medium text-slate-800">{majorLabel(application.major)}</div>
-                <div className="text-xs text-slate-500">Năm {application.student_year}</div>
+            <td className="px-5 py-4">
+                <div
+                    className="font-medium text-slate-800 line-clamp-2 text-xs sm:text-sm leading-snug break-words max-w-[220px] xl:max-w-[260px]"
+                    title={majorLabel(application.major)}
+                >
+                    {majorLabel(application.major)}
+                </div>
+                <div className="text-xs text-slate-500 mt-0.5">Năm {application.student_year}</div>
             </td>
 
             {/* Submitted Date */}
@@ -889,7 +891,10 @@ function ApplicationMobileCard({
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
                 <DepartmentBadge department={application.department} />
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600">
+                <span
+                    className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600 break-words max-w-full leading-relaxed"
+                    title={majorLabel(application.major)}
+                >
                     {majorLabel(application.major)} (Năm {application.student_year})
                 </span>
                 {application.student_id && (
@@ -949,7 +954,10 @@ function SkeletonTableRows({ rows = 5 }: { rows?: number }) {
                         <div className="h-6 w-20 rounded-lg bg-slate-200" />
                     </td>
                     <td className="px-5 py-4">
-                        <div className="h-4 w-28 rounded bg-slate-200" />
+                        <div className="space-y-1.5">
+                            <div className="h-4 w-32 rounded bg-slate-200" />
+                            <div className="h-3 w-16 rounded bg-slate-100" />
+                        </div>
                     </td>
                     <td className="px-5 py-4">
                         <div className="h-3 w-20 rounded bg-slate-100" />
@@ -1340,10 +1348,13 @@ function ApplicationModal({
                             <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-2xs">
                                 <span className="text-[11px] font-medium text-slate-500">Ngành học & Trường</span>
                                 <div className="mt-1">
-                                    <div className="truncate text-sm font-semibold text-slate-900">
+                                    <div
+                                        className="text-sm font-semibold text-slate-900 break-words"
+                                        title={majorLabel(application.major)}
+                                    >
                                         {majorLabel(application.major)}
                                     </div>
-                                    <div className="text-xs text-slate-500">{application.university}</div>
+                                    <div className="text-xs text-slate-500 mt-0.5">{application.university}</div>
                                 </div>
                             </div>
 
