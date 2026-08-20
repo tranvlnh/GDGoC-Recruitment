@@ -2,7 +2,10 @@ import rawDepartments from "@/config/departments.json";
 import rawMajors from "@/config/majors.json";
 import rawQuestions from "@/config/questions.json";
 import rawSettings from "@/config/settings.json";
-import { optionSchema, questionsSchema, settingsSchema } from "@/types/config";
+import { departmentSchema, optionSchema, questionsSchema, settingsSchema, type Department } from "@/types/config";
+import { getDepartmentTheme, getDepartmentIcon } from "@/lib/departments";
+
+export { getDepartmentTheme, getDepartmentIcon };
 
 export const questions = questionsSchema
     .parse(rawQuestions)
@@ -22,7 +25,7 @@ export function getDepartmentSpecificQuestions(departmentId: string) {
         .sort((a, b) => a.order - b.order);
 }
 export const majors = optionSchema.array().parse(rawMajors);
-export const departments = optionSchema.array().parse(rawDepartments);
+export const departments: Department[] = departmentSchema.array().parse(rawDepartments);
 export const settings = settingsSchema.parse(rawSettings);
 
 export function getApplicationWindowStatus(now = new Date()) {
@@ -49,9 +52,19 @@ export function majorLabel(majorId: string) {
     );
 }
 
+export function getDepartment(departmentId: string): Department | undefined {
+    return departments.find((department) => department.id === departmentId);
+}
+
 export function departmentLabel(departmentId: string) {
     return (
         departments.find((department) => department.id === departmentId)
-            ?.label ?? departmentId
+            ?.name ?? departmentId
     );
 }
+
+export function departmentBadgeStyle(departmentId: string): string {
+    const dept = getDepartment(departmentId);
+    return getDepartmentTheme(dept || departmentId).badgeClass;
+}
+

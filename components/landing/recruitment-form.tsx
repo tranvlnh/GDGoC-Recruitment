@@ -1,20 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo, useCallback, FormEvent, useId } from "react";
-import type { Option, Question } from "@/types/config";
+import type { Option, Question, Department } from "@/types/config";
+import { getDepartmentTheme, getDepartmentIcon } from "@/lib/departments";
 import {
     CheckCircleIcon,
     ArrowRightIcon,
     ShieldCheckIcon,
-    CodeIcon,
-    PaletteIcon,
-    MegaphoneIcon,
-    UsersIcon,
     FacebookIcon,
 } from "./google-icons";
 
 type RecruitmentFormProps = {
-    departments: Option[];
+    departments: (Department | Option)[];
     majors: Option[];
     questions: Question[];
     isOpen: boolean;
@@ -38,61 +35,6 @@ type FormState = {
     major: string;
     answers: Record<string, string | string[]>;
     otherTexts: Record<string, string>;
-};
-
-const departmentMeta: Record<
-    string,
-    {
-        name: string;
-        short: string;
-        tag: string;
-        activeBorder: string;
-        activeBg: string;
-        activeText: string;
-        iconBg: string;
-        icon: typeof CodeIcon;
-    }
-> = {
-    tech: {
-        name: "Ban Chuyên Môn",
-        short: "Ban Chuyên Môn",
-        tag: "Technical",
-        activeBorder: "border-[#4285F4]",
-        activeBg: "bg-blue-50/70",
-        activeText: "text-[#4285F4]",
-        iconBg: "bg-[#4285F4]",
-        icon: CodeIcon,
-    },
-    design: {
-        name: "Ban Thiết Kế",
-        short: "Ban Thiết Kế",
-        tag: "Design",
-        activeBorder: "border-[#EA4335]",
-        activeBg: "bg-red-50/70",
-        activeText: "text-[#EA4335]",
-        iconBg: "bg-[#EA4335]",
-        icon: PaletteIcon,
-    },
-    pr: {
-        name: "Ban Truyền Thông",
-        short: "Ban Truyền Thông",
-        tag: "Communications",
-        activeBorder: "border-[#FBBC05]",
-        activeBg: "bg-amber-50/70",
-        activeText: "text-[#B06000]",
-        iconBg: "bg-[#F29900]",
-        icon: MegaphoneIcon,
-    },
-    "hr-lg": {
-        name: "Ban Nhân Sự & Hậu Cần",
-        short: "Ban Nhân Sự & Hậu Cần",
-        tag: "People & Operations",
-        activeBorder: "border-[#34A853]",
-        activeBg: "bg-emerald-50/70",
-        activeText: "text-[#34A853]",
-        iconBg: "bg-[#34A853]",
-        icon: UsersIcon,
-    },
 };
 
 export function RecruitmentForm({
@@ -797,18 +739,12 @@ export function RecruitmentForm({
                                 </label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Ban chuyên môn">
                                     {departments.map((dept) => {
-                                        const meta = departmentMeta[dept.id] || {
-                                            name: dept.label,
-                                            short: dept.id,
-                                            tag: "Department",
-                                            activeBorder: "border-[#4285F4]",
-                                            activeBg: "bg-blue-50/70",
-                                            activeText: "text-[#4285F4]",
-                                            iconBg: "bg-[#4285F4]",
-                                            icon: CodeIcon,
-                                        };
-                                        const IconComp = meta.icon;
+                                        const isDeptObj = "name" in dept;
+                                        const theme = getDepartmentTheme(dept as Department);
+                                        const IconComp = getDepartmentIcon(isDeptObj ? (dept as Department).icon : undefined);
                                         const isSelected = form.department === dept.id;
+                                        const deptTitle = isDeptObj ? (dept as Department).name : dept.label;
+                                        const deptTag = isDeptObj ? (dept as Department).tag : "";
 
                                         return (
                                             <button
@@ -827,27 +763,29 @@ export function RecruitmentForm({
                                                     }
                                                 }}
                                                 className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${isSelected
-                                                    ? `${meta.activeBorder} ${meta.activeBg} shadow-sm border-2`
+                                                    ? `${theme.activeBorder} ${theme.activeBg} shadow-sm border-2`
                                                     : "border-zinc-200/90 bg-white hover:bg-zinc-50/80 hover:border-zinc-300"
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-9 h-9 rounded-xl ${meta.iconBg} text-white flex items-center justify-center shadow-xs shrink-0`}>
+                                                    <div className={`w-9 h-9 rounded-xl ${theme.iconBg} text-white flex items-center justify-center shadow-xs shrink-0`}>
                                                         <IconComp className="w-4.5 h-4.5" />
                                                     </div>
                                                     <div>
-                                                        <p className={`text-sm font-bold leading-tight ${isSelected ? meta.activeText : "text-zinc-900"}`}>
-                                                            {dept.label}
+                                                        <p className={`text-sm font-bold leading-tight ${isSelected ? theme.activeText : "text-zinc-900"}`}>
+                                                            {deptTitle}
                                                         </p>
-                                                        <span className="text-[11px] text-zinc-500 font-medium">
-                                                            {meta.tag}
-                                                        </span>
+                                                        {deptTag && (
+                                                            <span className="text-[11px] text-zinc-500 font-medium">
+                                                                {deptTag}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
 
                                                 <span
                                                     className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSelected
-                                                        ? `${meta.iconBg} border-transparent text-white`
+                                                        ? `${theme.iconBg} border-transparent text-white`
                                                         : "border-zinc-300 bg-white"
                                                         }`}
                                                 >

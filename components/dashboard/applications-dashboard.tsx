@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
     departmentLabel,
+    departmentBadgeStyle,
     departments,
     majorLabel,
     majors,
@@ -39,13 +40,6 @@ const statusStyles: Record<ApplicationStatus, { badge: string; dot: string }> = 
     },
 };
 
-const departmentStyles: Record<string, string> = {
-    tech: "bg-blue-50 text-blue-700 border-blue-200/80",
-    design: "bg-amber-50 text-amber-700 border-amber-200/80",
-    pr: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-    "hr-lg": "bg-purple-50 text-purple-700 border-purple-200/80",
-};
-
 function StatusBadge({ status }: { status: ApplicationStatus }) {
     const config = statusStyles[status] || statusStyles.pending;
     return (
@@ -59,7 +53,7 @@ function StatusBadge({ status }: { status: ApplicationStatus }) {
 }
 
 function DepartmentBadge({ department }: { department: string }) {
-    const style = departmentStyles[department] || "bg-slate-100 text-slate-700 border-slate-200";
+    const style = departmentBadgeStyle(department);
     return (
         <span
             className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${style}`}

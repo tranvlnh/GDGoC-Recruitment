@@ -35,7 +35,7 @@ export default function Home() {
                 <MissionGoalsSection />
 
                 {/* 4. Departments (4 Google Colored Groups) */}
-                <DepartmentsSection />
+                <DepartmentsSection departments={departments} />
 
                 {/* 5. Recruitment Form */}
                 <RecruitmentForm
