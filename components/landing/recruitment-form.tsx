@@ -55,8 +55,8 @@ const departmentMeta: Record<
 > = {
     tech: {
         name: "Ban Chuyên Môn",
-        short: "Technical",
-        tag: "Engineering",
+        short: "Ban Chuyên Môn",
+        tag: "Technical",
         activeBorder: "border-[#4285F4]",
         activeBg: "bg-blue-50/70",
         activeText: "text-[#4285F4]",
@@ -65,8 +65,8 @@ const departmentMeta: Record<
     },
     design: {
         name: "Ban Thiết Kế",
-        short: "Design",
-        tag: "UI/UX & Visual Art",
+        short: "Ban Thiết Kế",
+        tag: "Design",
         activeBorder: "border-[#EA4335]",
         activeBg: "bg-red-50/70",
         activeText: "text-[#EA4335]",
@@ -75,8 +75,8 @@ const departmentMeta: Record<
     },
     pr: {
         name: "Ban Truyền Thông",
-        short: "PR",
-        tag: "Media & Branding",
+        short: "Ban Truyền Thông",
+        tag: "Communications",
         activeBorder: "border-[#FBBC05]",
         activeBg: "bg-amber-50/70",
         activeText: "text-[#B06000]",
@@ -85,7 +85,7 @@ const departmentMeta: Record<
     },
     "hr-lg": {
         name: "Ban Nhân Sự & Hậu Cần",
-        short: "HR-LG",
+        short: "Ban Nhân Sự & Hậu Cần",
         tag: "People & Operations",
         activeBorder: "border-[#34A853]",
         activeBg: "bg-emerald-50/70",
@@ -659,7 +659,7 @@ export function RecruitmentForm({
                                 {/* Email */}
                                 <div className="space-y-1.5" id={`${formId}-email`}>
                                     <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Email (Gmail / PTIT Mail) <span className="text-red-500">*</span>
+                                        Email <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="email"
@@ -1021,7 +1021,7 @@ export function RecruitmentForm({
                                 <div className="space-y-6">
                                     {commonQuestions.map((q) => {
                                         const errorKey = `answers.${q.id}`;
-                                        const hasError = !errors[errorKey];
+                                        const hasError = errors[errorKey];
 
                                         if (q.type === "essay") {
                                             const currentText = (form.answers[q.id] as string) || "";
@@ -1062,7 +1062,7 @@ export function RecruitmentForm({
                                                         <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
                                                     ) : currentLen > 0 && minReq > 0 && !isMet ? (
                                                         <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                            ⚠️ Cần thêm {minReq - currentLen} ký tự nữa để đạt chuẩn ({minReq} ký tự).
+                                                            Cần viết ít nhất {minReq} ký tự.
                                                         </p>
                                                     ) : null}
                                                 </div>
@@ -1113,7 +1113,7 @@ export function RecruitmentForm({
                                                                         role="checkbox"
                                                                         aria-checked={otherChecked}
                                                                         onClick={() => handleCheckboxToggle(q.id, "__other__")}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer sm:col-span-2 ${otherChecked
+                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
                                                                             ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
                                                                             : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                                                             }`}
@@ -1190,7 +1190,7 @@ export function RecruitmentForm({
                                                                     onClick={() => {
                                                                         handleAnswerChange(q.id, "__other__");
                                                                     }}
-                                                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer sm:col-span-2 ${otherChecked
+                                                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
                                                                         ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
                                                                         : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                                                         }`}
@@ -1233,7 +1233,7 @@ export function RecruitmentForm({
                                     <div className="space-y-6">
                                         {deptQuestions.map((q) => {
                                             const errorKey = `answers.${q.id}`;
-                                            const hasError = !errors[errorKey];
+                                            const hasError = !!errors[errorKey];
 
                                             if (q.type === "essay") {
                                                 const currentText = (form.answers[q.id] as string) || "";
@@ -1274,7 +1274,7 @@ export function RecruitmentForm({
                                                             <p className="text-xs text-red-600 font-medium leading-relaxed">{errors[errorKey]}</p>
                                                         ) : currentLen > 0 && minReq > 0 && !isMet ? (
                                                             <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                                                                ⚠️ Cần thêm {minReq - currentLen} ký tự nữa để đạt chuẩn ({minReq} ký tự).
+                                                                Cần viết ít nhất {minReq} ký tự.
                                                             </p>
                                                         ) : null}
                                                     </div>
@@ -1325,7 +1325,7 @@ export function RecruitmentForm({
                                                                             role="checkbox"
                                                                             aria-checked={otherChecked}
                                                                             onClick={() => handleCheckboxToggle(q.id, "__other__")}
-                                                                            className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer sm:col-span-2 ${otherChecked
+                                                                            className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
                                                                                 ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
                                                                                 : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                                                                 }`}
@@ -1402,7 +1402,7 @@ export function RecruitmentForm({
                                                                         onClick={() => {
                                                                             handleAnswerChange(q.id, "__other__");
                                                                         }}
-                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer sm:col-span-2 ${otherChecked
+                                                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""} ${otherChecked
                                                                             ? "border-[#34A853] bg-emerald-50/70 text-[#34A853] shadow-xs font-semibold"
                                                                             : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                                                             }`}

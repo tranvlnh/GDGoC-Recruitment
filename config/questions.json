@@ -1,36 +1,189 @@
 [
   {
-    "id": "motivation",
+    "id": "pr1",
     "type": "essay",
-    "label": "Vì sao bạn muốn đồng hành cùng GDGoC PTIT trong nhiệm kỳ Gen 5?",
+    "label": "Theo bạn, Ban Truyền thông đóng vai trò như thế nào trong hoạt động của một CLB Công nghệ?",
     "required": true,
     "order": 1,
-    "minLength": 50,
-    "maxLength": 1000
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "pr"
+    ]
   },
   {
-    "id": "tech_interests",
-    "type": "multiple_choice",
-    "label": "Bạn có thế mạnh hoặc quan tâm đến những lĩnh vực công nghệ nào?",
-    "required": true,
+    "id": "pr2",
+    "type": "essay",
+    "label": "Bạn đã từng tham gia hoạt động/dự án nào liên quan đến Truyền thông, Content, Media, Social Media,... chưa?",
+    "required": false,
     "order": 2,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "pr"
+    ]
+  },
+  {
+    "id": "pr3",
+    "type": "multiple_choice",
+    "label": "GDG on Campus PTIT là một CLB định hướng về công nghệ. Khi tham gia ban Communications, bạn mong muốn phát triển những kỹ năng hoặc khía cạnh nào của bản thân?",
+    "required": true,
+    "order": 3,
     "multiple": true,
     "options": [
       {
-        "id": "web",
-        "label": "Lập trình Web (Frontend/Backend)"
+        "id": "1",
+        "label": "Content Writing/ Copywriting Viết lách, sáng tạo nội dung"
       },
       {
-        "id": "mobile",
-        "label": "Lập trình Mobile (Flutter/Android)"
+        "id": "2",
+        "label": "Media / Video Editing: Quay phim, chụp ảnh, dựng video"
       },
       {
-        "id": "ai_ml",
-        "label": "Trí tuệ nhân tạo (AI / Machine Learning)"
+        "id": "3",
+        "label": "Social Media: Quản lý các kênh mạng xã hội"
       },
       {
-        "id": "cloud_devops",
-        "label": "Cloud & DevOps (Google Cloud)"
+        "id": "4",
+        "label": "Planning & Strategy: Lên kế hoạch truyền thông, xây dựng campaign, phân tích hiệu quả"
+      }
+    ],
+    "allowOther": true,
+    "departments": [
+      "pr"
+    ]
+  },
+  {
+    "id": "pr4",
+    "type": "essay",
+    "label": "Bên cạnh Truyền thông, bạn có mong muốn tìm hiểu thêm về Công nghệ trong quá trình tham gia CLB không? Nếu có, bạn muốn tìm hiểu điều gì?",
+    "required": false,
+    "order": 4,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "pr"
+    ]
+  },
+  {
+    "id": "des1",
+    "type": "multiple_choice",
+    "label": "Bạn quan tâm đến lĩnh vực nào trong Design?",
+    "required": true,
+    "order": 1,
+    "multiple": true,
+    "options": [
+      {
+        "id": "1",
+        "label": "Graphic Design / Thiết kế ấn phẩm"
+      },
+      {
+        "id": "2",
+        "label": "Branding / Xây dựng hình ảnh thương hiệu"
+      },
+      {
+        "id": "3",
+        "label": "UI/UX Design"
+      },
+      {
+        "id": "4",
+        "label": "Illustration / Vẽ minh họa"
+      },
+      {
+        "id": "5",
+        "label": "Motion Design / Animation"
+      }
+    ],
+    "allowOther": true,
+    "departments": [
+      "design"
+    ]
+  },
+  {
+    "id": "des2",
+    "type": "multiple_choice",
+    "label": "Bạn muốn phát triển điều gì nhất khi tham gia Ban Design?",
+    "required": true,
+    "order": 2,
+    "multiple": false,
+    "options": [
+      {
+        "id": "1",
+        "label": "Tư duy thẩm mỹ"
+      },
+      {
+        "id": "2",
+        "label": "Bố cục, màu sắc và Typography"
+      },
+      {
+        "id": "3",
+        "label": "Xây dựng concept và ý tưởng"
+      },
+      {
+        "id": "4",
+        "label": "Sử dụng các công cụ thiết kế"
+      },
+      {
+        "id": "5",
+        "label": "Làm project thực tế và xây dựng portfolio"
+      },
+      {
+        "id": "6",
+        "label": "Học hỏi từ các thành viên có kinh nghiệm"
+      }
+    ],
+    "allowOther": true,
+    "departments": [
+      "design"
+    ]
+  },
+  {
+    "id": "des3",
+    "type": "essay",
+    "label": "Nếu trở thành thành viên Ban Design, bạn mong muốn được thử sức với điều gì và đóng góp gì cho hình ảnh của GDG On Campus PTIT?",
+    "required": true,
+    "order": 3,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "design"
+    ]
+  },
+  {
+    "id": "des4",
+    "type": "essay",
+    "label": "Bạn có Portfolio hoặc sản phẩm thiết kế từng thực hiện không?",
+    "required": false,
+    "order": 4,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "design"
+    ]
+  },
+  {
+    "id": "tech1",
+    "type": "multiple_choice",
+    "label": "Khi gặp một vấn đề chưa từng làm bao giờ, bạn thường làm gì đầu tiên?",
+    "required": true,
+    "order": 1,
+    "multiple": false,
+    "options": [
+      {
+        "id": "1",
+        "label": "Tự tìm hiểu (Google, hỏi AI, đọc tài liệu...)"
+      },
+      {
+        "id": "2",
+        "label": "Hỏi ngay người khác"
+      },
+      {
+        "id": "3",
+        "label": "Bỏ qua, chuyển việc khác"
+      },
+      {
+        "id": "4",
+        "label": "Chờ được hướng dẫn"
       }
     ],
     "allowOther": true,
@@ -39,92 +192,91 @@
     ]
   },
   {
-    "id": "expectations",
+    "id": "tech2",
     "type": "multiple_choice",
-    "label": "Bạn mong muốn nhận được những giá trị gì khi tham gia GDGoC PTIT?",
+    "label": "Bạn đã từng học lập trình qua hình thức nào?",
     "required": true,
-    "order": 3,
+    "order": 2,
     "multiple": true,
     "options": [
       {
-        "id": "skill_growth",
-        "label": "Nâng cao kỹ năng chuyên môn"
+        "id": "1",
+        "label": "Tự học qua khóa online/video/sách"
       },
       {
-        "id": "networking",
-        "label": "Mở rộng kết nối bạn bè & Mentor"
+        "id": "2",
+        "label": "Qua bài tập trên trường/lớp"
       },
       {
-        "id": "hackathon",
-        "label": "Tham gia Solution Challenge & Hackathon"
+        "id": "3",
+        "label": "Qua các dự án cá nhân"
       },
       {
-        "id": "soft_skills",
-        "label": "Kỹ năng mềm và làm việc nhóm"
-      },
-      {
-        "id": "leadership",
-        "label": "Kinh nghiệm quản lý dự án & sự kiện"
-      },
-      {
-        "id": "google_perks",
-        "label": "Cơ hội nhận Swag & chứng chỉ Google"
+        "id": "4",
+        "label": "Chưa từng học"
       }
     ],
-    "allowOther": true
-  },
-  {
-    "id": "past_project",
-    "type": "essay",
-    "label": "Kể tên một dự án, hoạt động hoặc thử thách đáng nhớ nhất mà bạn từng tham gia:",
-    "required": false,
-    "order": 4,
-    "minLength": 20,
-    "maxLength": 500
-  },
-  {
-    "id": "time_commitment",
-    "type": "multiple_choice",
-    "label": "Thời gian bạn có thể dành cho các hoạt động của câu lạc bộ mỗi tuần:",
-    "required": true,
-    "order": 5,
-    "multiple": false,
     "allowOther": true,
-    "options": [
-      {
-        "id": "time_under_5h",
-        "label": "Dưới 5 giờ / tuần"
-      },
-      {
-        "id": "time_5_10h",
-        "label": "Từ 5 – 10 giờ / tuần"
-      },
-      {
-        "id": "time_10_15h",
-        "label": "Từ 10 – 15 giờ / tuần"
-      },
-      {
-        "id": "time_over_15h",
-        "label": "Trên 15 giờ / tuần"
-      }
+    "departments": [
+      "tech"
     ]
   },
   {
-    "id": "commitment",
+    "id": "tech3",
     "type": "multiple_choice",
-    "label": "Bạn có cam kết tham gia đầy đủ các buổi sinh hoạt định kỳ và sự kiện chính không?",
+    "label": "Có một công nghệ, kĩ năng nào bạn rất muốn được học trong thời gian tới không?",
     "required": true,
-    "order": 6,
+    "order": 3,
     "multiple": false,
     "options": [
       {
-        "id": "yes",
-        "label": "Cam kết tham gia đầy đủ"
+        "id": "1",
+        "label": "Lập trình Web (Frontend/Backend)"
       },
       {
-        "id": "flexible",
-        "label": "Cần linh hoạt theo lịch thi/học"
+        "id": "2",
+        "label": "Lập trình Game (Unity/Unreal)"
+      },
+      {
+        "id": "3",
+        "label": "AI/Machine Learning"
+      },
+      {
+        "id": "4",
+        "label": "Mobile App (Android/iOS)"
+      },
+      {
+        "id": "5",
+        "label": "DevOps & Cloud Computing"
       }
+    ],
+    "allowOther": true,
+    "departments": [
+      "tech"
+    ]
+  },
+  {
+    "id": "tech4",
+    "type": "essay",
+    "label": "Điều gì khiến bạn muốn tham gia ban Technical của GDGoC?",
+    "required": true,
+    "order": 4,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "tech"
+    ]
+  },
+  {
+    "id": "tech5",
+    "type": "essay",
+    "label": "Hãy mô tả ngắn gọn dự án bạn tâm đắc nhất (tên dự án, công nghệ sử dụng, vai trò của bạn, và link nếu có). Nếu chưa từng làm dự án nào, có thể bỏ qua câu này.",
+    "required": false,
+    "order": 5,
+    "minLength": 10,
+    "maxLength": 1000,
+    "departments": [
+      "tech"
     ]
   }
 ]
