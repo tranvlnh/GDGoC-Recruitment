@@ -13,6 +13,73 @@ export const questions = questionsSchema
 
 export const commonQuestions = questions.filter((q) => !q.departments || q.departments.length === 0);
 
+export function isQuestionApplicable(
+    q: (typeof questions)[number],
+    context: {
+        departmentId: string;
+        studentYear?: number;
+        answers?: Record<string, string | string[]>;
+    },
+): boolean {
+    if (
+        q.departments &&
+        q.departments.length > 0 &&
+        !q.departments.includes(context.departmentId)
+    ) {
+        return false;
+    }
+    if (q.minYear && (!context.studentYear || context.studentYear < q.minYear)) {
+        return false;
+    }
+    if (q.dependsOn) {
+        if (!context.answers) return false;
+        const parentAnswer = context.answers[q.dependsOn.questionId];
+        const expected = q.dependsOn.value;
+        if (Array.isArray(expected)) {
+            if (Array.isArray(parentAnswer)) {
+                if (!parentAnswer.some((val) => (expected as string[]).includes(val))) {
+                    return false;
+                }
+            } else if (!parentAnswer || !(expected as string[]).includes(parentAnswer)) {
+                return false;
+            }
+        } else {
+            if (Array.isArray(parentAnswer)) {
+                if (!parentAnswer.includes(expected)) {
+                    return false;
+                }
+            } else if (parentAnswer !== expected) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+export function getApplicableQuestions(context: {
+    departmentId: string;
+    studentYear?: number;
+    answers?: Record<string, string | string[]>;
+}) {
+    const applicable = questions.filter((q) => isQuestionApplicable(q, context));
+    const common = applicable
+        .filter((q) => !q.departments || q.departments.length === 0)
+        .sort((a, b) => a.order - b.order);
+    const dept = applicable
+        .filter(
+            (q) =>
+                q.departments &&
+                q.departments.length > 0 &&
+                q.category !== "sub_tech_lead_web",
+        )
+        .sort((a, b) => a.order - b.order);
+    const subTech = applicable
+        .filter((q) => q.category === "sub_tech_lead_web")
+        .sort((a, b) => a.order - b.order);
+
+    return [...common, ...dept, ...subTech];
+}
+
 export function getQuestionsForDepartment(departmentId: string) {
     return questions
         .filter((q) => !q.departments || q.departments.length === 0 || q.departments.includes(departmentId))

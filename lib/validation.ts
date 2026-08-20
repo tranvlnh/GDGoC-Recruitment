@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { departments, getQuestionsForDepartment } from "@/lib/config";
+import { departments, getApplicableQuestions } from "@/lib/config";
 import type { Answer } from "@/types/application";
 
 const applicationBaseSchema = z.object({
@@ -45,7 +45,16 @@ export function validateApplicationSubmission(
         ]);
     }
 
-    const applicableQuestions = getQuestionsForDepartment(parsed.department);
+    const answersRecord: Record<string, string | string[]> = {};
+    for (const ans of parsed.answers) {
+        answersRecord[ans.question_id] = ans.value;
+    }
+
+    const applicableQuestions = getApplicableQuestions({
+        departmentId: parsed.department,
+        studentYear: parsed.student_year,
+        answers: answersRecord,
+    });
 
     const answerMap = new Map(
         parsed.answers.map((answer) => [answer.question_id, answer.value]),
@@ -60,7 +69,17 @@ export function validateApplicationSubmission(
         ]);
     }
     for (const answer of parsed.answers) {
-        if (!applicableQuestions.some((question) => question.id === answer.question_id)) {
+        // Allow if in applicableQuestions or if empty
+        const isApplicable = applicableQuestions.some(
+            (question) => question.id === answer.question_id,
+        );
+        const isEmpty =
+            answer.value === undefined ||
+            answer.value === null ||
+            (typeof answer.value === "string" && answer.value.trim() === "") ||
+            (Array.isArray(answer.value) && answer.value.length === 0);
+
+        if (!isApplicable && !isEmpty) {
             throw new z.ZodError([
                 {
                     code: "custom",

@@ -66,18 +66,45 @@ export default async function ApplicationDetailPage({
     const statusBadgeConfig = statusStyles[application.status] || statusStyles.pending;
     const deptStyle = departmentBadgeStyle(application.department);
 
-    const motivationQuestions = questions.filter((q) =>
-        ["motivation", "tech_interests", "expectations"].includes(q.id),
+    const isSubTechLead =
+        application.department === "tech" &&
+        application.answers?.some(
+            (a) => a.question_id === "tech_sublead_web_interest" && a.value === "yes",
+        );
+
+    const commonQuestions = questions.filter(
+        (q) => !q.departments || q.departments.length === 0,
     );
-    const essayQuestions = questions.filter((q) =>
-        ["past_project"].includes(q.id),
-    );
-    const commitmentQuestions = questions.filter((q) =>
-        ["time_commitment", "commitment"].includes(q.id),
-    );
-    const otherQuestions = questions.filter(
+
+    const deptQuestions = questions.filter(
         (q) =>
-            !["motivation", "tech_interests", "expectations", "past_project", "time_commitment", "commitment"].includes(q.id),
+            q.departments &&
+            q.departments.length > 0 &&
+            q.departments.includes(application.department) &&
+            q.category !== "sub_tech_lead_web",
+    );
+
+    const subTechLeadQuestions = questions.filter(
+        (q) => q.category === "sub_tech_lead_web",
+    );
+
+    const hasSubTechLeadAnswers = subTechLeadQuestions.some((q) => {
+        const a = answers.get(q.id);
+        return Boolean(
+            a &&
+            ((typeof a.value === "string" && a.value.trim().length > 0) ||
+                (Array.isArray(a.value) && a.value.length > 0)),
+        );
+    });
+
+    const knownQuestionIds = new Set([
+        ...commonQuestions.map((q) => q.id),
+        ...deptQuestions.map((q) => q.id),
+        ...subTechLeadQuestions.map((q) => q.id),
+    ]);
+
+    const otherAnsweredQuestions = application.answers.filter(
+        (ans) => !knownQuestionIds.has(ans.question_id),
     );
 
     return (
@@ -137,11 +164,18 @@ export default async function ApplicationDetailPage({
                             </div>
                         </div>
 
-                        <span
-                            className={`inline-flex self-start sm:self-auto items-center rounded-xl border px-3 py-1.5 text-xs font-semibold ${deptStyle}`}
-                        >
-                            {departmentLabel(application.department)}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                            <span
+                                className={`inline-flex items-center rounded-xl border px-3 py-1.5 text-xs font-semibold ${deptStyle}`}
+                            >
+                                {departmentLabel(application.department)}
+                            </span>
+                            {isSubTechLead && (
+                                <span className="inline-flex items-center gap-1 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 shadow-2xs">
+                                    ⚡ Sub-Tech Lead (Web)
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Contact & Academic Grid */}
@@ -194,43 +228,22 @@ export default async function ApplicationDetailPage({
 
                 {/* Answers Section */}
                 <div className="mt-6 space-y-6">
-                    {/* Section 1: Motivation */}
-                    {motivationQuestions.length > 0 && (
+                    {/* Section 1: Common Questions */}
+                    {commonQuestions.length > 0 && (
                         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-100 text-[#4285F4] text-xs font-bold">
                                     1
                                 </span>
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Nguyện vọng & Định hướng
+                                    Câu hỏi chung
                                 </h2>
-                            </div>
-                            <div className="space-y-4">
-                                {motivationQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-100 bg-slate-50/40 p-4">
-                                        <h3 className="text-xs font-semibold text-slate-700">{q.label}</h3>
-                                        <div className="mt-2 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs whitespace-pre-wrap">
-                                            {displayAnswer(q.id, answers.get(q.id))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Section 2: Projects */}
-                    {essayQuestions.length > 0 && (
-                        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-100 text-amber-700 text-xs font-bold">
-                                    2
+                                <span className="text-xs text-slate-400 font-normal">
+                                    ({commonQuestions.length} câu)
                                 </span>
-                                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Dự án & Kinh nghiệm
-                                </h2>
                             </div>
                             <div className="space-y-4">
-                                {essayQuestions.map((q) => (
+                                {commonQuestions.map((q) => (
                                     <div key={q.id} className="rounded-xl border border-slate-100 bg-slate-50/40 p-4">
                                         <h3 className="text-xs font-semibold text-slate-700">{q.label}</h3>
                                         <div className="mt-2 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs whitespace-pre-wrap">
@@ -242,22 +255,25 @@ export default async function ApplicationDetailPage({
                         </div>
                     )}
 
-                    {/* Section 3: Commitment */}
-                    {commitmentQuestions.length > 0 && (
+                    {/* Section 2: Department Specific Questions */}
+                    {deptQuestions.length > 0 && (
                         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 text-xs font-bold">
-                                    3
+                                    2
                                 </span>
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                                    Thời gian & Cam kết
+                                    Câu hỏi chuyên môn — {departmentLabel(application.department)}
                                 </h2>
+                                <span className="text-xs text-slate-400 font-normal">
+                                    ({deptQuestions.length} câu)
+                                </span>
                             </div>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                {commitmentQuestions.map((q) => (
+                            <div className="space-y-4">
+                                {deptQuestions.map((q) => (
                                     <div key={q.id} className="rounded-xl border border-slate-100 bg-slate-50/40 p-4">
                                         <h3 className="text-xs font-semibold text-slate-700">{q.label}</h3>
-                                        <div className="mt-2 rounded-lg bg-white p-3 text-sm font-medium text-slate-800 shadow-2xs">
+                                        <div className="mt-2 rounded-lg bg-white p-3.5 text-sm text-slate-800 leading-relaxed shadow-2xs whitespace-pre-wrap">
                                             {displayAnswer(q.id, answers.get(q.id))}
                                         </div>
                                     </div>
@@ -266,21 +282,54 @@ export default async function ApplicationDetailPage({
                         </div>
                     )}
 
-                    {/* Other questions */}
-                    {otherQuestions.length > 0 && (
+                    {/* Sub-Tech Lead (Web) Special Section */}
+                    {hasSubTechLeadAnswers && (
+                        <div className="rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50/70 via-white to-blue-50/40 p-6 shadow-sm">
+                            <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-blue-100">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#4285F4] text-white text-xs font-bold shadow-2xs">
+                                        ⚡
+                                    </span>
+                                    <h2 className="text-base font-bold text-blue-950">
+                                        Ứng tuyển Sub-Tech Lead (Web)
+                                    </h2>
+                                </div>
+                                <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full">
+                                    Vị trí đặc biệt
+                                </span>
+                            </div>
+                            <div className="space-y-4">
+                                {subTechLeadQuestions.map((q) => (
+                                    <div key={q.id} className="rounded-xl border border-blue-100 bg-white/90 p-4 shadow-2xs">
+                                        <h3 className="text-xs font-bold text-slate-800">{q.label}</h3>
+                                        <div className="mt-2 rounded-lg bg-slate-50/80 p-3.5 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
+                                            {displayAnswer(q.id, answers.get(q.id))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Other Answered Questions */}
+                    {otherAnsweredQuestions.length > 0 && (
                         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                                 Các câu trả lời khác
                             </h2>
                             <div className="space-y-3">
-                                {otherQuestions.map((q) => (
-                                    <div key={q.id} className="rounded-xl border border-slate-100 bg-slate-50/40 p-4">
-                                        <h3 className="text-xs font-semibold text-slate-700">{q.label}</h3>
-                                        <div className="mt-2 rounded-lg bg-white p-3 text-sm text-slate-800 shadow-2xs whitespace-pre-wrap">
-                                            {displayAnswer(q.id, answers.get(q.id))}
+                                {otherAnsweredQuestions.map((ans) => {
+                                    const matchingQ = questions.find((q) => q.id === ans.question_id);
+                                    const qLabel = matchingQ?.label || ans.question_id;
+                                    return (
+                                        <div key={ans.question_id} className="rounded-xl border border-slate-100 bg-slate-50/40 p-4">
+                                            <h3 className="text-xs font-semibold text-slate-700">{qLabel}</h3>
+                                            <div className="mt-2 rounded-lg bg-white p-3 text-sm text-slate-800 shadow-2xs whitespace-pre-wrap">
+                                                {displayAnswer(ans.question_id, ans)}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     )}

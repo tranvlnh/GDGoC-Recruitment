@@ -754,6 +754,12 @@ function ApplicationRow({
         .join("")
         .toUpperCase();
 
+    const isSubTechLead =
+        application.department === "tech" &&
+        application.answers?.some(
+            (a) => a.question_id === "tech_sublead_web_interest" && a.value === "yes",
+        );
+
     return (
         <tr className="group transition-colors hover:bg-slate-50/80">
             {/* Candidate Info */}
@@ -788,6 +794,13 @@ function ApplicationRow({
             {/* Department */}
             <td className="px-5 py-4 whitespace-nowrap">
                 <DepartmentBadge department={application.department} />
+                {isSubTechLead && (
+                    <div className="mt-1">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                            ⚡ Sub-Tech Lead
+                        </span>
+                    </div>
+                )}
             </td>
 
             {/* Major & Year */}
@@ -868,6 +881,12 @@ function ApplicationMobileCard({
         .join("")
         .toUpperCase();
 
+    const isSubTechLead =
+        application.department === "tech" &&
+        application.answers?.some(
+            (a) => a.question_id === "tech_sublead_web_interest" && a.value === "yes",
+        );
+
     return (
         <div className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
@@ -891,6 +910,11 @@ function ApplicationMobileCard({
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
                 <DepartmentBadge department={application.department} />
+                {isSubTechLead && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                        ⚡ Sub-Tech Lead
+                    </span>
+                )}
                 <span
                     className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600 break-words max-w-full leading-relaxed"
                     title={majorLabel(application.major)}
@@ -1080,16 +1104,31 @@ function ApplicationModal({
         (q) => !q.departments || q.departments.length === 0,
     );
 
-    const deptQuestions = questions.filter(
+    const regularDeptQuestions = questions.filter(
         (q) =>
             q.departments &&
             q.departments.length > 0 &&
-            q.departments.includes(application.department),
+            q.departments.includes(application.department) &&
+            q.category !== "sub_tech_lead_web",
     );
+
+    const subTechLeadQuestions = questions.filter(
+        (q) => q.category === "sub_tech_lead_web",
+    );
+
+    const hasSubTechLeadAnswers = subTechLeadQuestions.some((q) => {
+        const a = answers.get(q.id);
+        return Boolean(
+            a &&
+            ((typeof a.value === "string" && a.value.trim().length > 0) ||
+                (Array.isArray(a.value) && a.value.length > 0)),
+        );
+    });
 
     const knownQuestionIds = new Set([
         ...commonQuestions.map((q) => q.id),
-        ...deptQuestions.map((q) => q.id),
+        ...regularDeptQuestions.map((q) => q.id),
+        ...subTechLeadQuestions.map((q) => q.id),
     ]);
 
     const otherAnsweredQuestions = application.answers.filter(
@@ -1394,7 +1433,7 @@ function ApplicationModal({
                     )}
 
                     {/* Section 3: Department Specific Questions */}
-                    {deptQuestions.length > 0 && (
+                    {regularDeptQuestions.length > 0 && (
                         <div className="border-t border-slate-100 pt-5">
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 text-xs font-bold">
@@ -1404,11 +1443,33 @@ function ApplicationModal({
                                     Câu hỏi chuyên môn — {departmentLabel(application.department)}
                                 </h3>
                                 <span className="text-xs text-slate-400 font-normal">
-                                    ({deptQuestions.length} câu)
+                                    ({regularDeptQuestions.length} câu)
                                 </span>
                             </div>
                             <div className="space-y-3.5">
-                                {deptQuestions.map((q) => renderQuestionCard(q))}
+                                {regularDeptQuestions.map((q) => renderQuestionCard(q))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Section: Sub-Tech Lead (Web) Special Questions */}
+                    {hasSubTechLeadAnswers && (
+                        <div className="border-t border-blue-100 pt-5">
+                            <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-white to-blue-50/40 p-4 sm:p-5 space-y-4">
+                                <div className="flex items-center gap-2 pb-2 border-b border-blue-100">
+                                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#4285F4] text-white text-xs font-bold shadow-2xs">
+                                        ⚡
+                                    </span>
+                                    <h3 className="text-sm font-bold uppercase tracking-wider text-blue-900">
+                                        Ứng tuyển Sub-Tech Lead (Web)
+                                    </h3>
+                                    <span className="text-[11px] font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                                        Vị trí đặc biệt
+                                    </span>
+                                </div>
+                                <div className="space-y-3.5">
+                                    {subTechLeadQuestions.map((q) => renderQuestionCard(q))}
+                                </div>
                             </div>
                         </div>
                     )}

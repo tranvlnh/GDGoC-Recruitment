@@ -4,22 +4,22 @@
     "name": "Ban Kỹ Thuật",
     "englishName": "Technical",
     "tag": "Technical",
-    "desc": "Nghiên cứu công nghệ mới, phát triển dự án thực tế và xây dựng sản phẩm dự thi Google Solution Challenge.",
+    "desc": "Nghiên cứu công nghệ mới, xây dựng và phát triển sản phẩm thực tế, cùng đồng đội chinh phục các giải đấu, cuộc thi về công nghệ.",
     "themeColor": "#4285F4",
     "colorPreset": "blue",
     "svgImage": "/tech.svg",
     "svgAlt": "Ban Kỹ Thuật Mascot",
     "icon": "code",
     "roles": [
-      "Phát triển Web, Mobile App & ứng dụng AI/ML",
-      "Tổ chức Tech Workshops, CodeLabs & Hackathons",
-      "Tiếp cận Google Cloud & Gemini credits thực chiến"
+      "Phát triển Web/App, Game & ứng dụng AI/ML",
+      "Tham gia, tổ chức Tech Workshops, CodeLabs & Hackathons",
+      "Tiếp cận công nghệ, tài nguyên của Google"
     ],
     "skills": [
-      "Next.js / React",
-      "Flutter",
+      "Next.js / TypeScript",
+      "Git / Github",
       "Python / AI",
-      "Google Cloud"
+      "C# / Unity"
     ]
   },
   {
@@ -34,9 +34,8 @@
     "svgAlt": "Ban Thiết Kế Mascot",
     "icon": "palette",
     "roles": [
-      "Thiết kế UI/UX & Design System cho sản phẩm số",
-      "Sáng tạo Key Visual, poster, banner truyền thông",
-      "Xây dựng Portfolio chuẩn Product Design"
+      "Thiết kế UI/UX & Design cho sản phẩm số",
+      "Sáng tạo Key Visual, poster, banner truyền thông"
     ],
     "skills": [
       "Figma",
@@ -50,22 +49,23 @@
     "name": "Ban Truyền Thông",
     "englishName": "Public Relations",
     "tag": "Public Relations",
-    "desc": "Quản trị các kênh truyền thông số, sáng tạo nội dung viral và kết nối quan hệ đối tác, nhà tài trợ.",
+    "desc": "Quản trị các kênh truyền thông số, sáng tạo nội dung trên Facebook, Instagram và Website; đồng thời tham gia xây dựng kế hoạch cho các chiến dịch truyền thông của CLB và cộng đồng Google Developer Groups.",
     "themeColor": "#F29900",
     "colorPreset": "amber",
     "svgImage": "/pr.svg",
     "svgAlt": "Ban Truyền Thông Mascot",
     "icon": "megaphone",
     "roles": [
-      "Sáng tạo nội dung trên Fanpage, TikTok & LinkedIn",
-      "Lên chiến dịch truyền thông đa kênh cho sự kiện",
-      "Kết nối diễn giả công nghệ & nhà tài trợ"
+      "Lên kế hoạch & triển khai các chiến dịch truyền thông của CLB và cộng đồng GDG",
+      "Sáng tạo nội dung cho các hoạt động, sự kiện và chiến dịch",
+      "Quản trị các kênh truyền thông Facebook, Instagram & Website"
     ],
     "skills": [
-      "Content Writing",
+      "Copywriting",
+      "Content Strategy",
+      "Campaign Planning",
       "Social Media",
-      "Video Editing",
-      "Outreach"
+      "Trendjacking"
     ]
   },
   {

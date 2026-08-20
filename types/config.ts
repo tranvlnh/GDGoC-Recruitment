@@ -47,6 +47,14 @@ const baseQuestionSchema = z.object({
     required: z.boolean(),
     order: z.number().int().nonnegative(),
     departments: z.array(z.string().min(1)).optional(),
+    minYear: z.number().int().positive().optional(),
+    category: z.string().optional(),
+    dependsOn: z
+        .object({
+            questionId: z.string().min(1),
+            value: z.union([z.string(), z.array(z.string())]),
+        })
+        .optional(),
 });
 
 export const multipleChoiceQuestionSchema = baseQuestionSchema.extend({
