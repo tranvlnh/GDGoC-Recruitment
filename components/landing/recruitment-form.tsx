@@ -549,10 +549,10 @@ export function RecruitmentForm({
                         </label>
                         <span
                             className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded
-                                    ? "bg-red-50 text-red-700 border-red-200 font-bold"
-                                    : isMet
-                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
-                                        : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                                ? "bg-red-50 text-red-700 border-red-200 font-bold"
+                                : isMet
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
+                                    : "bg-zinc-100 text-zinc-600 border-zinc-200"
                                 }`}
                         >
                             {currentLen} / {maxReq} ký tự
@@ -565,8 +565,8 @@ export function RecruitmentForm({
                         value={currentText}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                         className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white ${hasError
-                                ? "border-red-500 bg-red-50/20"
-                                : "border-zinc-200 focus:border-blue-500"
+                            ? "border-red-500 bg-red-50/20"
+                            : "border-zinc-200 focus:border-blue-500"
                             }`}
                     />
 
@@ -605,22 +605,22 @@ export function RecruitmentForm({
                                         key={opt.id}
                                         onClick={() => handleCheckboxToggle(q.id, opt.id)}
                                         className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                             }`}
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                                    ? "text-[#4285F4] font-semibold"
-                                                    : "text-zinc-800 font-medium"
+                                                ? "text-[#4285F4] font-semibold"
+                                                : "text-zinc-800 font-medium"
                                                 }`}
                                         >
                                             {opt.label}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked
-                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                    : "border-zinc-300 bg-white"
+                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                : "border-zinc-300 bg-white"
                                                 }`}
                                         >
                                             {checked && "✓"}
@@ -644,16 +644,16 @@ export function RecruitmentForm({
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                                    ? "text-[#4285F4] font-semibold"
-                                                    : "text-zinc-800 font-medium"
+                                                ? "text-[#4285F4] font-semibold"
+                                                : "text-zinc-800 font-medium"
                                                 }`}
                                         >
                                             {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked
-                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                    : "border-zinc-300 bg-white"
+                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                : "border-zinc-300 bg-white"
                                                 }`}
                                         >
                                             {otherChecked && "✓"}
@@ -702,22 +702,22 @@ export function RecruitmentForm({
                                     key={opt.id}
                                     onClick={() => handleAnswerChange(q.id, opt.id)}
                                     className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                        ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
+                                        : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
                                         }`}
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                                ? "text-[#4285F4] font-semibold"
-                                                : "text-zinc-800 font-medium"
+                                            ? "text-[#4285F4] font-semibold"
+                                            : "text-zinc-800 font-medium"
                                             }`}
                                     >
                                         {opt.label}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked
-                                                ? "border-[#4285F4] bg-[#4285F4]"
-                                                : "border-zinc-300 bg-white"
+                                            ? "border-[#4285F4] bg-[#4285F4]"
+                                            : "border-zinc-300 bg-white"
                                             }`}
                                     >
                                         {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -743,16 +743,16 @@ export function RecruitmentForm({
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                                ? "text-[#4285F4] font-semibold"
-                                                : "text-zinc-800 font-medium"
+                                            ? "text-[#4285F4] font-semibold"
+                                            : "text-zinc-800 font-medium"
                                             }`}
                                     >
                                         {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked
-                                                ? "border-[#4285F4] bg-[#4285F4]"
-                                                : "border-zinc-300 bg-white"
+                                            ? "border-[#4285F4] bg-[#4285F4]"
+                                            : "border-zinc-300 bg-white"
                                             }`}
                                     >
                                         {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
