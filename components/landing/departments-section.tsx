@@ -259,7 +259,6 @@ export function DepartmentsSection({
                 {/* Section Header: Compact & Focused */}
                 <div className="text-center max-w-2xl mx-auto space-y-2">
                     <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-white uppercase tracking-wider backdrop-blur-md shadow-xs">
-                        <GoogleDots />
                         <span>Cơ cấu tổ chức • {departments.length} Ban Chuyên Môn</span>
                     </div>
 

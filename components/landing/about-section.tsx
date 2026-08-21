@@ -11,7 +11,7 @@ export function AboutSection() {
                 {/* Base radial gradient */}
                 <Image
                     src="/blank.svg"
-                    alt="Về GDGoC PTIT Background"
+                    alt="Về GDG on Campus: PTIT Background"
                     fill
                     unoptimized
                     className="object-cover object-center w-full h-full"
@@ -95,35 +95,43 @@ export function AboutSection() {
                 <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-[#EA4335]/10 rounded-full blur-3xl" />
             </div>
 
-            <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6">
-                <div className="text-center space-y-6">
-                    {/* Motto Title */}
-                    <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)] drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-3 gap-y-1">
-                        <span className="text-[#4285F4] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">Learn</span>
-                        <span className="text-white/50 font-light">·</span>
-                        <span className="text-[#EA4335] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">Share</span>
-                        <span className="text-white/50 font-light">·</span>
-                        <span className="text-[#FBBC05] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">Connect</span>
-                        <span className="text-white/50 font-light">·</span>
-                        <span className="text-[#34A853] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">Grow</span>
+            <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
+                {/* Section Header */}
+                <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-12">
+                    <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-white tracking-wider backdrop-blur-md shadow-xs">
+                        <span>Giới thiệu về GDG on Campus</span>
+                    </div>
+
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+                        Google Developer Groups <span className="text-[#4285F4] drop-shadow-[0_2px_12px_rgba(66,133,244,0.5)]">on Campus</span>
                     </h2>
+                </div>
 
-                    {/* Google Color Accent Divider */}
-                    <div className="w-20 h-1 mx-auto rounded-full bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC05] to-[#34A853] shadow-md" />
-
-                    {/* Structured Text Content */}
-                    <div className="space-y-4 pt-2 max-w-3xl mx-auto">
-                        <p className="text-base sm:text-lg md:text-xl text-white font-normal leading-relaxed drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [text-shadow:_0_2px_12px_rgba(0,0,0,0.95)]">
-                            <strong className="text-white font-bold">
-                                GDG on Campus: PTIT
-                            </strong>{" "}
-                            là chapter chính thức thuộc mạng lưới{" "}
-                            <span className="text-white font-semibold">Google Developer Groups (GDG)</span> toàn cầu, thành lập năm <span className="text-white font-semibold">2022</span> tại{" "}
-                            <span className="text-white font-semibold">Học viện Công nghệ Bưu chính Viễn thông</span>.
+                {/* Structured 2-Card Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                    {/* Card 1: Về Google Developer Groups - On Campus */}
+                    <div className="group relative rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-[#4285F4]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
+                        <div className="flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#4285F4] shadow-[0_0_10px_#4285F4]" />
+                            <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                                Về Google Developer Groups - On Campus
+                            </h3>
+                        </div>
+                        <p className="text-sm sm:text-base text-white/90 leading-relaxed font-normal drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                            Google Developer Groups - On Campus là chương trình được Google cấp quyền tổ chức và hỗ trợ, dành cho sinh viên đam mê CNTT và công nghệ Google. Năm 2026, đã kết nối hơn 2.100 trường đại học thuộc mạng lưới hơn 1.000+ cộng đồng Google Developer Groups bao phủ toàn cầu.
                         </p>
+                    </div>
 
-                        <p className="text-sm sm:text-base md:text-lg text-white/95 leading-relaxed font-normal drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] [text-shadow:_0_2px_12px_rgba(0,0,0,0.95)]">
-                            Với sứ mệnh truyền cảm hứng thay đổi tích cực cho cộng đồng thông qua các giải pháp công nghệ sáng tạo, <strong className="text-white font-semibold">GDG on Campus: PTIT</strong> tạo môi trường học tập cởi mở, nơi sinh viên cùng nhau khám phá công nghệ <span className="text-white font-semibold">Google</span>, xây dựng <span className="text-white font-semibold">sản phẩm thực chiến</span> và phát triển toàn diện qua các workshop, hackathon và dự án thực tế mang lại giá trị cho cộng đồng.
+                    {/* Card 2: Về GDG on Campus: PTIT */}
+                    <div className="group relative rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-[#EA4335]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
+                        <div className="flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#EA4335] shadow-[0_0_10px_#EA4335]" />
+                            <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                                Về GDG on Campus: PTIT
+                            </h3>
+                        </div>
+                        <p className="text-sm sm:text-base text-white/90 leading-relaxed font-normal drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                            Tháng 9/2022, GDG on Campus: PTIT chính thức ra đời, là một chapter của GDGOC tại Học viện Công nghệ Bưu chính Viễn thông. Đây là môi trường lý tưởng để sinh viên tiếp cận tài nguyên Google, học hỏi và phát triển bản thân, cùng nhau tạo ra những giải pháp công nghệ mang lại giá trị tích cực cho cộng đồng.
                         </p>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ export function FloatingNavbar() {
     const [activeSection, setActiveSection] = useState("");
 
     const navLinks = [
-        { name: "Về GDGoC", href: "#about", id: "about" },
+        { name: "Về chúng tôi", href: "#about", id: "about" },
         { name: "Sứ mệnh", href: "#mission", id: "mission" },
         { name: "Ban chuyên môn", href: "#departments", id: "departments" },
     ];
