@@ -96,8 +96,13 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
 
             {/* 2. Hero Text Displayed Directly on Cover */}
             <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-24 sm:pt-32 sm:pb-36 text-center flex flex-col items-center justify-center space-y-4 sm:space-y-6">
-                <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-snug sm:leading-tight drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)] max-w-4xl tracking-tight text-balance">
-                    Trở thành thành viên của GDG on Campus: PTIT
+                <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-snug sm:leading-tight drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)] max-w-4xl tracking-tight text-balance">
+                    <span className="text-[0.85em] font-semibold text-white/90">
+                        Trở thành thành viên của{" "}
+                    </span>
+                    <span className="font-black tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-white">
+                        GDG on Campus: PTIT
+                    </span>
                 </h1>
 
                 {/* Minimalist Countdown Timer with Google Colors */}
