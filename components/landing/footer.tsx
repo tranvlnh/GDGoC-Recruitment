@@ -70,7 +70,14 @@ export function Footer() {
                         <ul className="space-y-3 text-sm text-zinc-300">
                             <li className="flex items-start gap-2.5">
                                 <MapPinIcon className="w-4.5 h-4.5 text-[#EA4335] shrink-0 mt-0.5" />
-                                <span>Học viện Công nghệ Bưu chính Viễn thông, Km10 Đường Nguyễn Trãi, Hà Đông, Hà Nội</span>
+                                <a
+                                    href="https://share.google/KzFSSh2kk6J9UhS6y"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="hover:text-white transition-colors"
+                                >
+                                    96A Trần Phú, Hà Đông, Hà Nội.
+                                </a>
                             </li>
                             <li className="flex items-center gap-2.5">
                                 <MailIcon className="w-4.5 h-4.5 text-[#4285F4] shrink-0" />
