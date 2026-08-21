@@ -82,7 +82,7 @@ export function FloatingNavbar() {
                     aria-label="Main Navigation"
                     className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
                         ? "bg-white/90 backdrop-blur-lg border-zinc-200/90 shadow-lg shadow-zinc-900/5"
-                        : "bg-white/80 backdrop-blur-md border-zinc-200/60 shadow-sm"
+                        : "bg-transparent border-transparent shadow-none"
                         }`}
                 >
                     {/* Logo: Small on Mobile (< md), Full on Desktop (>= md) */}
@@ -206,4 +206,3 @@ export function FloatingNavbar() {
         </>
     );
 }
-
