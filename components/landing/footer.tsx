@@ -40,22 +40,27 @@ export function Footer() {
                         </h4>
                         <ul className="space-y-2 text-sm text-zinc-300">
                             <li>
-                                <a href="#about" className="hover:text-white transition-colors">
+                                <a href="/#about" className="hover:text-white transition-colors">
                                     Về chúng tôi
                                 </a>
                             </li>
                             <li>
-                                <a href="#mission" className="hover:text-white transition-colors">
+                                <a href="/#mission" className="hover:text-white transition-colors">
                                     Sứ mệnh
                                 </a>
                             </li>
                             <li>
-                                <a href="#departments" className="hover:text-white transition-colors">
+                                <a href="/#departments" className="hover:text-white transition-colors">
                                     Ban chuyên môn
                                 </a>
                             </li>
                             <li>
-                                <a href="#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
+                                <a href="/job-description" className="hover:text-white transition-colors">
+                                    Mô tả công việc (JD Gen 5)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
                                     Đăng ký tuyển thành viên
                                 </a>
                             </li>

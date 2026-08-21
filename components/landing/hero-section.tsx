@@ -75,7 +75,7 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
                 {/* Mobile Cover Image */}
                 <Image
                     src="/cover_mobile.svg"
-                    alt="GDGoC PTIT Mobile Cover Banner"
+                    alt="GDG on Campus: PTIT Mobile Cover Banner"
                     fill
                     priority
                     unoptimized
@@ -84,7 +84,7 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
                 {/* Desktop Cover Image */}
                 <Image
                     src="/cover.svg"
-                    alt="GDGoC PTIT Fullscreen Cover Banner"
+                    alt="GDG on Campus: PTIT Fullscreen Cover Banner"
                     fill
                     priority
                     unoptimized

@@ -671,10 +671,10 @@ export function RecruitmentForm({
                         </label>
                         <span
                             className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded || isUnderMin || (hasError && !isMet)
-                                    ? "bg-red-500/20 text-red-400 border-red-500/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
-                                    : isMet && currentLen > 0
-                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-bold shadow-[0_0_10px_rgba(52,168,83,0.25)]"
-                                        : "bg-white/10 text-zinc-400 border-white/15"
+                                ? "bg-red-500/20 text-red-400 border-red-500/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
+                                : isMet && currentLen > 0
+                                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-bold shadow-[0_0_10px_rgba(52,168,83,0.25)]"
+                                    : "bg-white/10 text-zinc-400 border-white/15"
                                 }`}
                         >
                             {currentLen} / {maxReq} ký tự
@@ -687,8 +687,8 @@ export function RecruitmentForm({
                         value={currentText}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                         className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${hasError || isUnderMin || isExceeded
-                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                : "border-white/15 focus:border-[#4285F4]"
+                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                            : "border-white/15 focus:border-[#4285F4]"
                             }`}
                     />
 
@@ -729,22 +729,22 @@ export function RecruitmentForm({
                                         key={opt.id}
                                         onClick={() => handleCheckboxToggle(q.id, opt.id)}
                                         className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                                ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
-                                                : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
+                                            ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                            : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                             }`}
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                                    ? "text-white font-semibold"
-                                                    : "text-zinc-200 font-medium"
+                                                ? "text-white font-semibold"
+                                                : "text-zinc-200 font-medium"
                                                 }`}
                                         >
                                             {opt.label}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked
-                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                    : "border-white/30 bg-white/5"
+                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                : "border-white/30 bg-white/5"
                                                 }`}
                                         >
                                             {checked && "✓"}
@@ -768,16 +768,16 @@ export function RecruitmentForm({
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                                    ? "text-white font-semibold"
-                                                    : "text-zinc-200 font-medium"
+                                                ? "text-white font-semibold"
+                                                : "text-zinc-200 font-medium"
                                                 }`}
                                         >
                                             {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked
-                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                    : "border-white/30 bg-white/5"
+                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                : "border-white/30 bg-white/5"
                                                 }`}
                                         >
                                             {otherChecked && "✓"}
@@ -827,22 +827,22 @@ export function RecruitmentForm({
                                     key={opt.id}
                                     onClick={() => handleAnswerChange(q.id, opt.id)}
                                     className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                            ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
-                                            : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
+                                        ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                        : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                         }`}
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                                ? "text-white font-semibold"
-                                                : "text-zinc-200 font-medium"
+                                            ? "text-white font-semibold"
+                                            : "text-zinc-200 font-medium"
                                             }`}
                                     >
                                         {opt.label}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked
-                                                ? "border-[#4285F4] bg-[#4285F4]"
-                                                : "border-white/30 bg-white/5"
+                                            ? "border-[#4285F4] bg-[#4285F4]"
+                                            : "border-white/30 bg-white/5"
                                             }`}
                                     >
                                         {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -868,16 +868,16 @@ export function RecruitmentForm({
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                                ? "text-white font-semibold"
-                                                : "text-zinc-200 font-medium"
+                                            ? "text-white font-semibold"
+                                            : "text-zinc-200 font-medium"
                                             }`}
                                     >
                                         {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked
-                                                ? "border-[#4285F4] bg-[#4285F4]"
-                                                : "border-white/30 bg-white/5"
+                                            ? "border-[#4285F4] bg-[#4285F4]"
+                                            : "border-white/30 bg-white/5"
                                             }`}
                                     >
                                         {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -1254,8 +1254,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.full_name
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.full_name && (
@@ -1286,8 +1286,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.email
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.email && (
@@ -1318,8 +1318,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.phone
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.phone && (
@@ -1350,8 +1350,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.facebook_url
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.facebook_url && (
@@ -1381,8 +1381,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark] ${errors.date_of_birth
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.date_of_birth && (
@@ -1548,8 +1548,8 @@ export function RecruitmentForm({
                                             }
                                         }}
                                         className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm uppercase transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.student_id
-                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                : "border-white/15 focus:border-[#4285F4]"
+                                            ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                            : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
                                     {errors.student_id && (
@@ -1604,8 +1604,8 @@ export function RecruitmentForm({
                                                 }
                                             }}
                                             className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.major
-                                                    ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
-                                                    : "border-white/15 focus:border-[#4285F4]"
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                                 } ${form.major ? "pr-10" : ""}`}
                                         />
 
@@ -1715,7 +1715,7 @@ export function RecruitmentForm({
                                                 Ứng tuyển Sub-Tech Lead (Web)
                                             </h4>
                                             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-2xl">
-                                                GDGoC PTIT mở cơ hội tuyển chọn <strong>Sub-Tech Lead mảng Web</strong> dành cho sinh viên có năng lực chuyên môn tốt, đam mê xây dựng sản phẩm và mong muốn dẫn dắt, định hướng kỹ thuật cho các dự án & thành viên trong CLB.
+                                                GDG on Campus: PTIT mở cơ hội tuyển chọn <strong>Sub-Tech Lead mảng Web</strong> dành cho sinh viên có năng lực chuyên môn tốt, đam mê xây dựng sản phẩm và mong muốn dẫn dắt, định hướng kỹ thuật cho các dự án & thành viên trong CLB.
                                             </p>
                                         </div>
 

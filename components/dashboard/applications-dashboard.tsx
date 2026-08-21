@@ -356,7 +356,7 @@ export function ApplicationsDashboard() {
                         <div className="flex items-center gap-2 mb-1">
                             <GoogleDots className="scale-75 origin-left" />
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                GDGoC PTIT · Tuyển quân Gen 5
+                                GDG on Campus: PTIT · Tuyển quân Gen 5
                             </span>
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">

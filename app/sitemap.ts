@@ -9,5 +9,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: "weekly",
             priority: 1,
         },
+        {
+            url: `${settings.site.url}/job-description`,
+            lastModified: new Date(),
+            changeFrequency: "weekly",
+            priority: 0.9,
+        },
     ];
 }

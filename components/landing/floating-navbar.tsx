@@ -9,12 +9,20 @@ export function FloatingNavbar() {
     const [activeSection, setActiveSection] = useState("");
 
     const navLinks = [
-        { name: "Về chúng tôi", href: "#about", id: "about" },
-        { name: "Sứ mệnh", href: "#mission", id: "mission" },
-        { name: "Ban chuyên môn", href: "#departments", id: "departments" },
+        { name: "Về chúng tôi", href: "/#about", id: "about" },
+        { name: "Sứ mệnh", href: "/#mission", id: "mission" },
+        { name: "Ban chuyên môn", href: "/#departments", id: "departments" },
     ];
 
-    const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string, isRoute?: boolean) => {
+        if (isRoute) {
+            return;
+        }
+
+        if (typeof window !== "undefined" && window.location.pathname !== "/") {
+            return;
+        }
+
         e.preventDefault();
 
         if (!id || id === "#" || id === "top") {
@@ -23,7 +31,7 @@ export function FloatingNavbar() {
             return;
         }
 
-        const targetId = id.replace("#", "");
+        const targetId = id.replace("#", "").replace("/", "");
         const elem = document.getElementById(targetId);
         if (!elem) return;
 
@@ -127,13 +135,13 @@ export function FloatingNavbar() {
                     <a
                         href="#"
                         onClick={(e) => scrollToSection(e, "top")}
-                        aria-label="GDGoC PTIT - Trang chủ"
+                        aria-label="GDG on Campus: PTIT - Trang chủ"
                         className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#00092B] rounded-lg flex items-center shrink-0 group transition-transform duration-200 hover:scale-[1.02]"
                     >
                         <div className="flex md:hidden items-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                             <Image
                                 src="/logo_small.svg"
-                                alt="GDGoC PTIT"
+                                alt="GDG on Campus: PTIT"
                                 width={1125}
                                 height={622}
                                 priority
@@ -161,7 +169,7 @@ export function FloatingNavbar() {
                                     <a
                                         key={link.id}
                                         href={link.href}
-                                        onClick={(e) => scrollToSection(e, link.id)}
+                                        onClick={(e) => scrollToSection(e, link.id, link.isRoute)}
                                         className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-all duration-300 ${isActive
                                             ? "text-white bg-[#4285F4]/25 border border-[#4285F4]/50 shadow-[0_0_12px_rgba(66,133,244,0.35)]"
                                             : "text-zinc-300 hover:text-white hover:bg-white/10"
@@ -175,7 +183,7 @@ export function FloatingNavbar() {
 
                         {/* Desktop CTA Button */}
                         <a
-                            href="#apply"
+                            href="/#apply"
                             onClick={(e) => scrollToSection(e, "apply")}
                             className="relative group inline-flex items-center justify-center px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] hover:from-[#3b78e7] hover:to-[#1765cc] rounded-full shadow-[0_0_18px_rgba(66,133,244,0.4)] hover:shadow-[0_0_24px_rgba(66,133,244,0.6)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shrink-0 border border-blue-400/30"
                         >
@@ -186,7 +194,7 @@ export function FloatingNavbar() {
                     {/* Mobile Right Group: Register Button & Hamburger Menu Button */}
                     <div className="flex md:hidden items-center gap-2">
                         <a
-                            href="#apply"
+                            href="/#apply"
                             onClick={(e) => scrollToSection(e, "apply")}
                             className="inline-flex items-center justify-center px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] rounded-full shadow-[0_0_12px_rgba(66,133,244,0.35)] active:scale-95 transition-all shrink-0 border border-blue-400/30"
                         >
@@ -223,7 +231,7 @@ export function FloatingNavbar() {
                                         href={link.href}
                                         onClick={(e) => {
                                             setMobileMenuOpen(false);
-                                            scrollToSection(e, link.id);
+                                            scrollToSection(e, link.id, link.isRoute);
                                         }}
                                         className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center justify-between ${isActive
                                             ? "text-white bg-[#4285F4]/20 border border-[#4285F4]/40 shadow-[0_0_12px_rgba(66,133,244,0.25)]"
@@ -237,7 +245,7 @@ export function FloatingNavbar() {
                             })}
                             <div className="pt-2.5 mt-1 border-t border-white/10">
                                 <a
-                                    href="#apply"
+                                    href="/#apply"
                                     onClick={(e) => {
                                         setMobileMenuOpen(false);
                                         scrollToSection(e, "apply");
