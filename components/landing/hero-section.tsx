@@ -70,15 +70,25 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
 
     return (
         <section className="relative w-full min-h-[100dvh] isolate flex items-center justify-center m-0 p-0 overflow-hidden">
-            {/* 1. Fullscreen Cover Image */}
+            {/* 1. Fullscreen Cover Image (Responsive Mobile & Desktop) */}
             <div className="absolute inset-0 z-0">
+                {/* Mobile Cover Image */}
                 <Image
-                    src="/cover.png?v=4"
+                    src="/cover_mobile.svg"
+                    alt="GDGoC PTIT Mobile Cover Banner"
+                    fill
+                    priority
+                    unoptimized
+                    className="block sm:hidden object-cover object-center w-full h-full pointer-events-none"
+                />
+                {/* Desktop Cover Image */}
+                <Image
+                    src="/cover.svg"
                     alt="GDGoC PTIT Fullscreen Cover Banner"
                     fill
                     priority
                     unoptimized
-                    className="object-cover object-center w-full h-full pointer-events-none"
+                    className="hidden sm:block object-cover object-center w-full h-full pointer-events-none"
                 />
                 {/* Subtle dark vignette for optimal text legibility */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/50 pointer-events-none" />
