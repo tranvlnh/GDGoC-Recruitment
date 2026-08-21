@@ -25,11 +25,11 @@ export function Footer() {
                             <GdgocLogo />
                         </div>
                         <p className="text-sm text-zinc-300 leading-relaxed max-w-sm">
-                            Google Developer Groups on Campus - Posts and Telecommunications Institute of Technology (GDGoC PTIT) là cộng đồng công nghệ sinh viên trực thuộc mạng lưới Google Developers toàn cầu.
+                            Google Developer Groups on Campus: Posts and Telecommunications Institute of Technology là cộng đồng công nghệ sinh viên trực thuộc mạng lưới Google Developer Groups toàn cầu.
                         </p>
                         <div className="pt-2 flex items-center gap-3">
                             <GoogleDots />
-                            <span className="text-xs text-zinc-400 font-medium">Connect • Learn • Grow</span>
+                            <span className="text-xs text-zinc-400 font-medium">Learn • Share • Connect • Grow</span>
                         </div>
                     </div>
 
@@ -40,24 +40,24 @@ export function Footer() {
                         </h4>
                         <ul className="space-y-2 text-sm text-zinc-300">
                             <li>
-                                 <a href="#about" className="hover:text-white transition-colors">
-                                     Về GDGoC PTIT
-                                 </a>
+                                <a href="#about" className="hover:text-white transition-colors">
+                                    Về chúng tôi
+                                </a>
                             </li>
                             <li>
-                                 <a href="#mission" className="hover:text-white transition-colors">
-                                     Sứ mệnh
-                                 </a>
+                                <a href="#mission" className="hover:text-white transition-colors">
+                                    Sứ mệnh
+                                </a>
                             </li>
                             <li>
-                                 <a href="#departments" className="hover:text-white transition-colors">
-                                     Ban chuyên môn
-                                 </a>
+                                <a href="#departments" className="hover:text-white transition-colors">
+                                    Ban chuyên môn
+                                </a>
                             </li>
                             <li>
-                                 <a href="#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
-                                     Đăng ký tuyển thành viên
-                                 </a>
+                                <a href="#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
+                                    Đăng ký tuyển thành viên
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -91,10 +91,10 @@ export function Footer() {
                 {/* Bottom Bar: Copyright & Disclaimer */}
                 <div className="pt-8 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-300">
                     <p>
-                        © {new Date().getFullYear()} GDGoC PTIT. All rights reserved.
+                        © {new Date().getFullYear()} GDG on Campus PTIT. All rights reserved.
                     </p>
                     <p className="text-center sm:text-right text-[11px] text-zinc-400">
-                        GDGoC PTIT is an independent student community backed by Google Developers.
+                        GDG on Campus PTIT is an independent student community backed by Google Developers.
                     </p>
                 </div>
             </div>

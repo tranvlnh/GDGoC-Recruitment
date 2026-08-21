@@ -593,7 +593,7 @@ export function RecruitmentForm({
             const successPayload = {
                 success: true,
                 applicationId: data.data?.id,
-                message: "Đơn ứng tuyển của bạn đã được gửi thành công đến GDGoC PTIT!",
+                message: "Cảm ơn bạn đã nộp đơn ứng tuyển vào GDG on Campus: PTIT! Đơn ứng tuyển của bạn đã được gửi thành công.",
                 submittedAt: new Date().toISOString(),
             };
 
@@ -667,17 +667,16 @@ export function RecruitmentForm({
             return (
                 <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
-                        <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider leading-snug">
+                        <label className="block text-sm font-semibold text-zinc-200 leading-snug">
                             {q.label} {q.required && <span className="text-[#EA4335]">*</span>}
                         </label>
                         <span
-                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${
-                                isExceeded || isUnderMin || (hasError && !isMet)
+                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded || isUnderMin || (hasError && !isMet)
                                     ? "bg-red-500/20 text-red-400 border-red-500/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
                                     : isMet && currentLen > 0
                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-bold shadow-[0_0_10px_rgba(52,168,83,0.25)]"
                                         : "bg-white/10 text-zinc-400 border-white/15"
-                            }`}
+                                }`}
                         >
                             {currentLen} / {maxReq} ký tự
                         </span>
@@ -688,11 +687,10 @@ export function RecruitmentForm({
                         placeholder="Nhập câu trả lời của bạn..."
                         value={currentText}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                            hasError || isUnderMin || isExceeded
+                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${hasError || isUnderMin || isExceeded
                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                 : "border-white/15 focus:border-[#4285F4]"
-                        }`}
+                            }`}
                     />
 
                     {hasError ? (
@@ -715,7 +713,7 @@ export function RecruitmentForm({
                 const selectedArray = (form.answers[q.id] as string[]) || [];
                 return (
                     <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                        <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider leading-snug">
+                        <label className="block text-sm font-semibold text-zinc-200 leading-snug">
                             {q.label} {q.required && <span className="text-[#EA4335]">*</span>}{" "}
                             <span className="text-[11px] font-normal lowercase text-zinc-400">
                                 (chọn một hoặc nhiều)
@@ -731,27 +729,24 @@ export function RecruitmentForm({
                                         aria-checked={checked}
                                         key={opt.id}
                                         onClick={() => handleCheckboxToggle(q.id, opt.id)}
-                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${
-                                            checked
+                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
                                                 ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
                                                 : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
-                                        }`}
+                                            }`}
                                     >
                                         <span
-                                            className={`text-xs sm:text-sm leading-snug break-words ${
-                                                checked
+                                            className={`text-xs sm:text-sm leading-snug break-words ${checked
                                                     ? "text-white font-semibold"
                                                     : "text-zinc-200 font-medium"
-                                            }`}
+                                                }`}
                                         >
                                             {opt.label}
                                         </span>
                                         <span
-                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${
-                                                checked
+                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked
                                                     ? "bg-[#4285F4] border-[#4285F4] text-white"
                                                     : "border-white/30 bg-white/5"
-                                            }`}
+                                                }`}
                                         >
                                             {checked && "✓"}
                                         </span>
@@ -766,29 +761,25 @@ export function RecruitmentForm({
                                         role="checkbox"
                                         aria-checked={otherChecked}
                                         onClick={() => handleCheckboxToggle(q.id, "__other__")}
-                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${
-                                            q.options.length % 2 === 0 ? "sm:col-span-2" : ""
-                                        } ${
-                                            otherChecked
+                                        className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
+                                            } ${otherChecked
                                                 ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
                                                 : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
-                                        }`}
+                                            }`}
                                     >
                                         <span
-                                            className={`text-xs sm:text-sm leading-snug ${
-                                                otherChecked
+                                            className={`text-xs sm:text-sm leading-snug ${otherChecked
                                                     ? "text-white font-semibold"
                                                     : "text-zinc-200 font-medium"
-                                            }`}
+                                                }`}
                                         >
                                             {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                         </span>
                                         <span
-                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${
-                                                otherChecked
+                                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked
                                                     ? "bg-[#4285F4] border-[#4285F4] text-white"
                                                     : "border-white/30 bg-white/5"
-                                            }`}
+                                                }`}
                                         >
                                             {otherChecked && "✓"}
                                         </span>
@@ -820,7 +811,7 @@ export function RecruitmentForm({
             const selectedValue = (form.answers[q.id] as string) || "";
             return (
                 <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider leading-snug">
+                    <label className="block text-sm font-semibold text-zinc-200 leading-snug">
                         {q.label} {q.required && <span className="text-[#EA4335]">*</span>}
                     </label>
                     <div
@@ -836,27 +827,24 @@ export function RecruitmentForm({
                                     aria-checked={checked}
                                     key={opt.id}
                                     onClick={() => handleAnswerChange(q.id, opt.id)}
-                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${
-                                        checked
+                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
                                             ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
                                             : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
-                                    }`}
+                                        }`}
                                 >
                                     <span
-                                        className={`text-xs sm:text-sm leading-snug break-words ${
-                                            checked
+                                        className={`text-xs sm:text-sm leading-snug break-words ${checked
                                                 ? "text-white font-semibold"
                                                 : "text-zinc-200 font-medium"
-                                        }`}
+                                            }`}
                                     >
                                         {opt.label}
                                     </span>
                                     <span
-                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
-                                            checked
+                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked
                                                 ? "border-[#4285F4] bg-[#4285F4]"
                                                 : "border-white/30 bg-white/5"
-                                        }`}
+                                            }`}
                                     >
                                         {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                                     </span>
@@ -873,29 +861,25 @@ export function RecruitmentForm({
                                     onClick={() => {
                                         handleAnswerChange(q.id, "__other__");
                                     }}
-                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${
-                                        q.options.length % 2 === 0 ? "sm:col-span-2" : ""
-                                    } ${
-                                        otherChecked
+                                    className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
+                                        } ${otherChecked
                                             ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
                                             : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
-                                    }`}
+                                        }`}
                                 >
                                     <span
-                                        className={`text-xs sm:text-sm leading-snug ${
-                                            otherChecked
+                                        className={`text-xs sm:text-sm leading-snug ${otherChecked
                                                 ? "text-white font-semibold"
                                                 : "text-zinc-200 font-medium"
-                                        }`}
+                                            }`}
                                     >
                                         {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                     </span>
                                     <span
-                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
-                                            otherChecked
+                                        className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked
                                                 ? "border-[#4285F4] bg-[#4285F4]"
                                                 : "border-white/30 bg-white/5"
-                                        }`}
+                                            }`}
                                     >
                                         {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                                     </span>
@@ -938,8 +922,9 @@ export function RecruitmentForm({
                     className="object-cover object-center w-full h-full"
                     aria-hidden="true"
                 />
+
                 {/* Stardust Layers */}
-                <div className="absolute inset-0 opacity-40 mix-blend-screen">
+                <div className="absolute inset-0 opacity-45 mix-blend-screen">
                     <Image
                         src="/dust1.svg"
                         alt=""
@@ -949,7 +934,7 @@ export function RecruitmentForm({
                         aria-hidden="true"
                     />
                 </div>
-                <div className="absolute inset-0 opacity-30 mix-blend-screen scale-110">
+                <div className="absolute inset-0 opacity-35 mix-blend-screen scale-110">
                     <Image
                         src="/dust2.svg"
                         alt=""
@@ -960,20 +945,11 @@ export function RecruitmentForm({
                     />
                 </div>
 
-                {/* Sparkling 4-Point Stars */}
-                <div className="absolute top-16 right-8 sm:right-24 w-5 sm:w-7 aspect-[136/205] opacity-60 pointer-events-none animate-pulse">
+                {/* Decorative Planet Accents */}
+                {/* 1. Top-Left Planet (Planet 1 - Solar Amber Glow) */}
+                <div className="absolute top-6 sm:top-12 -left-10 sm:-left-6 md:left-4 lg:left-12 xl:left-20 w-28 sm:w-36 md:w-48 aspect-square opacity-70 md:opacity-80 pointer-events-none animate-float drop-shadow-[0_0_35px_rgba(251,188,5,0.35)]">
                     <Image
-                        src="/Star 1.svg"
-                        alt=""
-                        fill
-                        unoptimized
-                        className="object-contain"
-                        aria-hidden="true"
-                    />
-                </div>
-                <div className="absolute bottom-24 left-6 sm:left-20 w-4 sm:w-6 aspect-[136/205] opacity-50 pointer-events-none animate-pulse">
-                    <Image
-                        src="/Star 1.svg"
+                        src="/planet1.svg"
                         alt=""
                         fill
                         unoptimized
@@ -982,11 +958,106 @@ export function RecruitmentForm({
                     />
                 </div>
 
+                {/* 2. Top-Right Planet (Planet 6 - Google Red / Magenta Celestial Body) */}
+                <div className="absolute top-10 sm:top-16 -right-8 sm:right-2 md:right-8 lg:right-16 xl:right-24 w-24 sm:w-32 md:w-44 aspect-square opacity-65 md:opacity-75 pointer-events-none animate-planet-breathe drop-shadow-[0_0_30px_rgba(234,67,53,0.35)]">
+                    <Image
+                        src="/planet6.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 3. Mid-Left Planet (Planet 5 - Google Green Emerald Planet) */}
+                <div
+                    className="absolute top-1/2 -translate-y-1/2 -left-12 sm:-left-8 md:left-2 lg:left-8 w-20 sm:w-28 md:w-36 aspect-square opacity-60 md:opacity-70 pointer-events-none animate-float drop-shadow-[0_0_30px_rgba(52,168,83,0.3)]"
+                    style={{ animationDelay: "2s" }}
+                >
+                    <Image
+                        src="/planet5.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 4. Mid-Right Small Planet (Planet 3 / Cyan Moon) */}
+                <div
+                    className="absolute top-[60%] -right-6 sm:right-4 md:right-12 w-16 sm:w-24 aspect-square opacity-55 md:opacity-65 pointer-events-none animate-planet-breathe drop-shadow-[0_0_20px_rgba(66,133,244,0.3)]"
+                    style={{ animationDelay: "1.5s" }}
+                >
+                    <Image
+                        src="/planet3.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 5. Bottom-Right Ring Planet (Planet 4 - Google Blue Saturn Planet) */}
+                <div
+                    className="absolute -bottom-10 sm:-bottom-16 -right-10 sm:-right-4 md:right-6 lg:right-14 xl:right-20 w-40 sm:w-56 md:w-72 aspect-square opacity-75 md:opacity-85 pointer-events-none animate-float drop-shadow-[0_0_40px_rgba(66,133,244,0.35)]"
+                    style={{ animationDelay: "1s" }}
+                >
+                    <Image
+                        src="/planet4.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 6. Bottom-Left Minor Planet (Planet 2) */}
+                <div
+                    className="absolute -bottom-6 left-6 sm:left-16 md:left-24 w-16 sm:w-24 aspect-square opacity-50 md:opacity-60 pointer-events-none animate-planet-breathe drop-shadow-[0_0_20px_rgba(251,188,5,0.25)]"
+                    style={{ animationDelay: "2.5s" }}
+                >
+                    <Image
+                        src="/planet2.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Sparkling 4-Point Stars Array */}
+                <div className="absolute top-10 left-10 sm:left-24 w-4 sm:w-6 aspect-[136/205] opacity-60 pointer-events-none animate-pulse">
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-20 right-12 sm:right-32 w-5 sm:w-7 aspect-[136/205] opacity-70 pointer-events-none animate-pulse" style={{ animationDelay: "700ms" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-1/3 left-6 sm:left-16 w-3.5 sm:w-5 aspect-[136/205] opacity-50 pointer-events-none animate-pulse" style={{ animationDelay: "1.4s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-1/2 right-8 sm:right-20 w-4.5 sm:w-6 aspect-[136/205] opacity-65 pointer-events-none animate-pulse" style={{ animationDelay: "2.1s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-1/3 left-12 sm:left-28 w-4 sm:w-5 aspect-[136/205] opacity-55 pointer-events-none animate-pulse" style={{ animationDelay: "900ms" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-20 right-10 sm:right-28 w-5 sm:w-7 aspect-[136/205] opacity-65 pointer-events-none animate-pulse" style={{ animationDelay: "1.8s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-8 left-1/4 w-3.5 sm:w-4.5 aspect-[136/205] opacity-40 pointer-events-none animate-pulse" style={{ animationDelay: "2.6s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+
                 {/* Ambient Soft Google Color Glows */}
-                <div className="absolute top-1/4 left-1/5 -translate-y-1/2 w-96 h-96 bg-[#4285F4]/10 rounded-full blur-3xl" />
-                <div className="absolute top-1/3 right-1/5 -translate-y-1/2 w-96 h-96 bg-[#EA4335]/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#34A853]/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-[#FBBC05]/10 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/5 -translate-y-1/2 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-3xl" />
+                <div className="absolute top-1/3 right-1/5 -translate-y-1/2 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#34A853]/15 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-[#FBBC05]/15 rounded-full blur-3xl" />
 
                 {/* Continuous vignette overlay */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
@@ -1037,7 +1108,18 @@ export function RecruitmentForm({
                 ) : submitResult?.success ? (
                     /* Enhanced Success Screen with Recruitment Roadmap */
                     <div className="relative rounded-3xl p-8 sm:p-12 bg-white/[0.04] border border-emerald-500/40 backdrop-blur-xl shadow-[0_0_60px_rgba(52,168,83,0.15)] space-y-8 animate-in zoom-in-95 duration-300 overflow-hidden">
-                        <div className="text-center space-y-3">
+                        {/* Decorative subtle stars in success card */}
+                        <div className="absolute top-6 left-8 w-4 h-6 opacity-60 pointer-events-none animate-pulse">
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+                        <div className="absolute top-8 right-10 w-5 h-7 opacity-70 pointer-events-none animate-pulse" style={{ animationDelay: "1s" }}>
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+                        <div className="absolute bottom-6 right-12 w-3.5 h-5 opacity-40 pointer-events-none animate-pulse" style={{ animationDelay: "1.8s" }}>
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+
+                        <div className="text-center space-y-3 relative z-10">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(52,168,83,0.35)]">
                                 <CheckCircleIcon className="w-10 h-10 sm:w-12 sm:h-12" />
                             </div>
@@ -1046,7 +1128,7 @@ export function RecruitmentForm({
                                 Nộp đơn ứng tuyển thành công!
                             </h3>
                             <p className="text-sm sm:text-base text-zinc-300 max-w-lg mx-auto leading-relaxed">
-                                Chúc mừng bạn đã hoàn thành đơn ứng tuyển vào GDGoC PTIT Gen 5. Ban điều hành đã tiếp nhận hồ sơ của bạn.
+                                Cảm ơn bạn đã nộp đơn ứng tuyển vào GDG on Campus: PTIT Gen 5. Ban điều hành đã tiếp nhận hồ sơ của bạn.
                             </p>
                         </div>
 
@@ -1155,7 +1237,7 @@ export function RecruitmentForm({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {/* Full Name */}
                                 <div className="space-y-1.5" id={`${formId}-full_name`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Họ và tên <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1172,11 +1254,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                            errors.full_name
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.full_name
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.full_name && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1188,7 +1269,7 @@ export function RecruitmentForm({
 
                                 {/* Email */}
                                 <div className="space-y-1.5" id={`${formId}-email`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Email <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1205,11 +1286,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                            errors.email
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.email
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.email && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1221,7 +1301,7 @@ export function RecruitmentForm({
 
                                 {/* Phone */}
                                 <div className="space-y-1.5" id={`${formId}-phone`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Số điện thoại <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1238,11 +1318,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                            errors.phone
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.phone
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.phone && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1254,7 +1333,7 @@ export function RecruitmentForm({
 
                                 {/* Facebook URL */}
                                 <div className="space-y-1.5" id={`${formId}-facebook_url`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Link Facebook cá nhân <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1271,11 +1350,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                            errors.facebook_url
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.facebook_url
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.facebook_url && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1287,7 +1365,7 @@ export function RecruitmentForm({
 
                                 {/* Date of Birth */}
                                 <div className="space-y-1.5" id={`${formId}-date_of_birth`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Ngày sinh <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1303,11 +1381,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark] ${
-                                            errors.date_of_birth
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark] ${errors.date_of_birth
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.date_of_birth && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1319,7 +1396,7 @@ export function RecruitmentForm({
 
                                 {/* Gender */}
                                 <div className="space-y-1.5" id={`${formId}-gender`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Giới tính <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <select
@@ -1354,7 +1431,7 @@ export function RecruitmentForm({
 
                             {/* Department Interactive Visual Radio Cards */}
                             <div className="space-y-2.5" id={`${formId}-department`}>
-                                <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                     Chọn Ban chuyên môn ứng tuyển <span className="text-[#EA4335]">*</span>
                                 </label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Ban chuyên môn">
@@ -1435,7 +1512,7 @@ export function RecruitmentForm({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                                 {/* University */}
                                 <div className="space-y-1.5 sm:col-span-2" id={`${formId}-university`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Trường <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1454,7 +1531,7 @@ export function RecruitmentForm({
 
                                 {/* Student ID */}
                                 <div className="space-y-1.5" id={`${formId}-student_id`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Mã sinh viên <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
@@ -1471,11 +1548,10 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm uppercase transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                            errors.student_id
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm uppercase transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.student_id
                                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                 : "border-white/15 focus:border-[#4285F4]"
-                                        }`}
+                                            }`}
                                     />
                                     {errors.student_id && (
                                         <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
@@ -1487,7 +1563,7 @@ export function RecruitmentForm({
 
                                 {/* Student Year */}
                                 <div className="space-y-1.5" id={`${formId}-student_year`}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Sinh viên năm <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <select
@@ -1505,7 +1581,7 @@ export function RecruitmentForm({
 
                                 {/* Major Input with Autocomplete Suggestions */}
                                 <div className="space-y-1.5 sm:col-span-2 relative" id={`${formId}-major`} ref={majorContainerRef}>
-                                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
                                         Ngành học <span className="text-[#EA4335]">*</span>
                                     </label>
 
@@ -1528,11 +1604,10 @@ export function RecruitmentForm({
                                                     });
                                                 }
                                             }}
-                                            className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                                                errors.major
+                                            className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.major
                                                     ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                                     : "border-white/15 focus:border-[#4285F4]"
-                                            } ${form.major ? "pr-10" : ""}`}
+                                                } ${form.major ? "pr-10" : ""}`}
                                         />
 
                                         {form.major && (
@@ -1573,9 +1648,8 @@ export function RecruitmentForm({
                                                                 });
                                                             }
                                                         }}
-                                                        className={`w-full text-left px-4 py-2.5 text-xs sm:text-sm flex items-center justify-between hover:bg-[#4285F4]/20 transition-colors cursor-pointer ${
-                                                            isSelected ? "bg-[#4285F4]/30 font-bold text-[#4285F4]" : "text-zinc-200"
-                                                        }`}
+                                                        className={`w-full text-left px-4 py-2.5 text-xs sm:text-sm flex items-center justify-between hover:bg-[#4285F4]/20 transition-colors cursor-pointer ${isSelected ? "bg-[#4285F4]/30 font-bold text-[#4285F4]" : "text-zinc-200"
+                                                            }`}
                                                     >
                                                         <span className="leading-snug">{m.label}</span>
                                                         {isSelected && <span className="text-[#4285F4] font-bold text-xs shrink-0 ml-2">✓</span>}
