@@ -1,14 +1,14 @@
 [
   {
     "id": "tech",
-    "name": "Ban Kỹ Thuật",
+    "name": "Ban Chuyên Môn",
     "englishName": "Technical",
     "tag": "Technical",
     "desc": "Nghiên cứu công nghệ mới, xây dựng và phát triển sản phẩm thực tế, cùng đồng đội chinh phục các giải đấu, cuộc thi về công nghệ.",
     "themeColor": "#4285F4",
     "colorPreset": "blue",
     "svgImage": "/tech.svg",
-    "svgAlt": "Ban Kỹ Thuật Mascot",
+    "svgAlt": "Ban Chuyên Môn Mascot",
     "icon": "code",
     "roles": [
       "Phát triển Web/App, Game & ứng dụng AI/ML",
