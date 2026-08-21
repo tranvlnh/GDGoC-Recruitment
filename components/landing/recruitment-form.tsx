@@ -39,6 +39,8 @@ type FormState = {
     otherTexts: Record<string, string>;
 };
 
+const STORAGE_KEY = "gdgoc_recruitment_form_draft";
+
 export function RecruitmentForm({
     departments,
     majors,
@@ -51,6 +53,7 @@ export function RecruitmentForm({
 }: RecruitmentFormProps) {
     const defaultUniversity = "Học viện Công nghệ Bưu chính Viễn thông";
     const formId = useId();
+    const [isDraftRestored, setIsDraftRestored] = useState(false);
 
     const buildDefaultAnswers = (qs: Question[]) => {
         const initial: Record<string, string | string[]> = {};
@@ -100,6 +103,71 @@ export function RecruitmentForm({
         applicationId?: string;
         message?: string;
     } | null>(null);
+
+    // When department or student year changes, reset non-applicable answers
+    const prevDeptRef = useRef(form.department);
+    const prevYearRef = useRef(form.student_year);
+
+    // Restore draft from localStorage on initial client mount
+    useEffect(() => {
+        try {
+            const savedDraft = localStorage.getItem(STORAGE_KEY);
+            if (savedDraft) {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed && typeof parsed === "object") {
+                    const restoredAnswers = {
+                        ...buildDefaultAnswers(questions),
+                        ...(parsed.answers && typeof parsed.answers === "object" ? parsed.answers : {}),
+                    };
+                    const restoredOtherTexts = {
+                        ...buildDefaultOtherTexts(questions),
+                        ...(parsed.otherTexts && typeof parsed.otherTexts === "object" ? parsed.otherTexts : {}),
+                    };
+
+                    const restoredDept =
+                        parsed.department && departments.some((d) => d.id === parsed.department)
+                            ? parsed.department
+                            : departments[0]?.id ?? "tech";
+
+                    prevDeptRef.current = restoredDept;
+                    if (parsed.student_year) {
+                        prevYearRef.current = parsed.student_year;
+                    }
+
+                    setForm((prev) => ({
+                        ...prev,
+                        full_name: typeof parsed.full_name === "string" ? parsed.full_name : prev.full_name,
+                        email: typeof parsed.email === "string" ? parsed.email : prev.email,
+                        phone: typeof parsed.phone === "string" ? parsed.phone : prev.phone,
+                        facebook_url: typeof parsed.facebook_url === "string" ? parsed.facebook_url : prev.facebook_url,
+                        student_year: typeof parsed.student_year === "string" ? parsed.student_year : prev.student_year,
+                        student_id: typeof parsed.student_id === "string" ? parsed.student_id : prev.student_id,
+                        date_of_birth: typeof parsed.date_of_birth === "string" ? parsed.date_of_birth : prev.date_of_birth,
+                        university: typeof parsed.university === "string" ? parsed.university : prev.university,
+                        department: restoredDept,
+                        gender: parsed.gender ?? prev.gender,
+                        major: typeof parsed.major === "string" ? parsed.major : prev.major,
+                        answers: restoredAnswers,
+                        otherTexts: restoredOtherTexts,
+                    }));
+                }
+            }
+        } catch (e) {
+            console.warn("Could not restore recruitment form draft from localStorage:", e);
+        } finally {
+            setIsDraftRestored(true);
+        }
+    }, [departments, questions]);
+
+    // Save draft to localStorage whenever form changes (after draft is restored and if not successfully submitted)
+    useEffect(() => {
+        if (!isDraftRestored || submitResult?.success) return;
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+        } catch (e) {
+            console.warn("Could not save recruitment form draft to localStorage:", e);
+        }
+    }, [form, isDraftRestored, submitResult?.success]);
 
     const studentYearNum = parseInt(form.student_year, 10) || 1;
     const isSubTechLeadEligible = form.department === "tech" && studentYearNum >= 2;
@@ -159,10 +227,6 @@ export function RecruitmentForm({
             ].sort((a, b) => a.order - b.order),
         [commonQuestions, regularDeptQuestions, subTechLeadQuestions],
     );
-
-    // When department or student year changes, reset non-applicable answers
-    const prevDeptRef = useRef(form.department);
-    const prevYearRef = useRef(form.student_year);
 
     useEffect(() => {
         const deptChanged = prevDeptRef.current !== form.department;
@@ -513,6 +577,12 @@ export function RecruitmentForm({
             }
 
             // Success!
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (e) {
+                console.warn("Could not clear recruitment form draft from localStorage:", e);
+            }
+
             setSubmitResult({
                 success: true,
                 applicationId: data.data?.id,
@@ -792,10 +862,10 @@ export function RecruitmentForm({
                 {/* Section Header */}
                 <div className="text-center space-y-4">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-[#4285F4] uppercase tracking-wider">
-                        Đăng ký ứng tuyển • Recruitment Form
+                        Đăng ký ứng tuyển
                     </div>
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
-                        Gia nhập đại gia đình GDGoC PTIT Gen 5
+                        Gia nhập đại gia đình GDG on Campus: PTIT
                     </h2>
                     <p className="text-base text-zinc-600 max-w-xl mx-auto font-normal">
                         Hãy điền đầy đủ và chính xác thông tin dưới đây để ban điều hành có thể kết nối và trao đổi với bạn sớm nhất.
@@ -861,6 +931,11 @@ export function RecruitmentForm({
                                 type="button"
                                 onClick={() => {
                                     setSubmitResult(null);
+                                    try {
+                                        localStorage.removeItem(STORAGE_KEY);
+                                    } catch (e) {
+                                        console.warn("Could not clear draft from localStorage:", e);
+                                    }
                                     setForm({
                                         full_name: "",
                                         email: "",
