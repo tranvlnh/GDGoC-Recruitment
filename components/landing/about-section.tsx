@@ -41,7 +41,7 @@ export function AboutSection() {
                 </div>
 
                 {/* Unified continuous vignette matching Hero and Mission */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/35 via-black/15 to-black/35" />
 
                 {/* Decorative Planet Accents (placed on margins behind content) */}
                 {/* Top-Left Planet (Planet 6 - Magenta / Pink) - positioned closer to text */}
@@ -69,7 +69,7 @@ export function AboutSection() {
                 </div>
 
                 {/* Sparkling 4-Point Stars */}
-                <div className="absolute top-12 right-10 sm:right-20 md:right-32 w-5 sm:w-7 aspect-[136/205] opacity-60 pointer-events-none animate-pulse">
+                <div className="absolute top-12 right-10 sm:right-20 md:right-32 w-5 sm:w-7 aspect-136/205 opacity-60 pointer-events-none animate-pulse">
                     <Image
                         src="/Star 1.svg"
                         alt=""
@@ -79,7 +79,7 @@ export function AboutSection() {
                         aria-hidden="true"
                     />
                 </div>
-                <div className="absolute bottom-16 left-8 sm:left-16 md:left-28 w-4 sm:w-6 aspect-[136/205] opacity-50 pointer-events-none animate-pulse">
+                <div className="absolute bottom-16 left-8 sm:left-16 md:left-28 w-4 sm:w-6 aspect-136/205 opacity-50 pointer-events-none animate-pulse">
                     <Image
                         src="/Star 1.svg"
                         alt=""
@@ -110,7 +110,7 @@ export function AboutSection() {
                 {/* Structured 2-Card Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                     {/* Card 1: Về Google Developer Groups - On Campus */}
-                    <div className="group relative rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-[#4285F4]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
+                    <div className="group relative rounded-2xl bg-white/4 hover:bg-white/[0.07] border border-white/10 hover:border-[#4285F4]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
                         <div className="flex items-center gap-2.5">
                             <span className="w-2.5 h-2.5 rounded-full bg-[#4285F4] shadow-[0_0_10px_#4285F4]" />
                             <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
@@ -123,7 +123,7 @@ export function AboutSection() {
                     </div>
 
                     {/* Card 2: Về GDG on Campus: PTIT */}
-                    <div className="group relative rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-[#EA4335]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
+                    <div className="group relative rounded-2xl bg-white/4 hover:bg-white/[0.07] border border-white/10 hover:border-[#EA4335]/50 p-6 sm:p-8 backdrop-blur-md transition-all duration-300 shadow-xl flex flex-col justify-start space-y-3.5">
                         <div className="flex items-center gap-2.5">
                             <span className="w-2.5 h-2.5 rounded-full bg-[#EA4335] shadow-[0_0_10px_#EA4335]" />
                             <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">

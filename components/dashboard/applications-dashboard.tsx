@@ -108,6 +108,10 @@ export function ApplicationsDashboard() {
                 setError(body.error ?? "Không thể tải dữ liệu");
                 return;
             }
+            if (body.totalPages && targetPage > body.totalPages) {
+                setPage(body.totalPages);
+                return;
+            }
             setResult(body);
         } catch {
             setLoading(false);
@@ -195,19 +199,74 @@ export function ApplicationsDashboard() {
         }
     }
 
+    const [lastKnownIndex, setLastKnownIndex] = useState<number>(-1);
+
     // Next / Previous application switcher for Modal
-    const currentIndex = result?.data.findIndex(
+    const foundIndex = result?.data.findIndex(
         (item) => item.id === selectedApplication?.id,
     ) ?? -1;
 
+    useEffect(() => {
+        if (foundIndex >= 0) {
+            setLastKnownIndex(foundIndex);
+        }
+    }, [foundIndex]);
+
+    const hasPrev = Boolean(
+        result &&
+        (foundIndex >= 0
+            ? foundIndex > 0
+            : lastKnownIndex - 1 >= 0 && lastKnownIndex - 1 < result.data.length),
+    );
+
+    const hasNext = Boolean(
+        result &&
+        (foundIndex >= 0
+            ? foundIndex < result.data.length - 1
+            : lastKnownIndex >= 0 && lastKnownIndex < result.data.length),
+    );
+
     const handlePrevCandidate = () => {
-        if (!result || currentIndex <= 0) return;
-        setSelectedApplication(result.data[currentIndex - 1]);
+        if (!result) return;
+        if (foundIndex > 0) {
+            setSelectedApplication(result.data[foundIndex - 1]);
+            setLastKnownIndex(foundIndex - 1);
+        } else if (
+            foundIndex === -1 &&
+            lastKnownIndex - 1 >= 0 &&
+            lastKnownIndex - 1 < result.data.length
+        ) {
+            setSelectedApplication(result.data[lastKnownIndex - 1]);
+            setLastKnownIndex(lastKnownIndex - 1);
+        }
     };
 
     const handleNextCandidate = () => {
-        if (!result || currentIndex < 0 || currentIndex >= result.data.length - 1) return;
-        setSelectedApplication(result.data[currentIndex + 1]);
+        if (!result) return;
+        if (foundIndex >= 0 && foundIndex < result.data.length - 1) {
+            setSelectedApplication(result.data[foundIndex + 1]);
+            setLastKnownIndex(foundIndex + 1);
+        } else if (
+            foundIndex === -1 &&
+            lastKnownIndex >= 0 &&
+            lastKnownIndex < result.data.length
+        ) {
+            setSelectedApplication(result.data[lastKnownIndex]);
+            setLastKnownIndex(lastKnownIndex);
+        }
+    };
+
+    const handleViewApplication = (application: Application) => {
+        const idx = result?.data.findIndex((item) => item.id === application.id) ?? -1;
+        if (idx >= 0) {
+            setLastKnownIndex(idx);
+        }
+        setSelectedApplication(application);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedApplication(null);
+        setLastKnownIndex(-1);
     };
 
     const stats: DashboardStats = result?.stats || {
@@ -610,7 +669,7 @@ export function ApplicationsDashboard() {
                                             application={application}
                                             actionLoading={actionLoadingId === application.id}
                                             onStatus={setApplicationStatus}
-                                            onView={setSelectedApplication}
+                                            onView={handleViewApplication}
                                         />
                                     ))
                                 ) : (
@@ -635,7 +694,7 @@ export function ApplicationsDashboard() {
                                     application={application}
                                     actionLoading={actionLoadingId === application.id}
                                     onStatus={setApplicationStatus}
-                                    onView={setSelectedApplication}
+                                    onView={handleViewApplication}
                                 />
                             ))
                         ) : (
@@ -691,11 +750,12 @@ export function ApplicationsDashboard() {
             {selectedApplication && (
                 <ApplicationModal
                     application={selectedApplication}
-                    hasPrev={currentIndex > 0}
-                    hasNext={result ? currentIndex < result.data.length - 1 : false}
+                    hasPrev={hasPrev}
+                    hasNext={hasNext}
+                    actionLoading={actionLoadingId === selectedApplication.id}
                     onPrev={handlePrevCandidate}
                     onNext={handleNextCandidate}
-                    onClose={() => setSelectedApplication(null)}
+                    onClose={handleCloseModal}
                     onStatus={setApplicationStatus}
                     onToast={addToast}
                 />
@@ -838,24 +898,50 @@ function ApplicationRow({
                     >
                         Chi tiết
                     </button>
-                    <button
-                        type="button"
-                        disabled={application.status === "approved" || actionLoading}
-                        onClick={() => onStatus(application, "approved")}
-                        className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
-                        title="Duyệt hồ sơ"
-                    >
-                        Duyệt
-                    </button>
-                    <button
-                        type="button"
-                        disabled={application.status === "rejected" || actionLoading}
-                        onClick={() => onStatus(application, "rejected")}
-                        className="rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-50 hover:border-rose-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
-                        title="Từ chối hồ sơ"
-                    >
-                        Từ chối
-                    </button>
+                    {application.status === "pending" && (
+                        <>
+                            <button
+                                type="button"
+                                disabled={actionLoading}
+                                onClick={() => onStatus(application, "approved")}
+                                className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                title="Duyệt hồ sơ"
+                            >
+                                Duyệt
+                            </button>
+                            <button
+                                type="button"
+                                disabled={actionLoading}
+                                onClick={() => onStatus(application, "rejected")}
+                                className="rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-50 hover:border-rose-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                title="Từ chối hồ sơ"
+                            >
+                                Từ chối
+                            </button>
+                        </>
+                    )}
+                    {application.status === "approved" && (
+                        <button
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={() => onStatus(application, "rejected")}
+                            className="rounded-lg border border-rose-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-50 hover:border-rose-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Chuyển sang Từ chối"
+                        >
+                            Từ chối
+                        </button>
+                    )}
+                    {application.status === "rejected" && (
+                        <button
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={() => onStatus(application, "approved")}
+                            className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Duyệt hồ sơ"
+                        >
+                            Duyệt
+                        </button>
+                    )}
                 </div>
             </td>
         </tr>
@@ -888,35 +974,33 @@ function ApplicationMobileCard({
         );
 
     return (
-        <div className="p-4 space-y-3">
-            <div className="flex items-start justify-between gap-2">
+        <div className="p-4 space-y-3 bg-white hover:bg-slate-50/50 transition-colors">
+            <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-[#4285F4]">
                         {initials}
                     </div>
                     <div>
-                        <button
-                            type="button"
-                            onClick={() => onView(application)}
-                            className="font-semibold text-slate-900 hover:text-[#4285F4] text-left"
-                        >
+                        <div className="font-semibold text-slate-900 leading-snug">
                             {application.full_name}
-                        </button>
-                        <div className="text-xs text-slate-500">{application.email}</div>
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                            {application.email}
+                        </div>
                     </div>
                 </div>
                 <StatusBadge status={application.status} />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 <DepartmentBadge department={application.department} />
                 {isSubTechLead && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
-                        ⚡ Sub-Tech Lead
+                    <span className="inline-flex items-center gap-0.5 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-[#4285F4] border border-blue-200">
+                        ⚡ Sub-Lead
                     </span>
                 )}
                 <span
-                    className="rounded-md bg-slate-100 px-2 py-0.5 text-slate-600 break-words max-w-full leading-relaxed"
+                    className="truncate text-slate-600 max-w-[200px]"
                     title={majorLabel(application.major)}
                 >
                     {majorLabel(application.major)} (Năm {application.student_year})
@@ -938,22 +1022,46 @@ function ApplicationMobileCard({
                     >
                         Chi tiết
                     </button>
-                    <button
-                        type="button"
-                        disabled={application.status === "approved" || actionLoading}
-                        onClick={() => onStatus(application, "approved")}
-                        className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-30"
-                    >
-                        Duyệt
-                    </button>
-                    <button
-                        type="button"
-                        disabled={application.status === "rejected" || actionLoading}
-                        onClick={() => onStatus(application, "rejected")}
-                        className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-30"
-                    >
-                        Loại
-                    </button>
+                    {application.status === "pending" && (
+                        <>
+                            <button
+                                type="button"
+                                disabled={actionLoading}
+                                onClick={() => onStatus(application, "approved")}
+                                className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                            >
+                                Duyệt
+                            </button>
+                            <button
+                                type="button"
+                                disabled={actionLoading}
+                                onClick={() => onStatus(application, "rejected")}
+                                className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50"
+                            >
+                                Từ chối
+                            </button>
+                        </>
+                    )}
+                    {application.status === "approved" && (
+                        <button
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={() => onStatus(application, "rejected")}
+                            className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50"
+                        >
+                            Từ chối
+                        </button>
+                    )}
+                    {application.status === "rejected" && (
+                        <button
+                            type="button"
+                            disabled={actionLoading}
+                            onClick={() => onStatus(application, "approved")}
+                            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                            Duyệt
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
@@ -1061,6 +1169,7 @@ function ApplicationModal({
     application,
     hasPrev,
     hasNext,
+    actionLoading,
     onPrev,
     onNext,
     onClose,
@@ -1070,6 +1179,7 @@ function ApplicationModal({
     application: Application;
     hasPrev: boolean;
     hasNext: boolean;
+    actionLoading?: boolean;
     onPrev: () => void;
     onNext: () => void;
     onClose: () => void;
@@ -1248,24 +1358,68 @@ function ApplicationModal({
                     </div>
 
                     <div className="flex items-center gap-2">
-                        {application.status === "pending" && (
-                            <div className="flex items-center gap-1.5 mr-2">
+                        <div className="flex items-center gap-1.5 mr-2">
+                            {application.status === "pending" && (
+                                <>
+                                    <button
+                                        type="button"
+                                        disabled={actionLoading}
+                                        onClick={() => onStatus(application, "approved")}
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {actionLoading ? (
+                                            <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                        ) : null}
+                                        <span>Duyệt</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={actionLoading}
+                                        onClick={() => onStatus(application, "rejected")}
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <span>Từ chối</span>
+                                    </button>
+                                </>
+                            )}
+                            {application.status === "approved" && (
                                 <button
                                     type="button"
-                                    onClick={() => onStatus(application, "approved")}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors cursor-pointer"
-                                >
-                                    <span>Duyệt</span>
-                                </button>
-                                <button
-                                    type="button"
+                                    disabled={actionLoading}
                                     onClick={() => onStatus(application, "rejected")}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer"
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Chuyển sang Từ chối"
                                 >
+                                    {actionLoading ? (
+                                        <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    ) : null}
                                     <span>Từ chối</span>
                                 </button>
-                            </div>
-                        )}
+                            )}
+                            {application.status === "rejected" && (
+                                <button
+                                    type="button"
+                                    disabled={actionLoading}
+                                    onClick={() => onStatus(application, "approved")}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Duyệt hồ sơ"
+                                >
+                                    {actionLoading ? (
+                                        <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    ) : null}
+                                    <span>Duyệt</span>
+                                </button>
+                            )}
+                        </div>
 
                         <div className="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5">
                             <button
