@@ -10,8 +10,7 @@ export function FloatingNavbar() {
 
     const navLinks = [
         { name: "Về GDGoC", href: "#about", id: "about" },
-        { name: "Hoạt động", href: "#activities", id: "activities" },
-        { name: "Sứ mệnh", href: "#mission", id: "mission" },
+        { name: "Sứ mệnh & Hoạt động", href: "#activities", id: "activities" },
         { name: "Ban chuyên môn", href: "#departments", id: "departments" },
     ];
 
@@ -32,7 +31,7 @@ export function FloatingNavbar() {
             }
 
             // Check sections from bottom to top so the lowest currently visible section wins
-            const sectionIds = ["departments", "mission", "activities", "about"];
+            const sectionIds = ["departments", "activities", "about"];
             let current = "";
 
             for (const id of sectionIds) {

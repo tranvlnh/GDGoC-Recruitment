@@ -2,142 +2,127 @@ import React from "react";
 import {
     GoogleDots,
     CodeIcon,
-    GlobeIcon,
-    RocketIcon,
+    MegaphoneIcon,
     UsersIcon,
+    RocketIcon,
 } from "./google-icons";
 
 export function MissionGoalsSection() {
     const pillars = [
         {
             num: "01",
-            title: "Nâng cao năng lực\nthực chiến",
-            english: "Tech Excellence",
-            desc: "Trang bị kỹ năng lập trình thực tế qua hệ sinh thái Google (AI, Cloud, Flutter, Web) và Google Solution Challenge.",
+            name: "Learn",
+            tagline: "Học hỏi & Thực chiến",
+            desc: "Làm chủ AI, Cloud, Web & Mobile qua hệ sinh thái Google và các dự án thực tế.",
             color: "#4285F4",
-            border: "border-blue-200/80 hover:border-[#4285F4]",
-            badge: "bg-blue-50 text-[#1a73e8] border-blue-200",
+            topBorder: "border-t-[#4285F4]",
+            iconBg: "bg-blue-50 text-[#1a73e8]",
             icon: CodeIcon,
-            points: [
-                "Dự án thực tế (Project-based)",
-                "Tiếp cận Google Cloud & Gemini",
-            ],
+            tags: ["Gemini & Cloud", "Solution Challenge"],
         },
         {
             num: "02",
-            title: "Cầu nối chuyên gia\n& Doanh nghiệp",
-            english: "Industry Network",
-            desc: "Mở rộng cơ hội giao lưu, thực tập và việc làm qua mạng lưới Google Developer Groups (GDG) và đối tác công nghệ.",
+            name: "Share",
+            tagline: "Chia sẻ & Lan tỏa",
+            desc: "Lan tỏa tri thức qua Tech Talk, Workshop và các giải pháp công nghệ vì cộng đồng.",
             color: "#EA4335",
-            border: "border-red-200/80 hover:border-[#EA4335]",
-            badge: "bg-red-50 text-[#d93025] border-red-200",
-            icon: GlobeIcon,
-            points: [
-                "Tech Talk cùng chuyên gia GDG",
-                "Cố vấn định hướng nghề nghiệp",
-            ],
+            topBorder: "border-t-[#EA4335]",
+            iconBg: "bg-red-50 text-[#d93025]",
+            icon: MegaphoneIcon,
+            tags: ["Tech Talk & Workshop", "Tech for Good"],
         },
         {
             num: "03",
-            title: "Kiến tạo giải pháp\ntác động xã hội",
-            english: "Social Impact",
-            desc: "Khuyến khích sinh viên sáng tạo các sản phẩm công nghệ hữu ích giải quyết bài toán thực tế vì cộng đồng (Tech for Good).",
+            name: "Connect",
+            tagline: "Kết nối & Mở rộng",
+            desc: "Giao lưu mạng lưới GDG toàn cầu, kết nối chuyên gia GDE và cơ hội thực tập.",
             color: "#FBBC05",
-            border: "border-amber-200/80 hover:border-[#FBBC05]",
-            badge: "bg-amber-50 text-[#b06000] border-amber-200",
-            icon: RocketIcon,
-            points: [
-                "Giải pháp vì cộng đồng (SDGs)",
-                "Ươm mầm ý tưởng khởi nghiệp",
-            ],
+            topBorder: "border-t-[#FBBC05]",
+            iconBg: "bg-amber-50 text-[#b06000]",
+            icon: UsersIcon,
+            tags: ["GDG Network", "Mentorship"],
         },
         {
             num: "04",
-            title: "Xây dựng văn hóa\nđa dạng & hòa nhập",
-            english: "Inclusive Community",
-            desc: "Xây dựng môi trường bình đẳng, cởi mở và gắn kết, nơi mọi ý tưởng sáng tạo đều được tôn trọng và phát triển.",
+            name: "Grow",
+            tagline: "Bứt phá & Phát triển",
+            desc: "Rèn luyện tư duy lãnh đạo, kỹ năng mềm và sẵn sàng hội nhập môi trường toàn cầu.",
             color: "#34A853",
-            border: "border-emerald-200/80 hover:border-[#34A853]",
-            badge: "bg-emerald-50 text-[#188038] border-emerald-200",
-            icon: UsersIcon,
-            points: [
-                "Văn hóa hòa đồng cởi mở",
-                "Trao đổi và sẻ chia kiến thức",
-            ],
+            topBorder: "border-t-[#34A853]",
+            iconBg: "bg-emerald-50 text-[#188038]",
+            icon: RocketIcon,
+            tags: ["Leadership", "Global Mindset"],
         },
     ];
 
     return (
-        <section id="mission" className="py-16 sm:py-20 bg-white relative scroll-mt-20 border-y border-zinc-200/70">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
+        <section id="mission" className="py-12 sm:py-16 bg-white relative scroll-mt-20 border-y border-zinc-200/70">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 sm:space-y-10">
 
                 {/* 1. Header & Central Mission Statement */}
-                <div className="max-w-3xl mx-auto text-center space-y-3.5">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-100 border border-zinc-200/80 text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                <div className="max-w-3xl mx-auto text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200/80 text-[11px] font-bold text-zinc-700 uppercase tracking-wider">
                         <GoogleDots className="shrink-0" />
-                        <span>Sứ mệnh cốt lõi • Our Mission</span>
+                        <span>Sứ mệnh cốt lõi</span>
+                        <GoogleDots className="shrink-0" />
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight leading-snug">
-                        &ldquo;Thu hẹp khoảng cách giữa lý thuyết giảng đường và công nghệ thực tiễn thế giới.&rdquo;
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-zinc-900 tracking-tight leading-snug">
+                        &ldquo;Thu hẹp khoảng cách giữa giảng đường và công nghệ thực tiễn thế giới.&rdquo;
                     </h2>
-
-                    <p className="text-sm sm:text-base text-zinc-600 leading-relaxed max-w-2xl mx-auto font-normal">
-                        GDGoC PTIT là bệ phóng giúp sinh viên làm chủ công nghệ mới, cọ xát với các chuẩn mực toàn cầu của Google và sẵn sàng bứt phá trong sự nghiệp.
-                    </p>
                 </div>
 
-                {/* 2. 4 Google-Themed Strategic Pillars Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
+                {/* 2. 4 Google-Themed Strategic Pillars Grid: Learn, Share, Connect, Grow */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch">
                     {pillars.map((pillar) => {
                         const IconComponent = pillar.icon;
                         return (
                             <div
                                 key={pillar.num}
-                                className={`rounded-2xl p-5 sm:p-6 bg-zinc-50/70 border ${pillar.border} transition-all duration-200 hover:bg-white hover:shadow-md hover:-translate-y-0.5 flex flex-col justify-between`}
+                                className={`rounded-xl sm:rounded-2xl p-4 sm:p-5 bg-white border border-zinc-200/90 ${pillar.topBorder} border-t-4 transition-all duration-200 hover:shadow-md hover:border-zinc-300 flex flex-col justify-between`}
                             >
-                                <div className="space-y-4">
+                                <div>
                                     {/* Card Top: Icon & Number Badge */}
                                     <div className="flex items-center justify-between">
                                         <div
-                                            className="w-10 h-10 rounded-xl text-white flex items-center justify-center shadow-xs"
-                                            style={{ backgroundColor: pillar.color }}
+                                            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${pillar.iconBg}`}
                                         >
-                                            <IconComponent className="w-5 h-5" />
+                                            <IconComponent className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                                         </div>
-                                        <span className={`px-2 py-0.5 rounded-md text-xs font-mono font-bold border ${pillar.badge}`}>
+                                        <span className="text-xs font-mono font-bold text-zinc-400">
                                             {pillar.num}
                                         </span>
                                     </div>
 
-                                    {/* Title & Subtitle: Unified Height for Perfect Horizontal Alignment */}
-                                    <div className="min-h-[58px] flex flex-col justify-start">
-                                        <h3 className="text-base font-bold text-zinc-900 leading-snug whitespace-pre-line">
-                                            {pillar.title}
+                                    {/* Title & Tagline */}
+                                    <div className="mt-3">
+                                        <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
+                                            {pillar.name}
                                         </h3>
-                                        <span className="text-[11px] font-semibold text-zinc-500 block mt-1">
-                                            {pillar.english}
-                                        </span>
+                                        <p className="text-xs font-semibold text-zinc-500 mt-0.5">
+                                            {pillar.tagline}
+                                        </p>
                                     </div>
 
-                                    {/* Description: Unified Min-Height for Consistent Baseline */}
-                                    <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed min-h-[76px] sm:min-h-[84px]">
+                                    {/* Description */}
+                                    <p className="text-xs text-zinc-600 leading-relaxed mt-2">
                                         {pillar.desc}
                                     </p>
                                 </div>
 
-                                {/* Key Bullet Points: Aligned Bottom Strip */}
-                                <div className="pt-4 mt-4 border-t border-zinc-200/70 space-y-2">
-                                    {pillar.points.map((pt, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 text-xs text-zinc-600">
+                                {/* Compact Highlight Badges */}
+                                <div className="pt-3 mt-3.5 border-t border-zinc-100 flex flex-wrap gap-1.5">
+                                    {pillar.tags.map((tag, idx) => (
+                                        <span
+                                            key={idx}
+                                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-zinc-50 text-zinc-700 border border-zinc-200/70"
+                                        >
                                             <span
                                                 className="w-1.5 h-1.5 rounded-full shrink-0"
                                                 style={{ backgroundColor: pillar.color }}
                                             />
-                                            <span className="leading-tight font-medium truncate sm:whitespace-normal">
-                                                {pt}
-                                            </span>
-                                        </div>
+                                            <span>{tag}</span>
+                                        </span>
                                     ))}
                                 </div>
                             </div>
