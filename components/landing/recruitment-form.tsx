@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback, FormEvent, useId } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import type { Option, Question, Department } from "@/types/config";
 import { getDepartmentTheme } from "@/lib/departments";
 import { isQuestionApplicable } from "@/lib/config";
@@ -43,6 +44,26 @@ type FormState = {
 
 const STORAGE_KEY = "gdgoc_recruitment_form_draft";
 const SUBMITTED_KEY = "gdgoc_recruitment_form_submitted";
+const TURNSTILE_SCRIPT_ID = "gdgoc-turnstile-script";
+
+type TurnstileRenderOptions = {
+    sitekey: string;
+    callback?: (token: string) => void;
+    "expired-callback"?: () => void;
+    "error-callback"?: () => void;
+    theme?: "light" | "dark";
+};
+
+type TurnstileApi = {
+    render: (container: string | HTMLElement, options: TurnstileRenderOptions) => string;
+    reset: (widgetId?: string) => void;
+};
+
+declare global {
+    interface Window {
+        turnstile?: TurnstileApi;
+    }
+}
 
 export function RecruitmentForm({
     departments,
@@ -55,6 +76,8 @@ export function RecruitmentForm({
     fallbackGoogleFormUrl,
     messengerGroupUrl,
 }: RecruitmentFormProps) {
+    const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+    const captchaEnabled = Boolean(turnstileSiteKey);
     const defaultUniversity = "Học viện Công nghệ Bưu chính Viễn thông";
     const formId = useId();
     const [isDraftRestored, setIsDraftRestored] = useState(false);
@@ -107,6 +130,11 @@ export function RecruitmentForm({
         applicationId?: string;
         message?: string;
     } | null>(null);
+    const [captchaToken, setCaptchaToken] = useState("");
+    const [captchaError, setCaptchaError] = useState("");
+    const [isTurnstileReady, setIsTurnstileReady] = useState(false);
+    const turnstileContainerRef = useRef<HTMLDivElement>(null);
+    const turnstileWidgetIdRef = useRef<string | null>(null);
 
     // When department or student year changes, reset non-applicable answers
     const prevDeptRef = useRef(form.department);
@@ -181,6 +209,29 @@ export function RecruitmentForm({
             console.warn("Could not save recruitment form draft to localStorage:", e);
         }
     }, [form, isDraftRestored, submitResult?.success]);
+
+    useEffect(() => {
+        if (!captchaEnabled || !isTurnstileReady || !turnstileContainerRef.current || !window.turnstile || turnstileWidgetIdRef.current) {
+            return;
+        }
+
+        turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: turnstileSiteKey,
+            callback: (token) => {
+                setCaptchaToken(token);
+                setCaptchaError("");
+            },
+            "expired-callback": () => {
+                setCaptchaToken("");
+                setCaptchaError("Mã xác thực đã hết hạn. Vui lòng xác thực lại.");
+            },
+            "error-callback": () => {
+                setCaptchaToken("");
+                setCaptchaError("Không thể xác thực captcha. Vui lòng thử lại.");
+            },
+            theme: "dark",
+        });
+    }, [captchaEnabled, isTurnstileReady, turnstileSiteKey]);
 
     const studentYearNum = parseInt(form.student_year, 10) || 1;
     const isSubTechLeadEligible = form.department === "tech" && studentYearNum >= 2;
@@ -511,6 +562,7 @@ export function RecruitmentForm({
         e.preventDefault();
         setErrors({});
         setSubmitResult(null);
+        setCaptchaError("");
 
         const validation = validateClient();
         if (!validation.valid) {
@@ -525,6 +577,11 @@ export function RecruitmentForm({
                     focusable?.focus();
                 }
             }
+            return;
+        }
+
+        if (captchaEnabled && !captchaToken) {
+            setCaptchaError("Vui lòng hoàn tất captcha trước khi gửi đơn.");
             return;
         }
 
@@ -562,11 +619,20 @@ export function RecruitmentForm({
                 gender: form.gender,
                 major: form.major,
                 answers: answersArray,
+                captcha_token: captchaToken,
             };
+
+            const idempotencyKey =
+                typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+                    ? crypto.randomUUID()
+                    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
             const res = await fetch("/api/apply", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Idempotency-Key": idempotencyKey,
+                },
                 body: JSON.stringify(payload),
             });
 
@@ -585,6 +651,10 @@ export function RecruitmentForm({
                     success: false,
                     message: data.error || "Không thể gửi đơn ứng tuyển. Vui lòng kiểm tra lại thông tin.",
                 });
+                if (captchaEnabled && window.turnstile && turnstileWidgetIdRef.current) {
+                    setCaptchaToken("");
+                    window.turnstile.reset(turnstileWidgetIdRef.current);
+                }
                 return;
             }
 
@@ -609,6 +679,10 @@ export function RecruitmentForm({
                 success: false,
                 message: "Đã xảy ra sự cố kết nối. Vui lòng thử lại sau.",
             });
+            if (captchaEnabled && window.turnstile && turnstileWidgetIdRef.current) {
+                setCaptchaToken("");
+                window.turnstile.reset(turnstileWidgetIdRef.current);
+            }
         } finally {
             setSubmitting(false);
         }
@@ -1187,11 +1261,20 @@ export function RecruitmentForm({
                     </div>
                 ) : (
                     /* Recruitment Form with Cosmic Dark Glassmorphism */
-                    <form
-                        onSubmit={handleSubmit}
-                        noValidate
-                        className="relative rounded-2xl sm:rounded-3xl bg-white/[0.04] hover:bg-white/[0.05] border border-white/15 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-5 sm:p-8 md:p-10 space-y-8 sm:space-y-10 transition-all duration-300 overflow-hidden"
-                    >
+                    <>
+                        {captchaEnabled && (
+                            <Script
+                                id={TURNSTILE_SCRIPT_ID}
+                                src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                                strategy="afterInteractive"
+                                onLoad={() => setIsTurnstileReady(true)}
+                            />
+                        )}
+                        <form
+                            onSubmit={handleSubmit}
+                            noValidate
+                            className="relative rounded-2xl sm:rounded-3xl bg-white/[0.04] hover:bg-white/[0.05] border border-white/15 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-5 sm:p-8 md:p-10 space-y-8 sm:space-y-10 transition-all duration-300 overflow-hidden"
+                        >
 
                         {submitResult && !submitResult.success && (
                             <div className="p-4 sm:p-5 rounded-2xl bg-red-950/40 border border-red-500/50 text-red-200 text-sm font-medium space-y-3 shadow-lg shadow-red-950/40 animate-in fade-in-50 duration-200">
@@ -1214,6 +1297,7 @@ export function RecruitmentForm({
                                         </a>
                                     </div>
                                 )}
+
                             </div>
                         )}
 
@@ -1750,6 +1834,18 @@ export function RecruitmentForm({
                                         </a>
                                     </div>
                                 )}
+
+                                {captchaEnabled && (
+                                    <div className="space-y-2">
+                                        <div ref={turnstileContainerRef} className="min-h-[65px]" />
+                                        {captchaError && (
+                                            <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5">
+                                                <span className="text-sm leading-none">⚠️</span>
+                                                <span>{captchaError}</span>
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1781,7 +1877,8 @@ export function RecruitmentForm({
                                 )}
                             </button>
                         </div>
-                    </form>
+                        </form>
+                    </>
                 )}
             </div>
         </section>
