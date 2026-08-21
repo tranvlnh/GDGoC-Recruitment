@@ -1,7 +1,8 @@
 import { departments, majors, questions, settings, getApplicationWindowStatus } from "@/lib/config";
 import { FloatingNavbar } from "@/components/landing/floating-navbar";
 import { HeroSection } from "@/components/landing/hero-section";
-import { AboutActivitiesSection } from "@/components/landing/about-activities-section";
+import { AboutSection } from "@/components/landing/about-section";
+import { ActivitiesSection } from "@/components/landing/activities-section";
 import { MissionGoalsSection } from "@/components/landing/mission-goals-section";
 import { DepartmentsSection } from "@/components/landing/departments-section";
 import { RecruitmentForm } from "@/components/landing/recruitment-form";
@@ -28,8 +29,11 @@ export default function Home() {
                     closeAt={windowStatus.closeAt}
                 />
 
-                {/* 2. About & Activities Showcase */}
-                <AboutActivitiesSection />
+                {/* 2. About Section */}
+                <AboutSection />
+
+                {/* 3. Activities Showcase */}
+                <ActivitiesSection />
 
                 {/* 3. Mission & Strategic Goals */}
                 <MissionGoalsSection />
