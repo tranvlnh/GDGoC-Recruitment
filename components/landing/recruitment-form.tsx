@@ -10,6 +10,7 @@ import {
     ArrowRightIcon,
     ShieldCheckIcon,
     FacebookIcon,
+    MessengerIcon,
 } from "./google-icons";
 
 type RecruitmentFormProps = {
@@ -21,6 +22,7 @@ type RecruitmentFormProps = {
     openAt: Date;
     closeAt: Date;
     fallbackGoogleFormUrl?: string;
+    messengerGroupUrl?: string;
 };
 
 type FormState = {
@@ -39,6 +41,9 @@ type FormState = {
     otherTexts: Record<string, string>;
 };
 
+const STORAGE_KEY = "gdgoc_recruitment_form_draft";
+const SUBMITTED_KEY = "gdgoc_recruitment_form_submitted";
+
 export function RecruitmentForm({
     departments,
     majors,
@@ -48,9 +53,11 @@ export function RecruitmentForm({
     openAt,
     closeAt,
     fallbackGoogleFormUrl,
+    messengerGroupUrl,
 }: RecruitmentFormProps) {
     const defaultUniversity = "Học viện Công nghệ Bưu chính Viễn thông";
     const formId = useId();
+    const [isDraftRestored, setIsDraftRestored] = useState(false);
 
     const buildDefaultAnswers = (qs: Question[]) => {
         const initial: Record<string, string | string[]> = {};
@@ -100,6 +107,80 @@ export function RecruitmentForm({
         applicationId?: string;
         message?: string;
     } | null>(null);
+
+    // When department or student year changes, reset non-applicable answers
+    const prevDeptRef = useRef(form.department);
+    const prevYearRef = useRef(form.student_year);
+
+    // Restore draft and submitted state from localStorage on initial client mount
+    useEffect(() => {
+        try {
+            // Check if user previously submitted successfully
+            const savedSubmission = localStorage.getItem(SUBMITTED_KEY);
+            if (savedSubmission) {
+                const parsedSub = JSON.parse(savedSubmission);
+                if (parsedSub && parsedSub.success) {
+                    setSubmitResult(parsedSub);
+                }
+            }
+
+            const savedDraft = localStorage.getItem(STORAGE_KEY);
+            if (savedDraft) {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed && typeof parsed === "object") {
+                    const restoredAnswers = {
+                        ...buildDefaultAnswers(questions),
+                        ...(parsed.answers && typeof parsed.answers === "object" ? parsed.answers : {}),
+                    };
+                    const restoredOtherTexts = {
+                        ...buildDefaultOtherTexts(questions),
+                        ...(parsed.otherTexts && typeof parsed.otherTexts === "object" ? parsed.otherTexts : {}),
+                    };
+
+                    const restoredDept =
+                        parsed.department && departments.some((d) => d.id === parsed.department)
+                            ? parsed.department
+                            : departments[0]?.id ?? "tech";
+
+                    prevDeptRef.current = restoredDept;
+                    if (parsed.student_year) {
+                        prevYearRef.current = parsed.student_year;
+                    }
+
+                    setForm((prev) => ({
+                        ...prev,
+                        full_name: typeof parsed.full_name === "string" ? parsed.full_name : prev.full_name,
+                        email: typeof parsed.email === "string" ? parsed.email : prev.email,
+                        phone: typeof parsed.phone === "string" ? parsed.phone : prev.phone,
+                        facebook_url: typeof parsed.facebook_url === "string" ? parsed.facebook_url : prev.facebook_url,
+                        student_year: typeof parsed.student_year === "string" ? parsed.student_year : prev.student_year,
+                        student_id: typeof parsed.student_id === "string" ? parsed.student_id : prev.student_id,
+                        date_of_birth: typeof parsed.date_of_birth === "string" ? parsed.date_of_birth : prev.date_of_birth,
+                        university: typeof parsed.university === "string" ? parsed.university : prev.university,
+                        department: restoredDept,
+                        gender: parsed.gender ?? prev.gender,
+                        major: typeof parsed.major === "string" ? parsed.major : prev.major,
+                        answers: restoredAnswers,
+                        otherTexts: restoredOtherTexts,
+                    }));
+                }
+            }
+        } catch (e) {
+            console.warn("Could not restore recruitment form draft or submission from localStorage:", e);
+        } finally {
+            setIsDraftRestored(true);
+        }
+    }, [departments, questions]);
+
+    // Save draft to localStorage whenever form changes (after draft is restored and if not currently in submitted view)
+    useEffect(() => {
+        if (!isDraftRestored || submitResult?.success) return;
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+        } catch (e) {
+            console.warn("Could not save recruitment form draft to localStorage:", e);
+        }
+    }, [form, isDraftRestored, submitResult?.success]);
 
     const studentYearNum = parseInt(form.student_year, 10) || 1;
     const isSubTechLeadEligible = form.department === "tech" && studentYearNum >= 2;
@@ -159,10 +240,6 @@ export function RecruitmentForm({
             ].sort((a, b) => a.order - b.order),
         [commonQuestions, regularDeptQuestions, subTechLeadQuestions],
     );
-
-    // When department or student year changes, reset non-applicable answers
-    const prevDeptRef = useRef(form.department);
-    const prevYearRef = useRef(form.student_year);
 
     useEffect(() => {
         const deptChanged = prevDeptRef.current !== form.department;
@@ -384,45 +461,43 @@ export function RecruitmentForm({
             newErrors.facebook_url = "Vui lòng nhập link Facebook cá nhân (ví dụ: facebook.com/username)";
         }
 
-        if (!form.student_id.trim()) newErrors.student_id = "Vui lòng nhập mã số sinh viên (ví dụ: B23DCCN001)";
+        if (!form.student_id.trim()) newErrors.student_id = "Vui lòng nhập mã sinh viên";
         if (!form.date_of_birth) newErrors.date_of_birth = "Vui lòng chọn ngày sinh";
         if (!form.university.trim()) newErrors.university = "Vui lòng nhập tên trường";
-        if (!form.department) newErrors.department = "Vui lòng chọn ban chuyên môn ứng tuyển";
-        if (!form.major || !form.major.trim()) newErrors.major = "Vui lòng nhập hoặc chọn ngành học";
+        if (!form.department) newErrors.department = "Vui lòng chọn ban ứng tuyển";
+        if (!form.major.trim()) newErrors.major = "Vui lòng nhập hoặc chọn ngành học";
 
-        // Dynamic Questions validation (active questions for selected department)
+        // Validate active questions
         activeQuestions.forEach((q) => {
-            const val = form.answers[q.id];
-            const isEmpty =
-                val === undefined ||
-                val === null ||
-                (typeof val === "string" && val.trim() === "") ||
-                (Array.isArray(val) && val.length === 0);
+            const answer = form.answers[q.id];
+            const otherText = form.otherTexts[q.id]?.trim();
 
-            if (q.required && isEmpty) {
-                newErrors[`answers.${q.id}`] = "Vui lòng hoàn thành câu hỏi này";
-                return;
-            }
-
-            if (isEmpty) return;
-
-            if (q.type === "essay" && typeof val === "string") {
-                const len = val.trim().length;
-                if (q.minLength && len < q.minLength) {
-                    newErrors[`answers.${q.id}`] = `Câu trả lời cần tối thiểu ${q.minLength} ký tự (hiện có ${len})`;
+            if (q.type === "essay") {
+                const text = typeof answer === "string" ? answer.trim() : "";
+                if (q.required && !text) {
+                    newErrors[`answers.${q.id}`] = "Vui lòng trả lời câu hỏi này";
+                } else if (text) {
+                    if (q.minLength && text.length < q.minLength) {
+                        newErrors[`answers.${q.id}`] = `Câu trả lời cần tối thiểu ${q.minLength} ký tự (hiện có ${text.length})`;
+                    } else if (q.maxLength && text.length > q.maxLength) {
+                        newErrors[`answers.${q.id}`] = `Câu trả lời không được vượt quá ${q.maxLength} ký tự (hiện có ${text.length})`;
+                    }
                 }
-                if (q.maxLength && len > q.maxLength) {
-                    newErrors[`answers.${q.id}`] = `Câu trả lời vượt quá tối đa ${q.maxLength} ký tự`;
-                }
-            }
-
-            // Validate "other" text is not empty when "other" is selected
-            if (q.type === "multiple_choice" && q.allowOther) {
-                const hasOtherSelected = q.multiple
-                    ? (Array.isArray(val) && val.includes("__other__"))
-                    : val === "__other__";
-                if (hasOtherSelected && !form.otherTexts[q.id]?.trim()) {
-                    newErrors[`answers.${q.id}`] = "Vui lòng nhập nội dung cho lựa chọn \"Khác\"";
+            } else if (q.type === "multiple_choice") {
+                if (q.multiple) {
+                    const arr = Array.isArray(answer) ? answer : [];
+                    if (q.required && arr.length === 0) {
+                        newErrors[`answers.${q.id}`] = "Vui lòng chọn ít nhất một phương án";
+                    } else if (q.allowOther && arr.includes("__other__") && !otherText) {
+                        newErrors[`answers.${q.id}`] = "Vui lòng nhập nội dung cho lựa chọn khác";
+                    }
+                } else {
+                    const val = typeof answer === "string" ? answer : "";
+                    if (q.required && !val) {
+                        newErrors[`answers.${q.id}`] = "Vui lòng chọn một phương án";
+                    } else if (q.allowOther && val === "__other__" && !otherText) {
+                        newErrors[`answers.${q.id}`] = "Vui lòng nhập nội dung cho lựa chọn khác";
+                    }
                 }
             }
         });
@@ -468,6 +543,8 @@ export function RecruitmentForm({
                     } else if (value === "__other__") {
                         value = `other:${otherText}`;
                     }
+                } else if (q.type === "essay" && typeof value === "string") {
+                    value = value.trim();
                 }
 
                 return { question_id: q.id, value };
@@ -512,12 +589,21 @@ export function RecruitmentForm({
                 return;
             }
 
-            // Success!
-            setSubmitResult({
+            // Success! Save submission state to localStorage so user still sees it upon revisit
+            const successPayload = {
                 success: true,
                 applicationId: data.data?.id,
-                message: "Đơn ứng tuyển của bạn đã được gửi thành công đến GDGoC PTIT!",
-            });
+                message: "Cảm ơn bạn đã nộp đơn ứng tuyển vào GDG on Campus: PTIT! Đơn ứng tuyển của bạn đã được gửi thành công.",
+                submittedAt: new Date().toISOString(),
+            };
+
+            try {
+                localStorage.setItem(SUBMITTED_KEY, JSON.stringify(successPayload));
+            } catch (e) {
+                console.warn("Could not save submitted state to localStorage:", e);
+            }
+
+            setSubmitResult(successPayload);
         } catch (err) {
             console.error("Submission failed:", err);
             setSubmitResult({
@@ -526,6 +612,42 @@ export function RecruitmentForm({
             });
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const getDepartmentCardStyle = (deptId: string, isSelected: boolean) => {
+        if (!isSelected) {
+            return "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200";
+        }
+        switch (deptId) {
+            case "tech":
+                return "border-[#4285F4] bg-gradient-to-r from-[#4285F4]/25 to-[#4285F4]/10 text-white shadow-[0_0_25px_rgba(66,133,244,0.35)]";
+            case "design":
+                return "border-[#EA4335] bg-gradient-to-r from-[#EA4335]/25 to-[#EA4335]/10 text-white shadow-[0_0_25px_rgba(234,67,53,0.35)]";
+            case "pr":
+                return "border-[#FBBC05] bg-gradient-to-r from-[#FBBC05]/25 to-[#FBBC05]/10 text-white shadow-[0_0_25px_rgba(251,188,5,0.35)]";
+            case "hr-lg":
+                return "border-[#34A853] bg-gradient-to-r from-[#34A853]/25 to-[#34A853]/10 text-white shadow-[0_0_25px_rgba(52,168,83,0.35)]";
+            default:
+                return "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_25px_rgba(66,133,244,0.35)]";
+        }
+    };
+
+    const getDepartmentRadioDotStyle = (deptId: string, isSelected: boolean) => {
+        if (!isSelected) {
+            return "border-white/30 bg-white/5";
+        }
+        switch (deptId) {
+            case "tech":
+                return "border-transparent bg-[#4285F4] text-white";
+            case "design":
+                return "border-transparent bg-[#EA4335] text-white";
+            case "pr":
+                return "border-transparent bg-[#FBBC05] text-zinc-950";
+            case "hr-lg":
+                return "border-transparent bg-[#34A853] text-white";
+            default:
+                return "border-transparent bg-[#4285F4] text-white";
         }
     };
 
@@ -540,19 +662,20 @@ export function RecruitmentForm({
             const maxReq = q.maxLength ?? 1000;
             const isMet = currentLen >= minReq;
             const isExceeded = currentLen > maxReq;
+            const isUnderMin = currentLen > 0 && minReq > 0 && !isMet;
 
             return (
                 <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
-                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                            {q.label} {q.required && <span className="text-red-500">*</span>}
+                        <label className="block text-sm font-semibold text-zinc-200 leading-snug">
+                            {q.label} {q.required && <span className="text-[#EA4335]">*</span>}
                         </label>
                         <span
-                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded
-                                ? "bg-red-50 text-red-700 border-red-200 font-bold"
-                                : isMet
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 font-bold"
-                                    : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                            className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${isExceeded || isUnderMin || (hasError && !isMet)
+                                    ? "bg-red-500/20 text-red-400 border-red-500/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
+                                    : isMet && currentLen > 0
+                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-bold shadow-[0_0_10px_rgba(52,168,83,0.25)]"
+                                        : "bg-white/10 text-zinc-400 border-white/15"
                                 }`}
                         >
                             {currentLen} / {maxReq} ký tự
@@ -564,19 +687,21 @@ export function RecruitmentForm({
                         placeholder="Nhập câu trả lời của bạn..."
                         value={currentText}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white ${hasError
-                            ? "border-red-500 bg-red-50/20"
-                            : "border-zinc-200 focus:border-blue-500"
+                        className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${hasError || isUnderMin || isExceeded
+                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                : "border-white/15 focus:border-[#4285F4]"
                             }`}
                     />
 
                     {hasError ? (
-                        <p className="text-xs text-red-600 font-medium leading-relaxed">
-                            {errors[errorKey]}
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>{errors[errorKey]}</span>
                         </p>
-                    ) : currentLen > 0 && minReq > 0 && !isMet ? (
-                        <p className="text-xs text-amber-700 font-medium leading-relaxed">
-                            Cần viết ít nhất {minReq} ký tự.
+                    ) : isUnderMin ? (
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>Cần viết ít nhất {minReq} ký tự (hiện có {currentLen} ký tự).</span>
                         </p>
                     ) : null}
                 </div>
@@ -588,9 +713,9 @@ export function RecruitmentForm({
                 const selectedArray = (form.answers[q.id] as string[]) || [];
                 return (
                     <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                        <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                            {q.label} {q.required && <span className="text-red-500">*</span>}{" "}
-                            <span className="text-[11px] font-normal lowercase text-zinc-500">
+                        <label className="block text-sm font-semibold text-zinc-200 leading-snug">
+                            {q.label} {q.required && <span className="text-[#EA4335]">*</span>}{" "}
+                            <span className="text-[11px] font-normal lowercase text-zinc-400">
                                 (chọn một hoặc nhiều)
                             </span>
                         </label>
@@ -605,22 +730,22 @@ export function RecruitmentForm({
                                         key={opt.id}
                                         onClick={() => handleCheckboxToggle(q.id, opt.id)}
                                         className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                                : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                             }`}
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                                ? "text-[#4285F4] font-semibold"
-                                                : "text-zinc-800 font-medium"
+                                                    ? "text-white font-semibold"
+                                                    : "text-zinc-200 font-medium"
                                                 }`}
                                         >
                                             {opt.label}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${checked
-                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                : "border-zinc-300 bg-white"
+                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                    : "border-white/30 bg-white/5"
                                                 }`}
                                         >
                                             {checked && "✓"}
@@ -638,22 +763,22 @@ export function RecruitmentForm({
                                         onClick={() => handleCheckboxToggle(q.id, "__other__")}
                                         className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
                                             } ${otherChecked
-                                                ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                                : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                                ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                                : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                             }`}
                                     >
                                         <span
                                             className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                                ? "text-[#4285F4] font-semibold"
-                                                : "text-zinc-800 font-medium"
+                                                    ? "text-white font-semibold"
+                                                    : "text-zinc-200 font-medium"
                                                 }`}
                                         >
                                             {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                         </span>
                                         <span
                                             className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center text-xs shrink-0 transition-colors ${otherChecked
-                                                ? "bg-[#4285F4] border-[#4285F4] text-white"
-                                                : "border-zinc-300 bg-white"
+                                                    ? "bg-[#4285F4] border-[#4285F4] text-white"
+                                                    : "border-white/30 bg-white/5"
                                                 }`}
                                         >
                                             {otherChecked && "✓"}
@@ -668,13 +793,14 @@ export function RecruitmentForm({
                                 placeholder="Nhập lựa chọn khác của bạn..."
                                 value={form.otherTexts[q.id] || ""}
                                 onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                                className="w-full px-4 py-2.5 rounded-xl border border-[#4285F4]/50 bg-[#4285F4]/10 text-white text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] placeholder:text-zinc-400"
                                 autoFocus
                             />
                         )}
                         {hasError && (
-                            <p className="text-xs text-red-600 font-medium leading-relaxed">
-                                {errors[errorKey]}
+                            <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                                <span className="text-sm leading-none">⚠️</span>
+                                <span>{errors[errorKey]}</span>
                             </p>
                         )}
                     </div>
@@ -685,8 +811,8 @@ export function RecruitmentForm({
             const selectedValue = (form.answers[q.id] as string) || "";
             return (
                 <div key={q.id} className="space-y-2.5" id={`${formId}-${errorKey}`}>
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider leading-snug">
-                        {q.label} {q.required && <span className="text-red-500">*</span>}
+                    <label className="block text-sm font-semibold text-zinc-200 leading-snug">
+                        {q.label} {q.required && <span className="text-[#EA4335]">*</span>}
                     </label>
                     <div
                         className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"
@@ -702,22 +828,22 @@ export function RecruitmentForm({
                                     key={opt.id}
                                     onClick={() => handleAnswerChange(q.id, opt.id)}
                                     className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${checked
-                                        ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                        : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                            ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                            : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                         }`}
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug break-words ${checked
-                                            ? "text-[#4285F4] font-semibold"
-                                            : "text-zinc-800 font-medium"
+                                                ? "text-white font-semibold"
+                                                : "text-zinc-200 font-medium"
                                             }`}
                                     >
                                         {opt.label}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${checked
-                                            ? "border-[#4285F4] bg-[#4285F4]"
-                                            : "border-zinc-300 bg-white"
+                                                ? "border-[#4285F4] bg-[#4285F4]"
+                                                : "border-white/30 bg-white/5"
                                             }`}
                                     >
                                         {checked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -737,22 +863,22 @@ export function RecruitmentForm({
                                     }}
                                     className={`p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${q.options.length % 2 === 0 ? "sm:col-span-2" : ""
                                         } ${otherChecked
-                                            ? "border-[#4285F4] bg-blue-50/70 text-[#4285F4] shadow-xs font-semibold"
-                                            : "border-zinc-200 bg-white hover:bg-zinc-50/80 text-zinc-700"
+                                            ? "border-[#4285F4] bg-[#4285F4]/20 text-white shadow-[0_0_18px_rgba(66,133,244,0.25)] font-semibold"
+                                            : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
                                         }`}
                                 >
                                     <span
                                         className={`text-xs sm:text-sm leading-snug ${otherChecked
-                                            ? "text-[#4285F4] font-semibold"
-                                            : "text-zinc-800 font-medium"
+                                                ? "text-white font-semibold"
+                                                : "text-zinc-200 font-medium"
                                             }`}
                                     >
                                         {q.otherLabel || "Khác (vui lòng ghi rõ)"}
                                     </span>
                                     <span
                                         className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${otherChecked
-                                            ? "border-[#4285F4] bg-[#4285F4]"
-                                            : "border-zinc-300 bg-white"
+                                                ? "border-[#4285F4] bg-[#4285F4]"
+                                                : "border-white/30 bg-white/5"
                                             }`}
                                     >
                                         {otherChecked && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
@@ -767,13 +893,14 @@ export function RecruitmentForm({
                             placeholder="Nhập lựa chọn khác của bạn..."
                             value={form.otherTexts[q.id] || ""}
                             onChange={(e) => handleOtherTextChange(q.id, e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl border border-blue-200 bg-blue-50/30 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-zinc-400"
+                            className="w-full px-4 py-2.5 rounded-xl border border-[#4285F4]/50 bg-[#4285F4]/10 text-white text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] placeholder:text-zinc-400"
                             autoFocus
                         />
                     )}
                     {hasError && (
-                        <p className="text-xs text-red-600 font-medium leading-relaxed">
-                            {errors[errorKey]}
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>{errors[errorKey]}</span>
                         </p>
                     )}
                 </div>
@@ -784,35 +911,183 @@ export function RecruitmentForm({
     };
 
     return (
-        <section id="apply" className="py-20 sm:py-28 bg-gradient-to-b from-white via-zinc-50 to-white relative scroll-mt-20">
-            {/* Background accent */}
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/30 blur-3xl rounded-full pointer-events-none -z-10" />
+        <section id="apply" className="py-20 sm:py-28 bg-[#00092B] relative scroll-mt-20 overflow-hidden">
+            {/* Seamless Cosmic Background matching Hero, About and Mission */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+                <Image
+                    src="/blank.svg"
+                    alt="Apply Background"
+                    fill
+                    unoptimized
+                    className="object-cover object-center w-full h-full"
+                    aria-hidden="true"
+                />
 
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
+                {/* Stardust Layers */}
+                <div className="absolute inset-0 opacity-45 mix-blend-screen">
+                    <Image
+                        src="/dust1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+                <div className="absolute inset-0 opacity-35 mix-blend-screen scale-110">
+                    <Image
+                        src="/dust2.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Decorative Planet Accents */}
+                {/* 1. Top-Left Planet (Planet 1 - Solar Amber Glow) */}
+                <div className="absolute top-6 sm:top-12 -left-10 sm:-left-6 md:left-4 lg:left-12 xl:left-20 w-28 sm:w-36 md:w-48 aspect-square opacity-70 md:opacity-80 pointer-events-none animate-float drop-shadow-[0_0_35px_rgba(251,188,5,0.35)]">
+                    <Image
+                        src="/planet1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 2. Top-Right Planet (Planet 6 - Google Red / Magenta Celestial Body) */}
+                <div className="absolute top-10 sm:top-16 -right-8 sm:right-2 md:right-8 lg:right-16 xl:right-24 w-24 sm:w-32 md:w-44 aspect-square opacity-65 md:opacity-75 pointer-events-none animate-planet-breathe drop-shadow-[0_0_30px_rgba(234,67,53,0.35)]">
+                    <Image
+                        src="/planet6.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 3. Mid-Left Planet (Planet 5 - Google Green Emerald Planet) */}
+                <div
+                    className="absolute top-1/2 -translate-y-1/2 -left-12 sm:-left-8 md:left-2 lg:left-8 w-20 sm:w-28 md:w-36 aspect-square opacity-60 md:opacity-70 pointer-events-none animate-float drop-shadow-[0_0_30px_rgba(52,168,83,0.3)]"
+                    style={{ animationDelay: "2s" }}
+                >
+                    <Image
+                        src="/planet5.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 4. Mid-Right Small Planet (Planet 3 / Cyan Moon) */}
+                <div
+                    className="absolute top-[60%] -right-6 sm:right-4 md:right-12 w-16 sm:w-24 aspect-square opacity-55 md:opacity-65 pointer-events-none animate-planet-breathe drop-shadow-[0_0_20px_rgba(66,133,244,0.3)]"
+                    style={{ animationDelay: "1.5s" }}
+                >
+                    <Image
+                        src="/planet3.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 5. Bottom-Right Ring Planet (Planet 4 - Google Blue Saturn Planet) */}
+                <div
+                    className="absolute -bottom-10 sm:-bottom-16 -right-10 sm:-right-4 md:right-6 lg:right-14 xl:right-20 w-40 sm:w-56 md:w-72 aspect-square opacity-75 md:opacity-85 pointer-events-none animate-float drop-shadow-[0_0_40px_rgba(66,133,244,0.35)]"
+                    style={{ animationDelay: "1s" }}
+                >
+                    <Image
+                        src="/planet4.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* 6. Bottom-Left Minor Planet (Planet 2) */}
+                <div
+                    className="absolute -bottom-6 left-6 sm:left-16 md:left-24 w-16 sm:w-24 aspect-square opacity-50 md:opacity-60 pointer-events-none animate-planet-breathe drop-shadow-[0_0_20px_rgba(251,188,5,0.25)]"
+                    style={{ animationDelay: "2.5s" }}
+                >
+                    <Image
+                        src="/planet2.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Sparkling 4-Point Stars Array */}
+                <div className="absolute top-10 left-10 sm:left-24 w-4 sm:w-6 aspect-[136/205] opacity-60 pointer-events-none animate-pulse">
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-20 right-12 sm:right-32 w-5 sm:w-7 aspect-[136/205] opacity-70 pointer-events-none animate-pulse" style={{ animationDelay: "700ms" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-1/3 left-6 sm:left-16 w-3.5 sm:w-5 aspect-[136/205] opacity-50 pointer-events-none animate-pulse" style={{ animationDelay: "1.4s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute top-1/2 right-8 sm:right-20 w-4.5 sm:w-6 aspect-[136/205] opacity-65 pointer-events-none animate-pulse" style={{ animationDelay: "2.1s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-1/3 left-12 sm:left-28 w-4 sm:w-5 aspect-[136/205] opacity-55 pointer-events-none animate-pulse" style={{ animationDelay: "900ms" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-20 right-10 sm:right-28 w-5 sm:w-7 aspect-[136/205] opacity-65 pointer-events-none animate-pulse" style={{ animationDelay: "1.8s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+                <div className="absolute bottom-8 left-1/4 w-3.5 sm:w-4.5 aspect-[136/205] opacity-40 pointer-events-none animate-pulse" style={{ animationDelay: "2.6s" }}>
+                    <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                </div>
+
+                {/* Ambient Soft Google Color Glows */}
+                <div className="absolute top-1/4 left-1/5 -translate-y-1/2 w-96 h-96 bg-[#4285F4]/15 rounded-full blur-3xl" />
+                <div className="absolute top-1/3 right-1/5 -translate-y-1/2 w-96 h-96 bg-[#EA4335]/15 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#34A853]/15 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-[#FBBC05]/15 rounded-full blur-3xl" />
+
+                {/* Continuous vignette overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
+            </div>
+
+            <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
                 {/* Section Header */}
-                <div className="text-center space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-[#4285F4] uppercase tracking-wider">
-                        Đăng ký ứng tuyển • Recruitment Form
+                <div className="text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] sm:text-xs font-bold text-white tracking-wider backdrop-blur-md shadow-xs">
+                        <span>Đăng ký ứng tuyển</span>
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
-                        Gia nhập đại gia đình GDGoC PTIT Gen 5
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+                        Gia nhập đại gia đình <span className="text-[#4285F4] drop-shadow-[0_2px_12px_rgba(66,133,244,0.5)]">GDG on Campus: PTIT</span>
                     </h2>
-                    <p className="text-base text-zinc-600 max-w-xl mx-auto font-normal">
+                    <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto font-normal leading-relaxed pt-1">
                         Hãy điền đầy đủ và chính xác thông tin dưới đây để ban điều hành có thể kết nối và trao đổi với bạn sớm nhất.
                     </p>
                 </div>
 
                 {!isOpen ? (
                     /* Closed or Not Open Window Notice */
-                    <div className="rounded-3xl p-8 sm:p-12 bg-white border border-zinc-200 shadow-xl text-center space-y-6">
-                        <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-2xl font-bold">
+                    <div className="relative rounded-3xl p-8 sm:p-12 bg-white/[0.04] border border-white/15 backdrop-blur-xl shadow-2xl text-center space-y-6 overflow-hidden">
+                        <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center mx-auto text-2xl font-bold shadow-[0_0_25px_rgba(251,188,5,0.3)]">
                             ⏳
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-2xl font-bold text-zinc-900">
+                            <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
                                 {reason === "not_opened" ? "Đơn ứng tuyển chưa mở" : "Đơn ứng tuyển đã đóng"}
                             </h3>
-                            <p className="text-sm text-zinc-600 max-w-md mx-auto">
+                            <p className="text-sm sm:text-base text-zinc-300 max-w-md mx-auto leading-relaxed">
                                 {reason === "not_opened"
                                     ? `Cổng đăng ký sẽ chính thức mở vào ngày ${openAt.toLocaleDateString("vi-VN")}. Hãy theo dõi fanpage GDGoC PTIT để không bỏ lỡ!`
                                     : `Thời hạn nhận đơn ứng tuyển Gen 5 đã kết thúc vào ngày ${closeAt.toLocaleDateString("vi-VN")}. Cảm ơn bạn đã quan tâm đến GDGoC PTIT!`}
@@ -823,7 +1098,7 @@ export function RecruitmentForm({
                                 href="https://facebook.com/gdgoc.ptit"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] text-white font-semibold text-sm hover:bg-[#3367D6] transition-colors"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
                             >
                                 <FacebookIcon className="w-4 h-4" />
                                 <span>Theo dõi Fanpage GDGoC PTIT</span>
@@ -832,35 +1107,63 @@ export function RecruitmentForm({
                     </div>
                 ) : submitResult?.success ? (
                     /* Enhanced Success Screen with Recruitment Roadmap */
-                    <div className="rounded-3xl p-8 sm:p-12 bg-white border border-emerald-200 shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
-                        <div className="text-center space-y-3">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-md shadow-emerald-500/10">
+                    <div className="relative rounded-3xl p-8 sm:p-12 bg-white/[0.04] border border-emerald-500/40 backdrop-blur-xl shadow-[0_0_60px_rgba(52,168,83,0.15)] space-y-8 animate-in zoom-in-95 duration-300 overflow-hidden">
+                        {/* Decorative subtle stars in success card */}
+                        <div className="absolute top-6 left-8 w-4 h-6 opacity-60 pointer-events-none animate-pulse">
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+                        <div className="absolute top-8 right-10 w-5 h-7 opacity-70 pointer-events-none animate-pulse" style={{ animationDelay: "1s" }}>
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+                        <div className="absolute bottom-6 right-12 w-3.5 h-5 opacity-40 pointer-events-none animate-pulse" style={{ animationDelay: "1.8s" }}>
+                            <Image src="/Star 1.svg" alt="" fill unoptimized className="object-contain" aria-hidden="true" />
+                        </div>
+
+                        <div className="text-center space-y-3 relative z-10">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(52,168,83,0.35)]">
                                 <CheckCircleIcon className="w-10 h-10 sm:w-12 sm:h-12" />
                             </div>
 
-                            <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900">
+                            <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
                                 Nộp đơn ứng tuyển thành công!
                             </h3>
-                            <p className="text-sm sm:text-base text-zinc-600 max-w-lg mx-auto">
-                                Chúc mừng bạn đã hoàn thành đơn ứng tuyển vào GDGoC PTIT Gen 5. Ban điều hành đã tiếp nhận hồ sơ của bạn.
+                            <p className="text-sm sm:text-base text-zinc-300 max-w-lg mx-auto leading-relaxed">
+                                Cảm ơn bạn đã nộp đơn ứng tuyển vào GDG on Campus: PTIT Gen 5. Ban điều hành đã tiếp nhận hồ sơ của bạn.
                             </p>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4">
+                            {messengerGroupUrl && (
+                                <a
+                                    href={messengerGroupUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#0084FF] via-[#00A2FF] to-[#0078FF] hover:from-[#0074e0] hover:to-[#0068db] text-white font-bold text-sm shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5"
+                                >
+                                    <MessengerIcon className="w-4 h-4 shrink-0" />
+                                    <span>Tham gia Group Messenger</span>
+                                </a>
+                            )}
                             <a
                                 href="https://facebook.com/gdgoc.ptit"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-sm shadow-md transition-all"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
                             >
-                                <FacebookIcon className="w-4 h-4" />
+                                <FacebookIcon className="w-4 h-4 shrink-0" />
                                 <span>Theo dõi kết quả tại Fanpage</span>
                             </a>
                             <button
                                 type="button"
                                 onClick={() => {
                                     setSubmitResult(null);
+                                    try {
+                                        localStorage.removeItem(STORAGE_KEY);
+                                        localStorage.removeItem(SUBMITTED_KEY);
+                                    } catch (e) {
+                                        console.warn("Could not clear draft and submission from localStorage:", e);
+                                    }
                                     setForm({
                                         full_name: "",
                                         email: "",
@@ -877,35 +1180,36 @@ export function RecruitmentForm({
                                         otherTexts: buildDefaultOtherTexts(questions),
                                     });
                                 }}
-                                className="w-full sm:w-auto px-6 py-3 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold text-sm transition-colors text-center"
+                                className="w-full sm:w-auto px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition-all text-center cursor-pointer"
                             >
                                 Gửi đơn ứng tuyển khác
                             </button>
                         </div>
                     </div>
                 ) : (
-                    /* Recruitment Form */
+                    /* Recruitment Form with Cosmic Dark Glassmorphism */
                     <form
                         onSubmit={handleSubmit}
                         noValidate
-                        className="rounded-2xl sm:rounded-3xl bg-white border border-zinc-200/90 shadow-2xl shadow-zinc-900/5 p-4 sm:p-8 md:p-10 space-y-8 sm:space-y-10"
+                        className="relative rounded-2xl sm:rounded-3xl bg-white/[0.04] hover:bg-white/[0.05] border border-white/15 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-5 sm:p-8 md:p-10 space-y-8 sm:space-y-10 transition-all duration-300 overflow-hidden"
                     >
+
                         {submitResult && !submitResult.success && (
-                            <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium space-y-2">
+                            <div className="p-4 sm:p-5 rounded-2xl bg-red-950/40 border border-red-500/50 text-red-200 text-sm font-medium space-y-3 shadow-lg shadow-red-950/40 animate-in fade-in-50 duration-200">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xl">⚠️</span>
-                                    <span>{submitResult.message}</span>
+                                    <span className="font-semibold">{submitResult.message}</span>
                                 </div>
                                 {fallbackGoogleFormUrl && (
-                                    <div className="pt-2 border-t border-red-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-                                        <span className="text-red-800">
+                                    <div className="pt-3 border-t border-red-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                        <span className="text-red-300">
                                             Nếu sự cố vẫn tiếp diễn, bạn có thể nộp qua Google Form dự phòng:
                                         </span>
                                         <a
                                             href={fallbackGoogleFormUrl}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="font-bold underline text-[#4285F4] hover:text-blue-800 inline-flex items-center gap-1"
+                                            className="font-bold underline text-[#4285F4] hover:text-blue-300 inline-flex items-center gap-1 shrink-0"
                                         >
                                             <span>Mở Google Form dự phòng ↗</span>
                                         </a>
@@ -916,15 +1220,15 @@ export function RecruitmentForm({
 
                         {/* PART 1: Personal Information */}
                         <div className="space-y-6">
-                            <div className="flex items-center gap-3 border-b border-zinc-100 pb-3">
-                                <div className="w-8 h-8 rounded-full bg-blue-100 text-[#4285F4] flex items-center justify-center font-bold text-sm">
+                            <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+                                <div className="w-8 h-8 rounded-full bg-[#4285F4]/20 border border-[#4285F4]/40 text-[#4285F4] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(66,133,244,0.3)]">
                                     1
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-zinc-900">
+                                    <h3 className="text-lg font-bold text-white tracking-tight">
                                         Thông tin cá nhân
                                     </h3>
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-zinc-400">
                                         Thông tin liên hệ cơ bản để ban điều hành trao đổi với bạn.
                                     </p>
                                 </div>
@@ -933,8 +1237,8 @@ export function RecruitmentForm({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 {/* Full Name */}
                                 <div className="space-y-1.5" id={`${formId}-full_name`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Họ và tên <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Họ và tên <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -950,16 +1254,23 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.full_name ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.full_name
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.full_name && <p className="text-xs text-red-600 font-medium">{errors.full_name}</p>}
+                                    {errors.full_name && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.full_name}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Email */}
                                 <div className="space-y-1.5" id={`${formId}-email`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Email <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Email <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="email"
@@ -975,16 +1286,23 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.email ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.email
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.email && <p className="text-xs text-red-600 font-medium">{errors.email}</p>}
+                                    {errors.email && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.email}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Phone */}
                                 <div className="space-y-1.5" id={`${formId}-phone`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Số điện thoại <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Số điện thoại <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="tel"
@@ -1000,16 +1318,23 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.phone ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.phone
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.phone && <p className="text-xs text-red-600 font-medium">{errors.phone}</p>}
+                                    {errors.phone && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.phone}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Facebook URL */}
                                 <div className="space-y-1.5" id={`${formId}-facebook_url`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Link Facebook cá nhân <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Link Facebook cá nhân <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -1025,16 +1350,23 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.facebook_url ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.facebook_url
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.facebook_url && <p className="text-xs text-red-600 font-medium">{errors.facebook_url}</p>}
+                                    {errors.facebook_url && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.facebook_url}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Date of Birth */}
                                 <div className="space-y-1.5" id={`${formId}-date_of_birth`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Ngày sinh <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Ngày sinh <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="date"
@@ -1049,26 +1381,33 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.date_of_birth ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark] ${errors.date_of_birth
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.date_of_birth && <p className="text-xs text-red-600 font-medium">{errors.date_of_birth}</p>}
+                                    {errors.date_of_birth && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.date_of_birth}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Gender */}
                                 <div className="space-y-1.5" id={`${formId}-gender`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Giới tính <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Giới tính <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <select
                                         value={form.gender}
                                         onChange={(e) => setForm({ ...form, gender: e.target.value as FormState["gender"] })}
-                                        className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+                                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-white/15 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark]"
                                     >
-                                        <option value="male">Nam</option>
-                                        <option value="female">Nữ</option>
-                                        <option value="other">Khác</option>
-                                        <option value="prefer_not_to_say">Không muốn tiết lộ</option>
+                                        <option value="male" className="bg-[#00092B] text-white">Nam</option>
+                                        <option value="female" className="bg-[#00092B] text-white">Nữ</option>
+                                        <option value="other" className="bg-[#00092B] text-white">Khác</option>
+                                        <option value="prefer_not_to_say" className="bg-[#00092B] text-white">Không muốn tiết lộ</option>
                                     </select>
                                 </div>
                             </div>
@@ -1076,15 +1415,15 @@ export function RecruitmentForm({
 
                         {/* PART 2: Academic Info & Department Selection */}
                         <div className="space-y-6">
-                            <div className="flex items-center gap-3 border-b border-zinc-100 pb-3">
-                                <div className="w-8 h-8 rounded-full bg-red-100 text-[#EA4335] flex items-center justify-center font-bold text-sm">
+                            <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+                                <div className="w-8 h-8 rounded-full bg-[#EA4335]/20 border border-[#EA4335]/40 text-[#EA4335] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(234,67,53,0.3)]">
                                     2
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-zinc-900">
+                                    <h3 className="text-lg font-bold text-white tracking-tight">
                                         Thông tin học tập & Ban ứng tuyển
                                     </h3>
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-zinc-400">
                                         Lựa chọn ban chuyên môn phù hợp nhất với định hướng của bạn.
                                     </p>
                                 </div>
@@ -1092,13 +1431,12 @@ export function RecruitmentForm({
 
                             {/* Department Interactive Visual Radio Cards */}
                             <div className="space-y-2.5" id={`${formId}-department`}>
-                                <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                    Chọn Ban chuyên môn ứng tuyển <span className="text-red-500">*</span>
+                                <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                    Chọn Ban chuyên môn ứng tuyển <span className="text-[#EA4335]">*</span>
                                 </label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Ban chuyên môn">
                                     {departments.map((dept) => {
                                         const isDeptObj = "name" in dept;
-                                        const theme = getDepartmentTheme(dept as Department);
                                         const isSelected = form.department === dept.id;
                                         const deptTitle = isDeptObj ? (dept as Department).name : dept.label;
                                         const deptTag = isDeptObj ? (dept as Department).tag : "";
@@ -1130,10 +1468,7 @@ export function RecruitmentForm({
                                                         });
                                                     }
                                                 }}
-                                                className={`group p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex items-center justify-between cursor-pointer ${isSelected
-                                                    ? `${theme.activeBorder} ${theme.activeBg} shadow-sm border-2`
-                                                    : "border-zinc-200/90 bg-white hover:bg-zinc-50/80 hover:border-zinc-300"
-                                                    }`}
+                                                className={`group p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-left transition-all duration-200 flex items-center justify-between cursor-pointer ${getDepartmentCardStyle(dept.id, isSelected)}`}
                                             >
                                                 <div className="flex items-center gap-3.5">
                                                     <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
@@ -1142,15 +1477,15 @@ export function RecruitmentForm({
                                                             alt={deptTitle}
                                                             width={56}
                                                             height={56}
-                                                            className="w-full h-full object-contain filter drop-shadow-xs"
+                                                            className="w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
                                                         />
                                                     </div>
                                                     <div>
-                                                        <p className={`text-sm font-bold leading-tight ${isSelected ? theme.activeText : "text-zinc-900"}`}>
+                                                        <p className="text-sm font-bold leading-tight text-white">
                                                             {deptTitle}
                                                         </p>
                                                         {deptTag && (
-                                                            <span className="text-[11px] text-zinc-500 font-medium">
+                                                            <span className="text-[11px] text-zinc-400 font-medium">
                                                                 {deptTag}
                                                             </span>
                                                         )}
@@ -1158,10 +1493,7 @@ export function RecruitmentForm({
                                                 </div>
 
                                                 <span
-                                                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isSelected
-                                                        ? `${theme.iconBg} border-transparent text-white`
-                                                        : "border-zinc-300 bg-white"
-                                                        }`}
+                                                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${getDepartmentRadioDotStyle(dept.id, isSelected)}`}
                                                 >
                                                     {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
                                                 </span>
@@ -1169,28 +1501,38 @@ export function RecruitmentForm({
                                         );
                                     })}
                                 </div>
-                                {errors.department && <p className="text-xs text-red-600 font-medium">{errors.department}</p>}
+                                {errors.department && (
+                                    <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                        <span className="text-sm leading-none">⚠️</span>
+                                        <span>{errors.department}</span>
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
                                 {/* University */}
                                 <div className="space-y-1.5 sm:col-span-2" id={`${formId}-university`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Trường <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Trường <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         value={form.university}
                                         onChange={(e) => setForm({ ...form, university: e.target.value })}
-                                        className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-white/15 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500"
                                     />
-                                    {errors.university && <p className="text-xs text-red-600 font-medium">{errors.university}</p>}
+                                    {errors.university && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.university}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Student ID */}
                                 <div className="space-y-1.5" id={`${formId}-student_id`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Mã sinh viên <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Mã sinh viên <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -1206,34 +1548,41 @@ export function RecruitmentForm({
                                                 });
                                             }
                                         }}
-                                        className={`w-full px-4 py-2.5 rounded-xl border text-sm uppercase transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${errors.student_id ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                        className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm uppercase transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.student_id
+                                                ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                : "border-white/15 focus:border-[#4285F4]"
                                             }`}
                                     />
-                                    {errors.student_id && <p className="text-xs text-red-600 font-medium">{errors.student_id}</p>}
+                                    {errors.student_id && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.student_id}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Student Year */}
                                 <div className="space-y-1.5" id={`${formId}-student_year`}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Sinh viên năm <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Sinh viên năm <span className="text-[#EA4335]">*</span>
                                     </label>
                                     <select
                                         value={form.student_year}
                                         onChange={(e) => setForm({ ...form, student_year: e.target.value })}
-                                        className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+                                        className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-white/15 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] bg-white/[0.06] hover:bg-white/[0.09] text-white [color-scheme:dark]"
                                     >
-                                        <option value="1">Năm 1</option>
-                                        <option value="2">Năm 2</option>
-                                        <option value="3">Năm 3</option>
-                                        <option value="4">Năm 4</option>
-                                        <option value="5">Năm 5 / Khác</option>
+                                        <option value="1" className="bg-[#00092B] text-white">Năm 1</option>
+                                        <option value="2" className="bg-[#00092B] text-white">Năm 2</option>
+                                        <option value="3" className="bg-[#00092B] text-white">Năm 3</option>
+                                        <option value="4" className="bg-[#00092B] text-white">Năm 4</option>
+                                        <option value="5" className="bg-[#00092B] text-white">Năm 5 / Khác</option>
                                     </select>
                                 </div>
 
                                 {/* Major Input with Autocomplete Suggestions */}
                                 <div className="space-y-1.5 sm:col-span-2 relative" id={`${formId}-major`} ref={majorContainerRef}>
-                                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
-                                        Ngành học <span className="text-red-500">*</span>
+                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-300">
+                                        Ngành học <span className="text-[#EA4335]">*</span>
                                     </label>
 
                                     <div className="relative">
@@ -1255,7 +1604,9 @@ export function RecruitmentForm({
                                                     });
                                                 }
                                             }}
-                                            className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white ${errors.major ? "border-red-500 bg-red-50/20" : "border-zinc-200 focus:border-blue-500"
+                                            className={`w-full px-4 py-2.5 sm:py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${errors.major
+                                                    ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
+                                                    : "border-white/15 focus:border-[#4285F4]"
                                                 } ${form.major ? "pr-10" : ""}`}
                                         />
 
@@ -1266,7 +1617,7 @@ export function RecruitmentForm({
                                                     setForm((prev) => ({ ...prev, major: "" }));
                                                     setIsMajorOpen(false);
                                                 }}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 rounded-full transition-colors cursor-pointer"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white rounded-full transition-colors cursor-pointer"
                                                 aria-label="Xóa nội dung"
                                             >
                                                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
@@ -1277,9 +1628,9 @@ export function RecruitmentForm({
                                         )}
                                     </div>
 
-                                    {/* Clean Suggestions List (Only pops up when user types and matching items exist) */}
+                                    {/* Suggestions List */}
                                     {isMajorOpen && form.major.trim().length > 0 && filteredMajors.length > 0 && (
-                                        <div className="absolute left-0 right-0 top-full mt-1.5 z-40 bg-white border border-zinc-200/90 rounded-2xl shadow-xl max-h-56 overflow-y-auto divide-y divide-zinc-100 animate-in fade-in-50 zoom-in-98 duration-150">
+                                        <div className="absolute left-0 right-0 top-full mt-1.5 z-40 bg-[#00092B]/95 border border-white/20 rounded-2xl shadow-2xl backdrop-blur-2xl max-h-56 overflow-y-auto divide-y divide-white/10 animate-in fade-in-50 zoom-in-98 duration-150">
                                             {filteredMajors.map((m) => {
                                                 const isSelected = form.major.trim().toLowerCase() === m.label.toLowerCase();
                                                 return (
@@ -1297,7 +1648,7 @@ export function RecruitmentForm({
                                                                 });
                                                             }
                                                         }}
-                                                        className={`w-full text-left px-4 py-2.5 text-xs sm:text-sm flex items-center justify-between hover:bg-blue-50/70 transition-colors cursor-pointer ${isSelected ? "bg-blue-50/90 font-bold text-[#4285F4]" : "text-zinc-800"
+                                                        className={`w-full text-left px-4 py-2.5 text-xs sm:text-sm flex items-center justify-between hover:bg-[#4285F4]/20 transition-colors cursor-pointer ${isSelected ? "bg-[#4285F4]/30 font-bold text-[#4285F4]" : "text-zinc-200"
                                                             }`}
                                                     >
                                                         <span className="leading-snug">{m.label}</span>
@@ -1308,22 +1659,27 @@ export function RecruitmentForm({
                                         </div>
                                     )}
 
-                                    {errors.major && <p className="text-xs text-red-600 font-medium leading-relaxed">{errors.major}</p>}
+                                    {errors.major && (
+                                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.major}</span>
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
                         {/* PART 3: Dynamic Questions with Live Dynamic Character Counters */}
                         <div className="space-y-8">
-                            <div className="flex items-center gap-3 border-b border-zinc-100 pb-3">
-                                <div className="w-8 h-8 rounded-full bg-amber-100 text-[#FBBC05] flex items-center justify-center font-bold text-sm">
+                            <div className="flex items-center gap-3 border-b border-white/10 pb-3">
+                                <div className="w-8 h-8 rounded-full bg-[#FBBC05]/20 border border-[#FBBC05]/40 text-[#FBBC05] flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(251,188,5,0.3)]">
                                     3
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-zinc-900">
+                                    <h3 className="text-lg font-bold text-white tracking-tight">
                                         Câu hỏi ứng tuyển
                                     </h3>
-                                    <p className="text-xs text-zinc-500">
+                                    <p className="text-xs text-zinc-400">
                                         Hãy chia sẻ chân thành để câu lạc bộ hiểu rõ hơn về bạn.
                                     </p>
                                 </div>
@@ -1337,7 +1693,7 @@ export function RecruitmentForm({
                                 )}
 
                                 {regularDeptQuestions.length > 0 && (
-                                    <div className={`space-y-6 ${commonQuestions.length > 0 ? "pt-4 border-t border-zinc-100" : ""}`}>
+                                    <div className={`space-y-6 ${commonQuestions.length > 0 ? "pt-6 border-t border-white/10" : ""}`}>
                                         {regularDeptQuestions.map((q) => renderQuestionField(q))}
                                     </div>
                                 )}
@@ -1346,17 +1702,20 @@ export function RecruitmentForm({
                                 {isSubTechLeadEligible && subTechLeadQuestions.length > 0 && (
                                     <div
                                         id={`${formId}-sub-tech-lead-section`}
-                                        className="rounded-2xl sm:rounded-3xl border-2 border-blue-200/90 bg-gradient-to-br from-blue-50/80 via-white to-blue-50/40 p-5 sm:p-7 space-y-6 shadow-sm relative overflow-hidden transition-all duration-300 animate-in fade-in-50"
+                                        className="rounded-2xl sm:rounded-3xl border border-[#4285F4]/40 bg-gradient-to-br from-[#4285F4]/15 via-white/[0.03] to-[#4285F4]/5 p-5 sm:p-7 space-y-6 shadow-[0_0_30px_rgba(66,133,244,0.15)] relative overflow-hidden backdrop-blur-md transition-all duration-300 animate-in fade-in-50"
                                     >
                                         {/* Subtle background glow */}
                                         <div className="absolute -top-10 -right-10 w-44 h-44 bg-blue-400/10 rounded-full blur-2xl pointer-events-none" />
 
                                         {/* Header */}
-                                        <div className="space-y-2 pb-4 border-b border-blue-100/90 relative z-10">
-                                            <h4 className="text-base sm:text-lg font-bold text-zinc-900 flex items-center gap-2">
+                                        <div className="space-y-2 pb-4 border-b border-blue-400/20 relative z-10">
+                                            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#4285F4]/20 border border-[#4285F4]/40 text-[#4285F4] text-[11px] font-bold tracking-wider">
+                                                <span>✨ Vị trí đặc biệt</span>
+                                            </div>
+                                            <h4 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                                                 Ứng tuyển Sub-Tech Lead (Web)
                                             </h4>
-                                            <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed max-w-2xl">
+                                            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-2xl">
                                                 GDGoC PTIT mở cơ hội tuyển chọn <strong>Sub-Tech Lead mảng Web</strong> dành cho sinh viên có năng lực chuyên môn tốt, đam mê xây dựng sản phẩm và mong muốn dẫn dắt, định hướng kỹ thuật cho các dự án & thành viên trong CLB.
                                             </p>
                                         </div>
@@ -1372,21 +1731,21 @@ export function RecruitmentForm({
 
                         {/* Submission Error Alert with Fallback Google Form */}
                         {submitResult && !submitResult.success && (
-                            <div className="p-4 sm:p-5 rounded-2xl bg-red-50/90 border border-red-200 text-red-700 text-sm font-medium space-y-3 shadow-xs animate-in fade-in-50 duration-200">
+                            <div className="p-4 sm:p-5 rounded-2xl bg-red-950/40 border border-red-500/50 text-red-200 text-sm font-medium space-y-3 shadow-lg shadow-red-950/40 animate-in fade-in-50 duration-200">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xl">⚠️</span>
                                     <span className="font-semibold">{submitResult.message}</span>
                                 </div>
                                 {fallbackGoogleFormUrl && (
-                                    <div className="pt-3 border-t border-red-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                                        <span className="text-red-800">
+                                    <div className="pt-3 border-t border-red-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                                        <span className="text-red-300">
                                             Nếu sự cố vẫn tiếp diễn, bạn có thể nộp qua Google Form dự phòng:
                                         </span>
                                         <a
                                             href={fallbackGoogleFormUrl}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="font-bold underline text-[#4285F4] hover:text-blue-800 inline-flex items-center gap-1 shrink-0"
+                                            className="font-bold underline text-[#4285F4] hover:text-blue-300 inline-flex items-center gap-1 shrink-0"
                                         >
                                             <span>Mở Google Form dự phòng ↗</span>
                                         </a>
@@ -1396,16 +1755,16 @@ export function RecruitmentForm({
                         )}
 
                         {/* Submit Button */}
-                        <div className="pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="text-xs text-zinc-500 flex items-center gap-1.5">
-                                <ShieldCheckIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="text-xs text-zinc-400 flex items-center gap-1.5">
+                                <ShieldCheckIcon className="w-4 h-4 text-[#34A853] shrink-0" />
                                 <span>Thông tin của bạn được bảo mật tuyệt đối theo chính sách GDGoC.</span>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-base font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-base font-bold text-white bg-gradient-to-r from-[#4285F4] via-[#3b78e7] to-[#1a73e8] hover:from-[#3367D6] hover:to-[#174ea6] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_25px_rgba(66,133,244,0.45)] hover:shadow-[0_0_35px_rgba(66,133,244,0.65)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                             >
                                 {submitting ? (
                                     <>

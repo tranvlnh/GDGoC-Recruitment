@@ -1,7 +1,8 @@
 {
-  "applicationOpenAt": "2026-08-01T00:00:00+07:00",
-  "applicationCloseAt": "2026-09-30T23:59:59+07:00",
-  "fallbackGoogleFormUrl": "https://forms.gle/GDGoCPTITGen5",
+  "applicationOpenAt": "2026-08-19T00:00:00+07:00",
+  "applicationCloseAt": "2026-08-22T23:59:59+07:00",
+  "fallbackGoogleFormUrl": "https://forms.gle/CaDCcDj7m8EJgtu28",
+  "messengerGroupUrl": "https://www.messenger.com/j/AbZEQb5lmw3Rryun/?send_source=gc%3Acopy_invite_link_c",
   "site": {
     "url": "https://gdscptit.dev",
     "name": "GDGoC PTIT",
@@ -12,6 +13,11 @@
     "locale": "vi_VN",
     "themeColor": "#4285F4",
     "keywords": [
+      "GDG on Campus",
+      "GDG on Campus: PTIT",
+      "Google Developer Groups on Campus: PTIT",
+      "GDG on Campus - PTIT",
+      "Google Developer Groups on Campus - PTIT",
       "GDGoC",
       "GDGoC PTIT",
       "GDSC PTIT",
