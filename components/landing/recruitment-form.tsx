@@ -232,12 +232,11 @@ export function RecruitmentForm({
     );
 
     const activeQuestions = useMemo(
-        () =>
-            [
-                ...commonQuestions,
-                ...regularDeptQuestions,
-                ...subTechLeadQuestions,
-            ].sort((a, b) => a.order - b.order),
+        () => [
+            ...commonQuestions,
+            ...regularDeptQuestions,
+            ...subTechLeadQuestions,
+        ],
         [commonQuestions, regularDeptQuestions, subTechLeadQuestions],
     );
 

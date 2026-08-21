@@ -7,9 +7,7 @@ import { getDepartmentTheme, getDepartmentIcon } from "@/lib/departments";
 
 export { getDepartmentTheme, getDepartmentIcon };
 
-export const questions = questionsSchema
-    .parse(rawQuestions)
-    .sort((a, b) => a.order - b.order);
+export const questions = questionsSchema.parse(rawQuestions);
 
 export const commonQuestions = questions.filter((q) => !q.departments || q.departments.length === 0);
 
@@ -62,34 +60,38 @@ export function getApplicableQuestions(context: {
     answers?: Record<string, string | string[]>;
 }) {
     const applicable = questions.filter((q) => isQuestionApplicable(q, context));
-    const common = applicable
-        .filter((q) => !q.departments || q.departments.length === 0)
-        .sort((a, b) => a.order - b.order);
-    const dept = applicable
-        .filter(
-            (q) =>
-                q.departments &&
-                q.departments.length > 0 &&
-                q.category !== "sub_tech_lead_web",
-        )
-        .sort((a, b) => a.order - b.order);
-    const subTech = applicable
-        .filter((q) => q.category === "sub_tech_lead_web")
-        .sort((a, b) => a.order - b.order);
+    const common = applicable.filter(
+        (q) => !q.departments || q.departments.length === 0,
+    );
+    const dept = applicable.filter(
+        (q) =>
+            q.departments &&
+            q.departments.length > 0 &&
+            q.category !== "sub_tech_lead_web",
+    );
+    const subTech = applicable.filter(
+        (q) => q.category === "sub_tech_lead_web",
+    );
 
     return [...common, ...dept, ...subTech];
 }
 
 export function getQuestionsForDepartment(departmentId: string) {
-    return questions
-        .filter((q) => !q.departments || q.departments.length === 0 || q.departments.includes(departmentId))
-        .sort((a, b) => a.order - b.order);
+    return questions.filter(
+        (q) =>
+            !q.departments ||
+            q.departments.length === 0 ||
+            q.departments.includes(departmentId),
+    );
 }
 
 export function getDepartmentSpecificQuestions(departmentId: string) {
-    return questions
-        .filter((q) => q.departments && q.departments.length > 0 && q.departments.includes(departmentId))
-        .sort((a, b) => a.order - b.order);
+    return questions.filter(
+        (q) =>
+            q.departments &&
+            q.departments.length > 0 &&
+            q.departments.includes(departmentId),
+    );
 }
 export const majors = optionSchema.array().parse(rawMajors);
 export const departments: Department[] = departmentSchema.array().parse(rawDepartments);

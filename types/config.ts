@@ -45,7 +45,7 @@ const baseQuestionSchema = z.object({
     id: z.string().min(1),
     label: z.string().min(1),
     required: z.boolean(),
-    order: z.number().int().nonnegative(),
+    order: z.number().int().nonnegative().optional(),
     departments: z.array(z.string().min(1)).optional(),
     minYear: z.number().int().positive().optional(),
     category: z.string().optional(),

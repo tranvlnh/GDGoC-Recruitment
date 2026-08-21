@@ -4,7 +4,6 @@
     "type": "multiple_choice",
     "label": "Bên cạnh lịch học trên trường và các hoạt động cá nhân, bạn dự kiến có thể dành khoảng bao nhiêu thời gian mỗi tuần cho các hoạt động & dự án của GDGoC PTIT?",
     "required": true,
-    "order": 1,
     "multiple": false,
     "options": [
       {
@@ -31,7 +30,6 @@
     "type": "essay",
     "label": "Hãy chia sẻ ngắn gọn về một kỷ niệm/dự án làm việc nhóm đáng nhớ của bạn (hoặc một tình huống gặp khó khăn/bất đồng ý kiến và cách bạn đã cùng đồng đội vượt qua).",
     "required": false,
-    "order": 2,
     "minLength": 20,
     "maxLength": 1000,
     "departments": []
@@ -39,9 +37,8 @@
   {
     "id": "common_achievements",
     "type": "essay",
-    "label": "Bạn đã từng tham gia các cuộc thi nào hoặc đạt được thành tích, giải thưởng gì nổi bật chưa (ví dụ: HSG cấp Tỉnh/Thành phố/Quốc gia, cuộc thi học thuật, nghiên cứu khoa học, hackathon, thiết kế, truyền thông, phong trào,...)? Hãy chia sẻ ngắn gọn cùng GDGoC nhé! (Nếu chưa có, bạn có thể bỏ qua câu hỏi này)",
+    "label": "Bạn đã từng tham gia các cuộc thi nào hoặc đạt được thành tích, giải thưởng gì nổi bật chưa (ví dụ: HSG cấp Tỉnh/Thành phố/Quốc gia, cuộc thi học thuật, nghiên cứu khoa học, hackathon, thiết kế, truyền thông, phong trào,...)? Hãy chia sẻ ngắn gọn cùng GDGoC nhé! (Nếu chưa có, bạn có thể bỏ qua câu này)",
     "required": false,
-    "order": 3,
     "minLength": 10,
     "maxLength": 1000,
     "departments": []
@@ -51,7 +48,6 @@
     "type": "essay",
     "label": "Theo bạn, Ban Truyền thông đóng vai trò như thế nào trong hoạt động của một CLB Công nghệ?",
     "required": true,
-    "order": 4,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -63,7 +59,6 @@
     "type": "essay",
     "label": "Bạn đã từng tham gia hoạt động/dự án nào liên quan đến Truyền thông, Content, Media, Social Media,... chưa?",
     "required": false,
-    "order": 5,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -75,7 +70,6 @@
     "type": "multiple_choice",
     "label": "GDG on Campus PTIT là một CLB định hướng về công nghệ. Khi tham gia ban Communications, bạn mong muốn phát triển những kỹ năng hoặc khía cạnh nào của bản thân?",
     "required": true,
-    "order": 6,
     "multiple": true,
     "options": [
       {
@@ -105,7 +99,6 @@
     "type": "essay",
     "label": "Bên cạnh Truyền thông, bạn có mong muốn tìm hiểu thêm về Công nghệ trong quá trình tham gia CLB không? Nếu có, bạn muốn tìm hiểu điều gì?",
     "required": false,
-    "order": 7,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -117,7 +110,6 @@
     "type": "multiple_choice",
     "label": "Bạn quan tâm đến lĩnh vực nào trong Design?",
     "required": true,
-    "order": 4,
     "multiple": true,
     "options": [
       {
@@ -151,7 +143,6 @@
     "type": "multiple_choice",
     "label": "Bạn muốn phát triển điều gì nhất khi tham gia Ban Design?",
     "required": true,
-    "order": 5,
     "multiple": false,
     "options": [
       {
@@ -189,7 +180,6 @@
     "type": "essay",
     "label": "Nếu trở thành thành viên Ban Design, bạn mong muốn được thử sức với điều gì và đóng góp gì cho hình ảnh của GDG On Campus PTIT?",
     "required": true,
-    "order": 6,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -201,7 +191,6 @@
     "type": "essay",
     "label": "Bạn có Portfolio hoặc sản phẩm thiết kế từng thực hiện không?",
     "required": false,
-    "order": 7,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -213,7 +202,6 @@
     "type": "multiple_choice",
     "label": "Khi gặp một vấn đề chưa từng làm bao giờ, bạn thường làm gì đầu tiên?",
     "required": true,
-    "order": 4,
     "multiple": false,
     "options": [
       {
@@ -243,7 +231,6 @@
     "type": "multiple_choice",
     "label": "Bạn đã từng học lập trình qua hình thức nào?",
     "required": true,
-    "order": 5,
     "multiple": true,
     "options": [
       {
@@ -273,7 +260,6 @@
     "type": "multiple_choice",
     "label": "Có một công nghệ, kĩ năng nào bạn rất muốn được học trong thời gian tới không?",
     "required": true,
-    "order": 6,
     "multiple": false,
     "options": [
       {
@@ -307,7 +293,6 @@
     "type": "essay",
     "label": "Điều gì khiến bạn muốn tham gia ban Technical của GDGoC?",
     "required": true,
-    "order": 7,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -319,7 +304,6 @@
     "type": "essay",
     "label": "Hãy mô tả ngắn gọn dự án bạn tâm đắc nhất (tên dự án, công nghệ sử dụng, vai trò của bạn, và link nếu có). Nếu chưa từng làm dự án nào, có thể bỏ qua câu này.",
     "required": false,
-    "order": 8,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -331,7 +315,6 @@
     "type": "multiple_choice",
     "label": "Bạn có nguyện vọng ứng tuyển vị trí Sub-Tech Lead (Web) cho GDGoC PTIT không?",
     "required": true,
-    "order": 9,
     "multiple": false,
     "options": [
       {
@@ -355,7 +338,6 @@
     "type": "essay",
     "label": "Hãy mô tả kinh nghiệm chuyên môn về Web Development và các công nghệ bạn thành thạo nhất.",
     "required": true,
-    "order": 10,
     "minLength": 20,
     "maxLength": 1500,
     "minYear": 2,
@@ -373,7 +355,6 @@
     "type": "essay",
     "label": "Bạn đã từng có kinh nghiệm quản lý nhóm, phân chia task, định hướng kỹ thuật cho thành viên hoặc giải quyết xung đột kỹ thuật trong team chưa? Hãy chia sẻ một trường hợp cụ thể.",
     "required": true,
-    "order": 11,
     "minLength": 20,
     "maxLength": 1500,
     "minYear": 2,
@@ -391,7 +372,6 @@
     "type": "essay",
     "label": "Nếu đảm nhận vai trò Sub-Tech Lead (Web) tại GDGoC PTIT, định hướng phát triển mảng Web, các dự án thực tế hoặc workshop/training bạn dự định tổ chức cho các thành viên trong nhiệm kỳ tới là gì?",
     "required": true,
-    "order": 12,
     "minLength": 20,
     "maxLength": 1500,
     "minYear": 2,
@@ -409,7 +389,6 @@
     "type": "essay",
     "label": "Vui lòng cung cấp link GitHub cá nhân, Portfolio, hoặc link demo/repository các dự án Web bạn từng tham gia phát triển.",
     "required": true,
-    "order": 13,
     "minLength": 5,
     "maxLength": 1000,
     "minYear": 2,
@@ -427,7 +406,6 @@
     "type": "multiple_choice",
     "label": "Theo bạn, điều gì khiến một thành viên muốn gắn bó lâu dài với CLB?",
     "required": true,
-    "order": 4,
     "multiple": true,
     "options": [
       {
@@ -469,7 +447,6 @@
     "type": "multiple_choice",
     "label": "Theo bạn, yếu tố nào quan trọng nhất để một team hoạt động hiệu quả?",
     "required": true,
-    "order": 5,
     "multiple": true,
     "options": [
       {
@@ -503,7 +480,6 @@
     "type": "multiple_choice",
     "label": "Nếu một thành viên liên tục không hoàn thành nhiệm vụ được giao, theo bạn HRLG nên làm gì?",
     "required": true,
-    "order": 6,
     "multiple": true,
     "options": [
       {
@@ -541,7 +517,6 @@
     "type": "essay",
     "label": "Bạn mong muốn nhận được điều gì khi trở thành thành viên GDG On Campus PTIT?",
     "required": true,
-    "order": 7,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
@@ -553,7 +528,6 @@
     "type": "essay",
     "label": "Bạn mong muốn phát triển bản thân như thế nào khi tham gia HRLG?",
     "required": true,
-    "order": 8,
     "minLength": 10,
     "maxLength": 1000,
     "departments": [
