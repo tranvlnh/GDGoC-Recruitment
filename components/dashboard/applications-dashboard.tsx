@@ -648,15 +648,15 @@ export function ApplicationsDashboard() {
 
                     {/* 3c. Desktop Data Table View (Hidden on mobile < md) */}
                     <div className="hidden md:block overflow-x-auto">
-                        <table className="w-full text-left text-sm min-w-[760px]">
+                        <table className="w-full text-left text-sm min-w-190">
                             <thead className="border-b border-slate-200 bg-slate-50/75 text-xs font-semibold uppercase tracking-wider text-slate-500">
                                 <tr>
-                                    <th className="w-[28%] min-w-[220px] px-6 py-3.5">Ứng viên</th>
-                                    <th className="w-[17%] min-w-[140px] px-5 py-3.5 whitespace-nowrap">Ban chuyên môn</th>
-                                    <th className="w-[24%] min-w-[180px] max-w-[240px] px-5 py-3.5">Ngành & Năm</th>
-                                    <th className="w-[11%] min-w-[95px] px-5 py-3.5 whitespace-nowrap">Ngày nộp</th>
-                                    <th className="w-[10%] min-w-[105px] px-5 py-3.5 whitespace-nowrap">Trạng thái</th>
-                                    <th className="w-[10%] min-w-[155px] px-6 py-3.5 text-right whitespace-nowrap">Hành động</th>
+                                    <th className="w-[28%] min-w-55 px-6 py-3.5">Ứng viên</th>
+                                    <th className="w-[17%] min-w-35 px-5 py-3.5 whitespace-nowrap">Ban chuyên môn</th>
+                                    <th className="w-[24%] min-w-45 max-w-60 px-5 py-3.5">Ngành & Năm</th>
+                                    <th className="w-[11%] min-w-23.75 px-5 py-3.5 whitespace-nowrap">Ngày nộp</th>
+                                    <th className="w-[10%] min-w-26.25 px-5 py-3.5 whitespace-nowrap">Trạng thái</th>
+                                    <th className="w-[10%] min-w-38.75 px-6 py-3.5 text-right whitespace-nowrap">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -838,7 +838,7 @@ function ApplicationRow({
                             {application.full_name}
                         </button>
                         <div className="flex items-center gap-2 text-xs text-slate-500">
-                            <span className="truncate max-w-[160px] sm:max-w-[200px]" title={application.email}>
+                            <span className="truncate max-w-40 sm:max-w-50" title={application.email}>
                                 {application.email}
                             </span>
                             {application.student_id && (
@@ -866,7 +866,7 @@ function ApplicationRow({
             {/* Major & Year */}
             <td className="px-5 py-4">
                 <div
-                    className="font-medium text-slate-800 line-clamp-2 text-xs sm:text-sm leading-snug break-words max-w-[220px] xl:max-w-[260px]"
+                    className="font-medium text-slate-800 line-clamp-2 text-xs sm:text-sm leading-snug wrap-break-word max-w-55 xl:max-w-65"
                     title={majorLabel(application.major)}
                 >
                     {majorLabel(application.major)}
@@ -1000,7 +1000,7 @@ function ApplicationMobileCard({
                     </span>
                 )}
                 <span
-                    className="truncate text-slate-600 max-w-[200px]"
+                    className="truncate text-slate-600 max-w-50"
                     title={majorLabel(application.major)}
                 >
                     {majorLabel(application.major)} (Năm {application.student_year})
@@ -1542,7 +1542,7 @@ function ApplicationModal({
                                 <span className="text-[11px] font-medium text-slate-500">Ngành học & Trường</span>
                                 <div className="mt-1">
                                     <div
-                                        className="text-sm font-semibold text-slate-900 break-words"
+                                        className="text-sm font-semibold text-slate-900 wrap-break-word"
                                         title={majorLabel(application.major)}
                                     >
                                         {majorLabel(application.major)}
@@ -1609,7 +1609,7 @@ function ApplicationModal({
                     {/* Section: Sub-Tech Lead (Web) Special Questions */}
                     {hasSubTechLeadAnswers && (
                         <div className="border-t border-blue-100 pt-5">
-                            <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-white to-blue-50/40 p-4 sm:p-5 space-y-4">
+                            <div className="rounded-2xl border border-blue-200 bg-linear-to-br from-blue-50/70 via-white to-blue-50/40 p-4 sm:p-5 space-y-4">
                                 <div className="flex items-center gap-2 pb-2 border-b border-blue-100">
                                     <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#4285F4] text-white text-xs font-bold shadow-2xs">
                                         ⚡
