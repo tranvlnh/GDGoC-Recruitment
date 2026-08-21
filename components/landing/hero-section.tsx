@@ -37,12 +37,8 @@ export function HeroSection({ isOpen, openAt, closeAt }: HeroSectionProps) {
 
             {/* 2. Hero Text Displayed Directly on Cover */}
             <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-24 sm:pt-32 sm:pb-36 text-center flex flex-col items-center justify-center space-y-3.5 sm:space-y-5">
-                {/* Main Title with Vibrant Google Gradient */}
-                <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-snug sm:leading-tight drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)] max-w-4xl tracking-tight">
-                    Trở thành thành viên của{" "}
-                    <span className="inline-block bg-gradient-to-r from-[#4285F4] via-[#EA4335] via-[#FBBC05] to-[#34A853] bg-clip-text text-transparent filter drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
-                        GDGoC ngay!
-                    </span>
+                <h1 className="text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-snug sm:leading-tight drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)] max-w-4xl tracking-tight text-balance">
+                    Trở thành thành viên của Google Developer Group on Campus : PTIT
                 </h1>
 
                 {/* Timeline & Recruitment Window Status Badge */}
@@ -76,30 +72,6 @@ export function HeroSection({ isOpen, openAt, closeAt }: HeroSectionProps) {
                     </a>
                 </div>
             </div>
-
-            {/* 3. Scroll Down Indicator */}
-            <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
-                <a
-                    href="#about"
-                    aria-label="Cuộn xuống để xem thông tin chi tiết về GDGoC PTIT"
-                    className="group flex flex-col items-center gap-1 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur-md border border-white/20 text-white/90 hover:text-white transition-all duration-300 transform hover:translate-y-0.5"
-                >
-                    <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-white/90">
-                        Khám phá
-                    </span>
-                    <svg
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/90 animate-bounce"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2.5}
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </a>
-            </div>
         </section>
     );
 }
-
-

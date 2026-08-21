@@ -1,7 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Google_Sans } from "next/font/google";
 import { settings } from "@/lib/config";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import "./globals.css";
+
+const googleSans = Google_Sans({
+    subsets: ["vietnamese"],
+    weight: "variable",
+    adjustFontFallback: false,
+});
 
 const { site } = settings;
 
@@ -88,7 +95,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="vi">
-            <body className="min-h-screen bg-[#f8f9fa] text-zinc-900 antialiased">
+            <body className={`${googleSans.className} min-h-screen bg-[#f8f9fa] text-zinc-900 antialiased`}>
                 {children}
                 <GoogleAnalytics />
             </body>
