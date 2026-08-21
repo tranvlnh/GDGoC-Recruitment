@@ -26,29 +26,24 @@ export function Footer() {
                         </h4>
                         <ul className="space-y-2 text-sm text-zinc-300">
                             <li>
-                                <a href="#about" className="hover:text-white transition-colors">
-                                    Về GDGoC PTIT
-                                </a>
+                                 <a href="#about" className="hover:text-white transition-colors">
+                                     Về GDGoC PTIT
+                                 </a>
                             </li>
                             <li>
-                                <a href="#activities" className="hover:text-white transition-colors">
-                                    Hoạt động tiêu biểu
-                                </a>
+                                 <a href="#mission" className="hover:text-white transition-colors">
+                                     Sứ mệnh
+                                 </a>
                             </li>
                             <li>
-                                <a href="#mission" className="hover:text-white transition-colors">
-                                    Sứ mệnh & Mục tiêu
-                                </a>
+                                 <a href="#departments" className="hover:text-white transition-colors">
+                                     Ban chuyên môn
+                                 </a>
                             </li>
                             <li>
-                                <a href="#departments" className="hover:text-white transition-colors">
-                                    Ban chuyên môn
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
-                                    Đăng ký tuyển thành viên
-                                </a>
+                                 <a href="#apply" className="hover:text-[#4285F4] transition-colors font-semibold">
+                                     Đăng ký tuyển thành viên
+                                 </a>
                             </li>
                         </ul>
                     </div>

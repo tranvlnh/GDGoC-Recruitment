@@ -2,7 +2,7 @@ import { departments, majors, questions, settings, getApplicationWindowStatus } 
 import { FloatingNavbar } from "@/components/landing/floating-navbar";
 import { HeroSection } from "@/components/landing/hero-section";
 import { AboutSection } from "@/components/landing/about-section";
-import { MissionActivitiesSection } from "@/components/landing/mission-activities-section";
+import { MissionSection } from "@/components/landing/mission-section";
 import { DepartmentsSection } from "@/components/landing/departments-section";
 import { RecruitmentForm } from "@/components/landing/recruitment-form";
 import { Footer } from "@/components/landing/footer";
@@ -31,8 +31,8 @@ export default function Home() {
                 {/* 2. About Section */}
                 <AboutSection />
 
-                {/* 3. Mission & Activities Showcase (Merged) */}
-                <MissionActivitiesSection />
+                {/* 3. Mission Showcase */}
+                <MissionSection />
 
                 {/* 4. Departments (4 Google Colored Groups) */}
                 <DepartmentsSection departments={departments} />

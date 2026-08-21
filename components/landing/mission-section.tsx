@@ -94,7 +94,7 @@ const THEME_STYLES = {
     },
 };
 
-export function MissionActivitiesSection() {
+export function MissionSection() {
     const [activePillarIndex, setActivePillarIndex] = useState<number>(0);
     const [imageIndices, setImageIndices] = useState<number[]>([0, 0, 0, 0]);
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -112,7 +112,6 @@ export function MissionActivitiesSection() {
     const isMouseDown = useRef<boolean>(false);
 
     const activePillar = PLANET_PILLARS[activePillarIndex];
-    const theme = THEME_STYLES[activePillar.colorKey];
     const currentHeroImgIdx = imageIndices[activePillarIndex] || 0;
 
     const changePhoto = (pillarIdx: number, direction: "next" | "prev") => {
@@ -234,7 +233,7 @@ export function MissionActivitiesSection() {
 
     return (
         <section
-            id="activities"
+            id="mission"
             className="py-12 sm:py-16 bg-[#0c0d12] text-white relative scroll-mt-20 overflow-hidden select-none border-y border-zinc-800/80"
         >
             {/* 1. Pure Background Cover Mission Image */}
@@ -253,8 +252,8 @@ export function MissionActivitiesSection() {
             <div className="absolute top-1/3 -right-48 w-96 h-96 bg-[#EA4335]/10 rounded-full blur-3xl pointer-events-none z-0" />
             <div className="absolute -bottom-24 left-1/3 w-96 h-96 bg-[#34A853]/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-            {/* Compatibility anchor */}
-            <div id="mission" className="absolute -top-20 pointer-events-none" />
+            {/* Compatibility anchor for old links */}
+            <div id="activities" className="absolute -top-20 pointer-events-none" />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
                 {/* Solar Planetary Orbital Arena */}
