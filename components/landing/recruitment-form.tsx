@@ -1088,19 +1088,19 @@ export function RecruitmentForm({
                             </h3>
                             <p className="text-sm sm:text-base text-zinc-300 max-w-md mx-auto leading-relaxed">
                                 {reason === "not_opened"
-                                    ? `Cổng đăng ký sẽ chính thức mở vào ngày ${openAt.toLocaleDateString("vi-VN")}. Hãy theo dõi fanpage GDGoC PTIT để không bỏ lỡ!`
-                                    : `Thời hạn nhận đơn ứng tuyển Gen 5 đã kết thúc vào ngày ${closeAt.toLocaleDateString("vi-VN")}. Cảm ơn bạn đã quan tâm đến GDGoC PTIT!`}
+                                    ? `Cổng đăng ký sẽ chính thức mở vào ngày ${openAt.toLocaleDateString("vi-VN")}. Hãy theo dõi fanpage GDG on Campus: PTIT để không bỏ lỡ!`
+                                    : `Thời hạn nhận đơn ứng tuyển Gen 5 đã kết thúc vào ngày ${closeAt.toLocaleDateString("vi-VN")}. Cảm ơn bạn đã quan tâm đến GDG on Campus: PTIT!`}
                             </p>
                         </div>
                         <div className="pt-2">
                             <a
-                                href="https://facebook.com/gdgoc.ptit"
+                                href="https://facebook.com/gdsc.ptit"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
                             >
                                 <FacebookIcon className="w-4 h-4" />
-                                <span>Theo dõi Fanpage GDGoC PTIT</span>
+                                <span>Theo dõi Fanpage GDG on Campus: PTIT</span>
                             </a>
                         </div>
                     </div>
@@ -1145,7 +1145,7 @@ export function RecruitmentForm({
                                 </a>
                             )}
                             <a
-                                href="https://facebook.com/gdgoc.ptit"
+                                href="https://facebook.com/gdsc.ptit"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
@@ -1757,7 +1757,7 @@ export function RecruitmentForm({
                         <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="text-xs text-zinc-400 flex items-center gap-1.5">
                                 <ShieldCheckIcon className="w-4 h-4 text-[#34A853] shrink-0" />
-                                <span>Thông tin của bạn được bảo mật tuyệt đối theo chính sách GDGoC.</span>
+                                <span>Thông tin của bạn được bảo mật tuyệt đối theo chính sách GDG on Campus.</span>
                             </div>
 
                             <button

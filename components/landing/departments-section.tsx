@@ -27,7 +27,7 @@ export function getDepartmentPlanet(deptId?: string): string {
 export function getDepartmentShortLabel(deptId?: string, isCenter = false): string {
     switch (deptId) {
         case "tech":
-            return isCenter ? "Ban Kỹ Thuật" : "Kỹ Thuật";
+            return isCenter ? "Ban Chuyên Môn" : "Chuyên môn";
         case "design":
             return isCenter ? "Ban Thiết Kế" : "Thiết Kế";
         case "pr":
