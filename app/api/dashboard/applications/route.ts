@@ -18,9 +18,14 @@ export async function GET(request: NextRequest) {
   if (status && !applicationStatuses.includes(status as (typeof applicationStatuses)[number])) {
     return NextResponse.json({ error: "Status không hợp lệ" }, { status: 400 });
   }
-  if (major && !majors.some((item) => item.id === major)) {
-    return NextResponse.json({ error: "Ngành không hợp lệ" }, { status: 400 });
+  let matchingMajor: (typeof majors)[number] | undefined;
+  if (major) {
+    matchingMajor = majors.find((item) => item.id === major || item.label === major);
+    if (!matchingMajor) {
+      return NextResponse.json({ error: "Ngành không hợp lệ" }, { status: 400 });
+    }
   }
+
   if (department && !departments.some((item) => item.id === department)) {
     return NextResponse.json({ error: "Ban chuyên môn không hợp lệ" }, { status: 400 });
   }
@@ -28,11 +33,15 @@ export async function GET(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
   let query = supabase.from("applications").select("*", { count: "exact" });
   if (status) query = query.eq("status", status);
-  if (major) query = query.eq("major", major);
+  if (matchingMajor) {
+    query = query.in("major", Array.from(new Set([matchingMajor.id, matchingMajor.label])));
+  }
   if (department) query = query.eq("department", department);
   if (search) {
-    const escaped = search.replace(/[%_,()]/g, "");
-    query = query.or(`full_name.ilike.%${escaped}%,email.ilike.%${escaped}%`);
+    const sanitized = search.replace(/["\\%_,()]/g, "").trim();
+    if (sanitized) {
+      query = query.or(`full_name.ilike."%${sanitized}%",email.ilike."%${sanitized}%"`);
+    }
   }
 
   const [

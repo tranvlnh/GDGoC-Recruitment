@@ -2,17 +2,26 @@ import { departmentLabel, majorLabel, questions } from "@/lib/config";
 import type { Application, Answer } from "@/types/application";
 
 function escapeCsv(value: string | number | null | undefined) {
-    const text = String(value ?? "");
+    let text = String(value ?? "");
+    // Prevent CSV Formula Injection (CWE-1236)
+    // Excel, Google Sheets, and LibreOffice execute formulas if first character is =, +, -, @, \t, or \r
+    if (/^[=+\-@\t\r]/.test(text)) {
+        text = `'${text}`;
+    }
     return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
 function answerLabel(questionId: string, answer: Answer | undefined) {
     if (!answer) return "";
     const question = questions.find((item) => item.id === questionId);
-    if (!question)
-        return Array.isArray(answer.value)
-            ? answer.value.join(", ")
+    if (!question) {
+        if (Array.isArray(answer.value)) {
+            return answer.value.map((v) => (typeof v === "string" && v.startsWith("other:") ? `Khác: ${v.slice("other:".length)}` : v)).join(", ");
+        }
+        return typeof answer.value === "string" && answer.value.startsWith("other:")
+            ? `Khác: ${answer.value.slice("other:".length)}`
             : answer.value;
+    }
     if (question.type === "essay")
         return typeof answer.value === "string"
             ? answer.value
@@ -20,9 +29,12 @@ function answerLabel(questionId: string, answer: Answer | undefined) {
     const values = Array.isArray(answer.value) ? answer.value : [answer.value];
     return values
         .map(
-            (value) =>
-                question.options.find((option) => option.id === value)?.label ??
-                value,
+            (value) => {
+                if (typeof value === "string" && value.startsWith("other:")) {
+                    return `Khác: ${value.slice("other:".length)}`;
+                }
+                return question.options.find((option) => option.id === value)?.label ?? value;
+            },
         )
         .join(", ");
 }
