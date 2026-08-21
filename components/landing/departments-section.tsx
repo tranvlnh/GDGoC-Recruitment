@@ -267,7 +267,7 @@ export function DepartmentsSection({
                     </h2>
 
                     <p className="text-xs sm:text-sm text-zinc-300 font-normal">
-                        Khám phá nhân vật đại diện cùng sứ mệnh của từng ban. Hãy chọn vị trí để cùng GDGoC PTIT tỏa sáng!
+                        Khám phá nhân vật đại diện cùng sứ mệnh của từng ban. Hãy chọn vị trí để cùng GDG on Campus: PTIT tỏa sáng!
                     </p>
                 </div>
 

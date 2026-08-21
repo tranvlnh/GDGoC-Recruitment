@@ -10,6 +10,7 @@ import {
     ArrowRightIcon,
     ShieldCheckIcon,
     FacebookIcon,
+    MessengerIcon,
 } from "./google-icons";
 
 type RecruitmentFormProps = {
@@ -21,6 +22,7 @@ type RecruitmentFormProps = {
     openAt: Date;
     closeAt: Date;
     fallbackGoogleFormUrl?: string;
+    messengerGroupUrl?: string;
 };
 
 type FormState = {
@@ -40,6 +42,7 @@ type FormState = {
 };
 
 const STORAGE_KEY = "gdgoc_recruitment_form_draft";
+const SUBMITTED_KEY = "gdgoc_recruitment_form_submitted";
 
 export function RecruitmentForm({
     departments,
@@ -50,6 +53,7 @@ export function RecruitmentForm({
     openAt,
     closeAt,
     fallbackGoogleFormUrl,
+    messengerGroupUrl,
 }: RecruitmentFormProps) {
     const defaultUniversity = "Học viện Công nghệ Bưu chính Viễn thông";
     const formId = useId();
@@ -108,9 +112,18 @@ export function RecruitmentForm({
     const prevDeptRef = useRef(form.department);
     const prevYearRef = useRef(form.student_year);
 
-    // Restore draft from localStorage on initial client mount
+    // Restore draft and submitted state from localStorage on initial client mount
     useEffect(() => {
         try {
+            // Check if user previously submitted successfully
+            const savedSubmission = localStorage.getItem(SUBMITTED_KEY);
+            if (savedSubmission) {
+                const parsedSub = JSON.parse(savedSubmission);
+                if (parsedSub && parsedSub.success) {
+                    setSubmitResult(parsedSub);
+                }
+            }
+
             const savedDraft = localStorage.getItem(STORAGE_KEY);
             if (savedDraft) {
                 const parsed = JSON.parse(savedDraft);
@@ -153,13 +166,13 @@ export function RecruitmentForm({
                 }
             }
         } catch (e) {
-            console.warn("Could not restore recruitment form draft from localStorage:", e);
+            console.warn("Could not restore recruitment form draft or submission from localStorage:", e);
         } finally {
             setIsDraftRestored(true);
         }
     }, [departments, questions]);
 
-    // Save draft to localStorage whenever form changes (after draft is restored and if not successfully submitted)
+    // Save draft to localStorage whenever form changes (after draft is restored and if not currently in submitted view)
     useEffect(() => {
         if (!isDraftRestored || submitResult?.success) return;
         try {
@@ -576,18 +589,21 @@ export function RecruitmentForm({
                 return;
             }
 
-            // Success!
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch (e) {
-                console.warn("Could not clear recruitment form draft from localStorage:", e);
-            }
-
-            setSubmitResult({
+            // Success! Save submission state to localStorage so user still sees it upon revisit
+            const successPayload = {
                 success: true,
                 applicationId: data.data?.id,
                 message: "Đơn ứng tuyển của bạn đã được gửi thành công đến GDGoC PTIT!",
-            });
+                submittedAt: new Date().toISOString(),
+            };
+
+            try {
+                localStorage.setItem(SUBMITTED_KEY, JSON.stringify(successPayload));
+            } catch (e) {
+                console.warn("Could not save submitted state to localStorage:", e);
+            }
+
+            setSubmitResult(successPayload);
         } catch (err) {
             console.error("Submission failed:", err);
             setSubmitResult({
@@ -646,6 +662,7 @@ export function RecruitmentForm({
             const maxReq = q.maxLength ?? 1000;
             const isMet = currentLen >= minReq;
             const isExceeded = currentLen > maxReq;
+            const isUnderMin = currentLen > 0 && minReq > 0 && !isMet;
 
             return (
                 <div key={q.id} className="space-y-2" id={`${formId}-${errorKey}`}>
@@ -655,8 +672,8 @@ export function RecruitmentForm({
                         </label>
                         <span
                             className={`self-start sm:self-auto shrink-0 text-[11px] sm:text-xs font-mono px-2.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${
-                                isExceeded
-                                    ? "bg-red-500/20 text-red-300 border-red-400/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
+                                isExceeded || isUnderMin || (hasError && !isMet)
+                                    ? "bg-red-500/20 text-red-400 border-red-500/40 font-bold shadow-[0_0_10px_rgba(234,67,53,0.25)]"
                                     : isMet && currentLen > 0
                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-bold shadow-[0_0_10px_rgba(52,168,83,0.25)]"
                                         : "bg-white/10 text-zinc-400 border-white/15"
@@ -672,19 +689,21 @@ export function RecruitmentForm({
                         value={currentText}
                         onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                         className={`w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border text-sm leading-relaxed transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500 ${
-                            hasError
+                            hasError || isUnderMin || isExceeded
                                 ? "border-red-500/80 bg-red-950/20 focus:border-red-400 focus:ring-red-400/20"
                                 : "border-white/15 focus:border-[#4285F4]"
                         }`}
                     />
 
                     {hasError ? (
-                        <p className="text-xs text-red-400 font-medium leading-relaxed">
-                            {errors[errorKey]}
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>{errors[errorKey]}</span>
                         </p>
-                    ) : currentLen > 0 && minReq > 0 && !isMet ? (
-                        <p className="text-xs text-amber-300 font-medium leading-relaxed">
-                            Cần viết ít nhất {minReq} ký tự.
+                    ) : isUnderMin ? (
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>Cần viết ít nhất {minReq} ký tự (hiện có {currentLen} ký tự).</span>
                         </p>
                     ) : null}
                 </div>
@@ -788,8 +807,9 @@ export function RecruitmentForm({
                             />
                         )}
                         {hasError && (
-                            <p className="text-xs text-red-400 font-medium leading-relaxed">
-                                {errors[errorKey]}
+                            <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                                <span className="text-sm leading-none">⚠️</span>
+                                <span>{errors[errorKey]}</span>
                             </p>
                         )}
                     </div>
@@ -894,8 +914,9 @@ export function RecruitmentForm({
                         />
                     )}
                     {hasError && (
-                        <p className="text-xs text-red-400 font-medium leading-relaxed">
-                            {errors[errorKey]}
+                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                            <span className="text-sm leading-none">⚠️</span>
+                            <span>{errors[errorKey]}</span>
                         </p>
                     )}
                 </div>
@@ -1030,14 +1051,25 @@ export function RecruitmentForm({
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4">
+                            {messengerGroupUrl && (
+                                <a
+                                    href={messengerGroupUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#0084FF] via-[#00A2FF] to-[#0078FF] hover:from-[#0074e0] hover:to-[#0068db] text-white font-bold text-sm shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5"
+                                >
+                                    <MessengerIcon className="w-4 h-4 shrink-0" />
+                                    <span>Tham gia Group Messenger</span>
+                                </a>
+                            )}
                             <a
                                 href="https://facebook.com/gdgoc.ptit"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-sm shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#4285F4] hover:bg-[#3367D6] text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
                             >
-                                <FacebookIcon className="w-4 h-4" />
+                                <FacebookIcon className="w-4 h-4 shrink-0" />
                                 <span>Theo dõi kết quả tại Fanpage</span>
                             </a>
                             <button
@@ -1046,8 +1078,9 @@ export function RecruitmentForm({
                                     setSubmitResult(null);
                                     try {
                                         localStorage.removeItem(STORAGE_KEY);
+                                        localStorage.removeItem(SUBMITTED_KEY);
                                     } catch (e) {
-                                        console.warn("Could not clear draft from localStorage:", e);
+                                        console.warn("Could not clear draft and submission from localStorage:", e);
                                     }
                                     setForm({
                                         full_name: "",
@@ -1065,7 +1098,7 @@ export function RecruitmentForm({
                                         otherTexts: buildDefaultOtherTexts(questions),
                                     });
                                 }}
-                                className="w-full sm:w-auto px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition-all text-center"
+                                className="w-full sm:w-auto px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition-all text-center cursor-pointer"
                             >
                                 Gửi đơn ứng tuyển khác
                             </button>
@@ -1145,7 +1178,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.full_name && <p className="text-xs text-red-400 font-medium">{errors.full_name}</p>}
+                                    {errors.full_name && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.full_name}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Email */}
@@ -1173,7 +1211,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.email && <p className="text-xs text-red-400 font-medium">{errors.email}</p>}
+                                    {errors.email && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.email}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Phone */}
@@ -1201,7 +1244,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.phone && <p className="text-xs text-red-400 font-medium">{errors.phone}</p>}
+                                    {errors.phone && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.phone}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Facebook URL */}
@@ -1229,7 +1277,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.facebook_url && <p className="text-xs text-red-400 font-medium">{errors.facebook_url}</p>}
+                                    {errors.facebook_url && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.facebook_url}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Date of Birth */}
@@ -1256,7 +1309,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.date_of_birth && <p className="text-xs text-red-400 font-medium">{errors.date_of_birth}</p>}
+                                    {errors.date_of_birth && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.date_of_birth}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Gender */}
@@ -1366,7 +1424,12 @@ export function RecruitmentForm({
                                         );
                                     })}
                                 </div>
-                                {errors.department && <p className="text-xs text-red-400 font-medium">{errors.department}</p>}
+                                {errors.department && (
+                                    <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                        <span className="text-sm leading-none">⚠️</span>
+                                        <span>{errors.department}</span>
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
@@ -1381,7 +1444,12 @@ export function RecruitmentForm({
                                         onChange={(e) => setForm({ ...form, university: e.target.value })}
                                         className="w-full px-4 py-2.5 sm:py-3 rounded-xl border border-white/15 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#4285F4]/30 focus:border-[#4285F4] bg-white/[0.06] hover:bg-white/[0.09] text-white placeholder:text-zinc-500"
                                     />
-                                    {errors.university && <p className="text-xs text-red-400 font-medium">{errors.university}</p>}
+                                    {errors.university && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.university}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Student ID */}
@@ -1409,7 +1477,12 @@ export function RecruitmentForm({
                                                 : "border-white/15 focus:border-[#4285F4]"
                                         }`}
                                     />
-                                    {errors.student_id && <p className="text-xs text-red-400 font-medium">{errors.student_id}</p>}
+                                    {errors.student_id && (
+                                        <p className="text-xs text-red-400 font-semibold flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.student_id}</span>
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Student Year */}
@@ -1512,7 +1585,12 @@ export function RecruitmentForm({
                                         </div>
                                     )}
 
-                                    {errors.major && <p className="text-xs text-red-400 font-medium leading-relaxed">{errors.major}</p>}
+                                    {errors.major && (
+                                        <p className="text-xs text-red-400 font-semibold leading-relaxed flex items-center gap-1.5 pt-0.5">
+                                            <span className="text-sm leading-none">⚠️</span>
+                                            <span>{errors.major}</span>
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>

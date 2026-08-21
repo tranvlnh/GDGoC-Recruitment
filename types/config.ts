@@ -117,6 +117,7 @@ export const settingsSchema = z
         applicationOpenAt: z.string().datetime({ offset: true }),
         applicationCloseAt: z.string().datetime({ offset: true }),
         fallbackGoogleFormUrl: z.string().url().optional().or(z.literal("")),
+        messengerGroupUrl: z.string().url().optional().or(z.literal("")),
         site: siteSchema,
     })
     .refine(

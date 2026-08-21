@@ -47,6 +47,7 @@ export default function Home() {
                     openAt={windowStatus.openAt}
                     closeAt={windowStatus.closeAt}
                     fallbackGoogleFormUrl={settings.fallbackGoogleFormUrl}
+                    messengerGroupUrl={settings.messengerGroupUrl}
                 />
             </main>
 

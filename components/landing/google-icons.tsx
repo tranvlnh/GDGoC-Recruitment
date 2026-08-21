@@ -158,3 +158,12 @@ export function FacebookIcon({ className = "w-5 h-5" }: { className?: string }) 
     );
 }
 
+export function MessengerIcon({ className = "w-5 h-5" }: { className?: string }) {
+    return (
+        <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.914 1.455 5.518 3.734 7.207v3.535l3.39-1.862c.91.252 1.879.388 2.876.388 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2zm1.066 12.443l-2.584-2.756-5.044 2.756 5.544-5.887 2.65 2.756 4.978-2.756-5.544 5.887z" />
+        </svg>
+    );
+}
+
+
