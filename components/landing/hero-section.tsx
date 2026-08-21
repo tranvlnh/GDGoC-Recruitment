@@ -69,7 +69,7 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
     }, [openAt, closeAt]);
 
     return (
-        <section className="relative w-full min-h-[100dvh] isolate flex items-center justify-center m-0 p-0 overflow-hidden">
+        <section className="relative w-full min-h-[100dvh] isolate flex items-center justify-center m-0 p-0 overflow-hidden bg-[#00092B]">
             {/* 1. Fullscreen Cover Image (Responsive Mobile & Desktop) */}
             <div className="absolute inset-0 z-0">
                 {/* Mobile Cover Image */}
@@ -90,8 +90,8 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
                     unoptimized
                     className="hidden sm:block object-cover object-center w-full h-full pointer-events-none"
                 />
-                {/* Subtle dark vignette for optimal text legibility */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/50 pointer-events-none" />
+                {/* Unified continuous vignette matching About and Mission */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/35 pointer-events-none" />
             </div>
 
             {/* 2. Hero Text Displayed Directly on Cover */}

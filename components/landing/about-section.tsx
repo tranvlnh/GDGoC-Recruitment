@@ -2,16 +2,97 @@ import Image from "next/image";
 
 export function AboutSection() {
     return (
-        <section id="about" className="relative pt-28 sm:pt-32 pb-20 sm:pb-24 overflow-hidden -scroll-mt-4">
-            <div className="absolute inset-0 z-0">
+        <section
+            id="about"
+            className="relative py-20 sm:py-28 md:py-32 bg-[#00092B] overflow-hidden -scroll-mt-4"
+        >
+            {/* Seamless Cosmic Background matching Hero and Mission */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+                {/* Base radial gradient */}
                 <Image
-                    src="/about.png"
-                    alt="Về GDGoC PTIT"
+                    src="/blank.svg"
+                    alt="Về GDGoC PTIT Background"
                     fill
-                    className="object-cover object-center"
+                    unoptimized
+                    className="object-cover object-center w-full h-full"
                     aria-hidden="true"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/75 backdrop-blur-[2px]" />
+
+                {/* Stardust Layers */}
+                <div className="absolute inset-0 opacity-40 mix-blend-screen">
+                    <Image
+                        src="/dust1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+                <div className="absolute inset-0 opacity-30 mix-blend-screen scale-110">
+                    <Image
+                        src="/dust2.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Unified continuous vignette matching Hero and Mission */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
+
+                {/* Decorative Planet Accents (placed on margins behind content) */}
+                {/* Top-Left Planet (Planet 6 - Magenta / Pink) - positioned closer to text */}
+                <div className="absolute top-4 sm:top-8 md:top-12 -left-6 sm:left-4 md:left-10 lg:left-20 xl:left-28 w-36 sm:w-48 md:w-60 aspect-square opacity-65 sm:opacity-75 md:opacity-85 pointer-events-none drop-shadow-[0_0_30px_rgba(234,67,53,0.35)]">
+                    <Image
+                        src="/planet6.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Bottom-Right Planet (Planet 4 - Cosmic Blue Ring Planet) */}
+                <div className="absolute -bottom-10 sm:-bottom-14 md:-bottom-20 -right-8 sm:right-0 md:right-6 lg:right-14 w-48 sm:w-64 md:w-80 lg:w-96 aspect-square opacity-70 sm:opacity-80 md:opacity-85 pointer-events-none drop-shadow-[0_0_35px_rgba(66,133,244,0.3)]">
+                    <Image
+                        src="/planet4.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Sparkling 4-Point Stars */}
+                <div className="absolute top-12 right-10 sm:right-20 md:right-32 w-5 sm:w-7 aspect-[136/205] opacity-60 pointer-events-none animate-pulse">
+                    <Image
+                        src="/Star 1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+                <div className="absolute bottom-16 left-8 sm:left-16 md:left-28 w-4 sm:w-6 aspect-[136/205] opacity-50 pointer-events-none animate-pulse">
+                    <Image
+                        src="/Star 1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-contain"
+                        aria-hidden="true"
+                    />
+                </div>
+
+                {/* Ambient Soft Google Color Glows */}
+                <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-[#4285F4]/10 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-[#EA4335]/10 rounded-full blur-3xl" />
             </div>
 
             <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6">

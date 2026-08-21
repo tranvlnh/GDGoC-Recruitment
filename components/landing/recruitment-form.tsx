@@ -854,20 +854,42 @@ export function RecruitmentForm({
     };
 
     return (
-        <section id="apply" className="py-20 sm:py-28 bg-gradient-to-b from-white via-zinc-50 to-white relative scroll-mt-20">
-            {/* Background accent */}
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/30 blur-3xl rounded-full pointer-events-none -z-10" />
+        <section id="apply" className="py-20 sm:py-28 bg-[#00092B] relative scroll-mt-20 overflow-hidden">
+            {/* Seamless Cosmic Background matching all sections */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+                <Image
+                    src="/blank.svg"
+                    alt="Apply Background"
+                    fill
+                    unoptimized
+                    className="object-cover object-center w-full h-full"
+                    aria-hidden="true"
+                />
+                {/* Stardust Layer */}
+                <div className="absolute inset-0 opacity-30 mix-blend-screen">
+                    <Image
+                        src="/dust1.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+                {/* Continuous vignette overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
+            </div>
 
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
+            <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
                 {/* Section Header */}
                 <div className="text-center space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-xs font-bold text-[#4285F4] uppercase tracking-wider">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-xs font-bold text-blue-300 uppercase tracking-wider backdrop-blur-md">
                         Đăng ký ứng tuyển
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
                         Gia nhập đại gia đình GDG on Campus: PTIT
                     </h2>
-                    <p className="text-base text-zinc-600 max-w-xl mx-auto font-normal">
+                    <p className="text-base text-zinc-300 max-w-xl mx-auto font-normal">
                         Hãy điền đầy đủ và chính xác thông tin dưới đây để ban điều hành có thể kết nối và trao đổi với bạn sớm nhất.
                     </p>
                 </div>

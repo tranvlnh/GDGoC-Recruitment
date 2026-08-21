@@ -1,9 +1,23 @@
+import Image from "next/image";
 import { GdgocLogo, GoogleDots, MapPinIcon, MailIcon, FacebookIcon } from "./google-icons";
 
 export function Footer() {
     return (
-        <footer className="bg-zinc-900 text-zinc-400 pt-16 pb-12 border-t border-zinc-800">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
+        <footer className="bg-[#00092B] text-zinc-300 pt-16 pb-12 border-t border-white/10 relative overflow-hidden">
+            {/* Seamless Cosmic Background */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+                <Image
+                    src="/blank.svg"
+                    alt=""
+                    fill
+                    unoptimized
+                    className="object-cover object-center w-full h-full opacity-60"
+                    aria-hidden="true"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
+            </div>
+
+            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
                     {/* Column 1: Brand Info */}
                     <div className="md:col-span-5 space-y-4">

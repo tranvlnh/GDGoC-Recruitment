@@ -81,7 +81,7 @@ export function FloatingNavbar() {
                     aria-label="Main Navigation"
                     className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
                         ? "bg-white/90 backdrop-blur-lg border-zinc-200/90 shadow-lg shadow-zinc-900/5"
-                        : "bg-transparent border-transparent shadow-none"
+                        : "bg-white/5 backdrop-blur-sm border-white/10 shadow-none"
                         }`}
                 >
                     {/* Logo: Small on Mobile (< md), Full on Desktop (>= md) */}
@@ -123,7 +123,9 @@ export function FloatingNavbar() {
                                         href={link.href}
                                         className={`px-3.5 py-1.5 text-sm font-semibold rounded-full transition-all duration-200 ${isActive
                                             ? "text-[#4285F4] bg-blue-50/80 shadow-2xs font-bold"
-                                            : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/70"
+                                            : scrolled
+                                                ? "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/70"
+                                                : "text-white/90 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         {link.name}
@@ -153,7 +155,10 @@ export function FloatingNavbar() {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="shrink-0 p-1.5 sm:p-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            className={`shrink-0 p-1.5 sm:p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${scrolled
+                                ? "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                                : "text-white hover:bg-white/10"
+                                }`}
                             aria-label="Mở danh mục điều hướng"
                             aria-expanded={mobileMenuOpen}
                         >

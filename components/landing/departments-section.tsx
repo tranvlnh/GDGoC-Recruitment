@@ -26,20 +26,45 @@ export function DepartmentsSection({
     };
 
     return (
-        <section id="departments" className="py-16 sm:py-24 bg-white relative scroll-mt-20">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
+        <section id="departments" className="py-20 sm:py-28 bg-[#00092B] relative scroll-mt-20 overflow-hidden">
+            {/* Seamless Cosmic Background matching all sections */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+                <Image
+                    src="/blank.svg"
+                    alt="Departments Background"
+                    fill
+                    unoptimized
+                    className="object-cover object-center w-full h-full"
+                    aria-hidden="true"
+                />
+                {/* Stardust Layer */}
+                <div className="absolute inset-0 opacity-30 mix-blend-screen">
+                    <Image
+                        src="/dust2.svg"
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover object-center"
+                        aria-hidden="true"
+                    />
+                </div>
+                {/* Continuous vignette overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35" />
+            </div>
+
+            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
                 {/* Header */}
                 <div className="text-center max-w-2xl mx-auto space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-bold text-zinc-700 uppercase tracking-wider">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-white uppercase tracking-wider backdrop-blur-md">
                         <GoogleDots />
                         <span>Cơ cấu tổ chức • {departments.length} Ban Chuyên Môn</span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
                         {departments.length} Mảnh ghép tạo nên GDGoC PTIT
                     </h2>
 
-                    <p className="text-sm sm:text-base text-zinc-600 font-normal">
+                    <p className="text-sm sm:text-base text-zinc-300 font-normal">
                         Mỗi ban chuyên môn giữ vai trò cốt lõi trong sự phát triển của câu lạc bộ. Hãy chọn ban phù hợp nhất với đam mê của bạn!
                     </p>
                 </div>

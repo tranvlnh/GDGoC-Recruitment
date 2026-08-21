@@ -14,7 +14,7 @@ export default function Home() {
     const windowStatus = getApplicationWindowStatus();
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-zinc-900 selection:bg-blue-100 selection:text-blue-900">
+        <div className="min-h-screen flex flex-col bg-[#00092B] text-zinc-100 selection:bg-blue-500 selection:text-white">
             <JsonLd />
             {/* Floating Top Navbar */}
             <FloatingNavbar />

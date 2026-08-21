@@ -234,7 +234,7 @@ export function MissionSection() {
     return (
         <section
             id="mission"
-            className="py-12 sm:py-16 bg-[#0c0d12] text-white relative scroll-mt-20 overflow-hidden select-none border-y border-zinc-800/80"
+            className="py-16 sm:py-24 bg-[#00092B] text-white relative scroll-mt-20 overflow-hidden select-none"
         >
             {/* 1. Pure Background Cover Mission Image */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -243,8 +243,11 @@ export function MissionSection() {
                     alt="GDGoC Mission Cosmic Background"
                     fill
                     priority
-                    className="object-cover object-center"
+                    unoptimized
+                    className="object-cover object-center w-full h-full"
                 />
+                {/* Unified continuous vignette */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/35 pointer-events-none" />
             </div>
 
             {/* Ambient Google Color Glows */}
@@ -255,7 +258,21 @@ export function MissionSection() {
             {/* Compatibility anchor for old links */}
             <div id="activities" className="absolute -top-20 pointer-events-none" />
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 space-y-8 sm:space-y-12">
+                {/* Section Header Title */}
+                <div className="text-center space-y-3 max-w-3xl mx-auto">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight sm:leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] flex flex-col items-center justify-center gap-1 sm:gap-2">
+                        <span className="block">
+                            We <span className="text-[#4285F4] drop-shadow-[0_2px_12px_rgba(66,133,244,0.5)]">Learn</span>,{" "}
+                            <span className="text-[#EA4335] drop-shadow-[0_2px_12px_rgba(234,67,53,0.5)]">Share</span>,
+                        </span>
+                        <span className="block">
+                            <span className="text-[#FBBC05] drop-shadow-[0_2px_12px_rgba(251,188,5,0.5)]">Connect</span> and{" "}
+                            <span className="text-[#34A853] drop-shadow-[0_2px_12px_rgba(52,168,83,0.5)]">Grow</span>!
+                        </span>
+                    </h2>
+                </div>
+
                 {/* Solar Planetary Orbital Arena */}
                 <div
                     onMouseEnter={() => setIsHovered(true)}
