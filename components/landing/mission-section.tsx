@@ -4,78 +4,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { GoogleDots } from "./google-icons";
 
-export interface PlanetPillar {
-    id: string;
-    name: string;
-    title: string;
-    tagline: string;
-    description: string;
-    color: string;
-    colorKey: "blue" | "red" | "yellow" | "green";
-    planetSvg: string;
-    planetSize: string;
-    positionClass: string;
-    images: string[];
-}
+import { PlanetPillar, DEFAULT_PLANET_PILLARS } from "@/types/missions";
 
-const PLANET_PILLARS: PlanetPillar[] = [
-    {
-        id: "learn",
-        name: "Learn",
-        title: "Learn",
-        tagline: "Học hỏi & Thực chiến",
-        description:
-            "Ở GDG on Campus: PTIT, học tập là hành động. Thay vì chỉ lắng nghe, bạn sẽ được bắt tay vào làm, được thử nghiệm và sai sót trong một môi trường an toàn. Nắm vững công nghệ mới qua các dự án chuyên sâu, biến ý tưởng thành sản phẩm và học hỏi từ chính những thử thách thực tế là cách bạn sẽ tiến bộ tại đây.",
-        color: "#4285F4",
-        colorKey: "blue",
-        planetSvg: "/planet4.svg",
-        planetSize: "w-20 h-20 sm:w-26 sm:h-26 md:w-32 md:h-32",
-        positionClass: "top-1 left-4 sm:top-2 sm:left-6 md:top-3 md:left-8",
-        images: ["/phase-3.png", "/phase-6.png"],
-    },
-    {
-        id: "share",
-        name: "Share",
-        title: "Share",
-        tagline: "Chia sẻ & Lan tỏa",
-        description:
-            "GDG on Campus: PTIT tin rằng giá trị của kiến thức nằm ở sự lan tỏa. Một văn hóa cởi mở được xây dựng, nơi mọi góc nhìn đều được tôn trọng và bất kỳ ai cũng có thể là người chia sẻ. Qua việc chia sẻ, bạn không chỉ giúp cộng đồng cùng phát triển mà còn củng cố kiến thức và xây dựng sự tự tin.",
-        color: "#EA4335",
-        colorKey: "red",
-        planetSvg: "/planet6.svg",
-        planetSize: "w-20 h-20 sm:w-26 sm:h-26 md:w-32 md:h-32",
-        positionClass: "top-1 right-4 sm:top-2 sm:right-6 md:top-3 md:right-8",
-        images: ["/phase-4.png", "/phase-6.png"],
-    },
-    {
-        id: "connect",
-        name: "Connect",
-        title: "Connect",
-        tagline: "Kết nối & Mở rộng",
-        description:
-            "GDG on Campus: PTIT mở ra cánh cửa đến với một mạng lưới kết nối rộng lớn và giá trị. Đây không chỉ là nơi bạn tìm thấy những người bạn cùng chung đam mê, mà còn là cơ hội gặp gỡ các chuyên gia, diễn giả và tiếp cận cộng đồng Google Developer toàn cầu.",
-        color: "#FBBC05",
-        colorKey: "yellow",
-        planetSvg: "/planet1.svg",
-        planetSize: "w-20 h-20 sm:w-26 sm:h-26 md:w-32 md:h-32",
-        positionClass: "bottom-1 right-4 sm:bottom-2 sm:right-6 md:bottom-3 md:right-8",
-        images: ["/phase-1.png", "/phase-5.png"],
-    },
-    {
-        id: "grow",
-        name: "Grow",
-        title: "Grow",
-        tagline: "Phát triển & Bứt phá",
-        description:
-            "Learn, Share, và Connect chính là ba mảnh ghép tạo nên sự trưởng thành toàn diện tại GDG on Campus: PTIT. GDG on Campus: PTIT sẽ là bệ phóng để biến tiềm năng của bạn thành những thành tựu thực sự, ghi dấu ấn trong hành trình sinh viên của mình.",
-        color: "#34A853",
-        colorKey: "green",
-        planetSvg: "/planet5.svg",
-        planetSize: "w-20 h-20 sm:w-26 sm:h-26 md:w-32 md:h-32",
-        positionClass: "bottom-1 left-4 sm:bottom-2 sm:left-6 md:bottom-3 md:left-8",
-        images: ["/phase-2.png", "/phase-4.png"],
-    },
-];
+export type { PlanetPillar };
 
 const THEME_STYLES = {
     blue: {
@@ -108,7 +39,11 @@ const THEME_STYLES = {
     },
 };
 
-export function MissionSection() {
+interface MissionSectionProps {
+    pillars?: PlanetPillar[];
+}
+
+export function MissionSection({ pillars = DEFAULT_PLANET_PILLARS }: MissionSectionProps) {
     const [activePillarIndex, setActivePillarIndex] = useState<number>(0);
     const [imageIndices, setImageIndices] = useState<number[]>([0, 0, 0, 0]);
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -125,13 +60,13 @@ export function MissionSection() {
     const mouseStartY = useRef<number | null>(null);
     const isMouseDown = useRef<boolean>(false);
 
-    const activePillar = PLANET_PILLARS[activePillarIndex];
+    const activePillar = pillars[activePillarIndex] || pillars[0] || DEFAULT_PLANET_PILLARS[0];
     const currentHeroImgIdx = imageIndices[activePillarIndex] || 0;
 
     const changePhoto = (pillarIdx: number, direction: "next" | "prev") => {
         setImageIndices((prev) => {
             const next = [...prev];
-            const total = PLANET_PILLARS[pillarIdx].images.length;
+            const total = pillars[pillarIdx]?.images?.length || 1;
             if (direction === "next") {
                 next[pillarIdx] = (next[pillarIdx] + 1) % total;
             } else {
@@ -147,11 +82,21 @@ export function MissionSection() {
         setIsLightboxOpen(true);
     };
 
-    // Close lightbox on Escape key
+    // Close lightbox on Escape key & navigate with Arrow keys
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 setIsLightboxOpen(false);
+            } else if (e.key === "ArrowRight") {
+                const total = pillars[lightboxPillarIdx]?.images?.length || 0;
+                if (total > 1) {
+                    setLightboxImgIdx((prev) => (prev + 1) % total);
+                }
+            } else if (e.key === "ArrowLeft") {
+                const total = pillars[lightboxPillarIdx]?.images?.length || 0;
+                if (total > 1) {
+                    setLightboxImgIdx((prev) => (prev - 1 + total) % total);
+                }
             }
         };
         if (isLightboxOpen) {
@@ -162,24 +107,24 @@ export function MissionSection() {
             window.removeEventListener("keydown", handleKeyDown);
             document.body.style.overflow = "unset";
         };
-    }, [isLightboxOpen]);
+    }, [isLightboxOpen, lightboxPillarIdx, pillars]);
 
     // Auto-cycle missions (Learn -> Share -> Connect -> Grow) every 4.5 seconds
     useEffect(() => {
         if (isHovered || isLightboxOpen) return;
 
         const interval = setInterval(() => {
-            setActivePillarIndex((prev) => (prev + 1) % PLANET_PILLARS.length);
+            setActivePillarIndex((prev) => (prev + 1) % pillars.length);
             setImageIndices((prev) =>
                 prev.map((currentIdx, pIdx) => {
-                    const total = PLANET_PILLARS[pIdx].images.length;
+                    const total = pillars[pIdx]?.images?.length || 1;
                     return (currentIdx + 1) % total;
                 })
             );
         }, 4500);
 
         return () => clearInterval(interval);
-    }, [isHovered, isLightboxOpen]);
+    }, [isHovered, isLightboxOpen, pillars]);
 
     // Touch gesture handlers for mobile swipe vs tap-to-zoom
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -231,18 +176,21 @@ export function MissionSection() {
         isMouseDown.current = false;
     };
 
-    const activeLightboxPillar = PLANET_PILLARS[lightboxPillarIdx];
-    const activeLightboxTheme = THEME_STYLES[activeLightboxPillar.colorKey];
+    const activeLightboxPillar = pillars[lightboxPillarIdx] || pillars[0] || DEFAULT_PLANET_PILLARS[0];
     const totalLightboxImgs = activeLightboxPillar.images.length;
 
     const nextLightboxImg = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setLightboxImgIdx((prev) => (prev + 1) % totalLightboxImgs);
+        if (totalLightboxImgs > 0) {
+            setLightboxImgIdx((prev) => (prev + 1) % totalLightboxImgs);
+        }
     };
 
     const prevLightboxImg = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setLightboxImgIdx((prev) => (prev - 1 + totalLightboxImgs) % totalLightboxImgs);
+        if (totalLightboxImgs > 0) {
+            setLightboxImgIdx((prev) => (prev - 1 + totalLightboxImgs) % totalLightboxImgs);
+        }
     };
 
     return (
@@ -337,18 +285,30 @@ export function MissionSection() {
                                 title="Nhấp để xem chi tiết sứ mệnh"
                             >
                                 {/* Auto-cycling Photos with Smooth Crossfade */}
-                                {activePillar.images.map((imgSrc, imgIdx) => (
-                                    <Image
-                                        key={imgSrc}
-                                        src={imgSrc}
-                                        alt={activePillar.name}
-                                        fill
-                                        sizes="(max-width: 768px) 300px, 400px"
-                                        draggable={false}
-                                        className={`object-cover object-center transition-opacity duration-1000 ease-in-out pointer-events-none ${imgIdx === currentHeroImgIdx ? "opacity-95" : "opacity-0"
-                                            }`}
-                                    />
-                                ))}
+                                {activePillar.images.length > 0 ? (
+                                    activePillar.images.map((imgSrc, imgIdx) => (
+                                        <Image
+                                            key={imgSrc}
+                                            src={imgSrc}
+                                            alt={activePillar.name}
+                                            fill
+                                            sizes="(max-width: 768px) 300px, 400px"
+                                            draggable={false}
+                                            className={`object-cover object-center transition-opacity duration-1000 ease-in-out pointer-events-none ${imgIdx === currentHeroImgIdx ? "opacity-95" : "opacity-0"
+                                                }`}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-950">
+                                        <Image
+                                            src={activePillar.planetSvg}
+                                            alt={activePillar.name}
+                                            width={140}
+                                            height={140}
+                                            className="opacity-50 drop-shadow-xl"
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Circular Radial & Linear Dark Gradient Scrim */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/40 pointer-events-none" />
@@ -406,7 +366,7 @@ export function MissionSection() {
 
                     {/* B. REVOLVING ORBIT CONTAINER: Continuous Flying Planet Animation */}
                     <div className="absolute inset-0 z-30 pointer-events-none animate-orbit group-hover:[animation-play-state:paused]">
-                        {PLANET_PILLARS.map((pillar, idx) => {
+                        {pillars.map((pillar, idx) => {
                             const isSelected = activePillarIndex === idx;
                             const pTheme = THEME_STYLES[pillar.colorKey];
 
@@ -459,106 +419,159 @@ export function MissionSection() {
                 </div>
             </div>
 
-            {/* LIGHTBOX / DETAIL MODAL POPUP */}
+            {/* MINIMALIST THEMATIC MISSION LIGHTBOX POPUP (MATCHING RECRUITMENT FORM GLASS BLUR) */}
             {isLightboxOpen && (
                 <div
                     onClick={() => setIsLightboxOpen(false)}
-                    className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-8 bg-black/85 backdrop-blur-xl animate-modal-backdrop overflow-y-auto"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-6 md:p-8 bg-black/60 backdrop-blur-md animate-modal-backdrop overflow-y-auto"
                 >
-                    {/* Modal Content Box */}
+                    {/* Modal Content Dialog: Frosted Ultra-Glass matching Recruitment Form */}
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className={`relative w-full max-w-5xl my-auto rounded-2xl sm:rounded-3xl border bg-zinc-950/95 shadow-2xl backdrop-blur-2xl transition-all duration-300 animate-modal-zoom overflow-hidden flex flex-col max-h-[92vh] ${activeLightboxTheme.glow}`}
+                        className="relative w-full max-w-4xl my-auto rounded-2xl sm:rounded-3xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.05] text-white shadow-[0_20px_60px_rgba(0,0,0,0.7)] backdrop-blur-2xl transition-all duration-300 animate-modal-zoom overflow-hidden flex flex-col max-h-[92vh]"
                     >
-                        {/* Modal Header */}
-                        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 bg-white/[0.02]">
-                            <div className="flex items-center gap-2 sm:gap-3">
-                                <div
-                                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${activeLightboxTheme.badge}`}
-                                >
-                                    <span>{activeLightboxPillar.title}</span>
-                                </div>
-                                <span className="hidden sm:inline text-xs font-medium text-zinc-400">
-                                    {activeLightboxPillar.tagline}
-                                </span>
+                        {/* Ambient Color Glow in Top-Right Corner */}
+                        <div
+                            className="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none transition-colors duration-700"
+                            style={{ backgroundColor: activeLightboxPillar.color }}
+                        />
+
+                        {/* Top Accent Color Bar */}
+                        <div
+                            className="absolute top-0 inset-x-0 h-1 transition-colors duration-500 z-30"
+                            style={{ backgroundColor: activeLightboxPillar.color }}
+                        />
+
+                        {/* Modal Header: Sleek Segmented Switcher + Minimalist Close Button */}
+                        <div className="relative z-20 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-3.5 border-b border-white/10 bg-white/[0.02]">
+                            {/* Segmented Switcher for 4 Pillars */}
+                            <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar">
+                                {pillars.map((p, pIdx) => {
+                                    const isCurrent = lightboxPillarIdx === pIdx;
+                                    return (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => {
+                                                setLightboxPillarIdx(pIdx);
+                                                setActivePillarIndex(pIdx);
+                                                setLightboxImgIdx(0);
+                                            }}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border ${
+                                                isCurrent
+                                                    ? "bg-white/15 text-white border-white/30 shadow-xs font-bold"
+                                                    : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/30 text-zinc-200"
+                                            }`}
+                                        >
+                                            <span
+                                                className="w-1.5 h-1.5 rounded-full transition-transform"
+                                                style={{
+                                                    backgroundColor: p.color,
+                                                    transform: isCurrent ? "scale(1.25)" : "scale(1)",
+                                                }}
+                                            />
+                                            <span>{p.name}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
 
+                            {/* Minimalist Close Button */}
                             <button
                                 onClick={() => setIsLightboxOpen(false)}
-                                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/10 hover:border-white/30 transition-all cursor-pointer"
+                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center border border-white/15 hover:border-white/30 transition-all cursor-pointer shrink-0 backdrop-blur-md"
                                 title="Đóng (Esc)"
                                 aria-label="Đóng popup"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="w-4 h-4 sm:w-5 sm:h-5"
+                                    className="w-4 h-4"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
-                                    strokeWidth={2.5}
+                                    strokeWidth={2}
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
 
-                        {/* Modal Body: Image on left, Rich Content Box on right */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 p-4 sm:p-6 md:p-8 overflow-y-auto max-h-[calc(92vh-64px)] items-stretch">
-                            {/* Left Column: Interactive Image Slider */}
-                            <div className="lg:col-span-7 flex flex-col justify-center">
-                                <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-xl group/img flex-1 min-h-[240px] sm:min-h-[320px]">
-                                    <Image
-                                        src={activeLightboxPillar.images[lightboxImgIdx]}
-                                        alt={`${activeLightboxPillar.title} activity`}
-                                        fill
-                                        sizes="(max-width: 1024px) 100vw, 600px"
-                                        className="object-cover object-center transition-opacity duration-300"
-                                        priority
-                                    />
+                        {/* Modal Body: Minimalist 2-Column Layout */}
+                        <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 p-5 sm:p-7 md:p-8 overflow-y-auto max-h-[calc(92vh-58px)] items-center">
+                            {/* Left Column: Image Showcase with Smooth Minimalist Slider */}
+                            <div className="md:col-span-6 lg:col-span-7 flex flex-col justify-center">
+                                <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl overflow-hidden border border-white/15 bg-white/[0.02] backdrop-blur-sm shadow-xl group/img select-none">
+                                    {activeLightboxPillar.images.length > 0 ? (
+                                        activeLightboxPillar.images.map((imgSrc, idx) => (
+                                            <Image
+                                                key={imgSrc}
+                                                src={imgSrc}
+                                                alt={`${activeLightboxPillar.title} activity ${idx + 1}`}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 550px"
+                                                className={`object-cover object-center transition-opacity duration-500 ease-in-out ${
+                                                    idx === lightboxImgIdx ? "opacity-100" : "opacity-0 pointer-events-none"
+                                                }`}
+                                                priority={idx === 0}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 gap-3">
+                                            <div className="relative w-28 h-28 sm:w-36 sm:h-36">
+                                                <Image
+                                                    src={activeLightboxPillar.planetSvg}
+                                                    alt={activeLightboxPillar.name}
+                                                    fill
+                                                    className="object-contain opacity-75 drop-shadow-xl animate-planet-breathe"
+                                                />
+                                            </div>
+                                            <span className="text-xs text-zinc-400 font-medium">Hành tinh {activeLightboxPillar.name}</span>
+                                        </div>
+                                    )}
 
-                                    {/* Bottom gradient */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                                    {/* Subtle Gradient Scrim at bottom for indicators */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
-                                    {/* Image Counter Badge */}
+                                    {/* Minimalist Image Counter Badge */}
                                     {totalLightboxImgs > 1 && (
-                                        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md text-[11px] font-bold text-white/90 border border-white/15 pointer-events-none">
+                                        <div className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md text-[11px] font-medium text-white/90 border border-white/15">
                                             {lightboxImgIdx + 1} / {totalLightboxImgs}
                                         </div>
                                     )}
 
-                                    {/* Lightbox Photo Slider Dots */}
+                                    {/* Minimalist Slider Dots */}
                                     {totalLightboxImgs > 1 && (
-                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 z-10">
+                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/15 z-10">
                                             {activeLightboxPillar.images.map((_, dIdx) => (
                                                 <button
                                                     key={dIdx}
                                                     onClick={() => setLightboxImgIdx(dIdx)}
-                                                    className={`h-2 rounded-full transition-all cursor-pointer ${dIdx === lightboxImgIdx
-                                                        ? `w-5 ${activeLightboxTheme.dotActive}`
-                                                        : "w-2 bg-white/40 hover:bg-white/70"
-                                                        }`}
+                                                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                                                        dIdx === lightboxImgIdx
+                                                            ? "w-4 bg-white"
+                                                            : "w-1.5 bg-white/40 hover:bg-white/70"
+                                                    }`}
                                                     aria-label={`Chuyển đến ảnh ${dIdx + 1}`}
                                                 />
                                             ))}
                                         </div>
                                     )}
 
-                                    {/* Navigation Arrows */}
+                                    {/* Minimalist Navigation Arrows */}
                                     {totalLightboxImgs > 1 && (
                                         <>
                                             <button
                                                 onClick={prevLightboxImg}
-                                                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 hover:border-white/40 transition-all cursor-pointer backdrop-blur-md z-10"
+                                                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8.5 h-8.5 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/15 hover:border-white/30 transition-all cursor-pointer backdrop-blur-md z-10 shadow-md"
                                                 title="Ảnh trước"
                                                 aria-label="Ảnh trước"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    className="w-5 h-5"
+                                                    className="w-4 h-4"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"
-                                                    strokeWidth={2.5}
+                                                    strokeWidth={2}
                                                 >
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                                 </svg>
@@ -566,17 +579,17 @@ export function MissionSection() {
 
                                             <button
                                                 onClick={nextLightboxImg}
-                                                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 hover:border-white/40 transition-all cursor-pointer backdrop-blur-md z-10"
+                                                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8.5 h-8.5 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/15 hover:border-white/30 transition-all cursor-pointer backdrop-blur-md z-10 shadow-md"
                                                 title="Ảnh tiếp theo"
                                                 aria-label="Ảnh tiếp theo"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    className="w-5 h-5"
+                                                    className="w-4 h-4"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"
-                                                    strokeWidth={2.5}
+                                                    strokeWidth={2}
                                                 >
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                                 </svg>
@@ -586,76 +599,24 @@ export function MissionSection() {
                                 </div>
                             </div>
 
-                            {/* Right Column: The Requested Text Card ("Khung Text") */}
-                            <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-                                {/* The Mission Text Frame */}
-                                <div
-                                    className={`p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border backdrop-blur-md transition-all duration-300 relative overflow-hidden flex-1 flex flex-col justify-center ${activeLightboxTheme.border}`}
-                                >
-                                    {/* Colored Left Accent Bar */}
-                                    <div
-                                        className="absolute top-0 left-0 bottom-0 w-1.5 transition-colors duration-500"
-                                        style={{ backgroundColor: activeLightboxPillar.color }}
-                                    />
+                            {/* Right Column: Clean Minimalist Content */}
+                            <div className="md:col-span-6 lg:col-span-5 flex flex-col justify-center space-y-4">
+                                <div className="space-y-1.5">
+                                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                                        <span style={{ color: activeLightboxPillar.color }}>
+                                            {activeLightboxPillar.title}
+                                        </span>
+                                    </h3>
 
-                                    <div className="pl-2 space-y-3">
-                                        <div className="space-y-1">
-                                            <div className="text-[11px] font-bold tracking-wider uppercase text-zinc-400">
-                                                Sứ Mệnh GDG on Campus: PTIT
-                                            </div>
-                                            <h3
-                                                className="text-2xl sm:text-3xl font-black tracking-tight transition-colors duration-500 drop-shadow-sm"
-                                                style={{ color: activeLightboxPillar.color }}
-                                            >
-                                                {activeLightboxPillar.title}
-                                            </h3>
-                                            <p className="text-xs sm:text-sm font-semibold text-zinc-300">
-                                                {activeLightboxPillar.tagline}
-                                            </p>
-                                        </div>
-
-                                        {/* Description text content */}
-                                        <div className="pt-3 border-t border-white/10">
-                                            <p className="text-sm sm:text-[15px] leading-relaxed text-zinc-200 text-justify sm:text-left font-normal">
-                                                {activeLightboxPillar.description}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <p className="text-xs sm:text-sm font-semibold text-zinc-300">
+                                        {activeLightboxPillar.tagline}
+                                    </p>
                                 </div>
 
-                                {/* Pillar Quick Selector Tabs */}
-                                <div className="space-y-2 pt-1">
-                                    <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider px-1">
-                                        Khám phá các sứ mệnh:
-                                    </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                        {PLANET_PILLARS.map((p, pIdx) => {
-                                            const isCurrent = lightboxPillarIdx === pIdx;
-                                            const pStyle = THEME_STYLES[p.colorKey];
-                                            return (
-                                                <button
-                                                    key={p.id}
-                                                    onClick={() => {
-                                                        setLightboxPillarIdx(pIdx);
-                                                        setActivePillarIndex(pIdx);
-                                                        setLightboxImgIdx(0);
-                                                    }}
-                                                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${isCurrent
-                                                        ? `${pStyle.badge} border-white/30 scale-[1.02] shadow-md`
-                                                        : "bg-white/[0.04] text-zinc-400 border-white/10 hover:bg-white/[0.08] hover:text-white hover:border-white/20"
-                                                        }`}
-                                                >
-                                                    <span
-                                                        className="w-1.5 h-1.5 rounded-full"
-                                                        style={{
-                                                            backgroundColor: isCurrent ? "currentColor" : p.color,
-                                                        }}
-                                                    />
-                                                    <span>{p.name}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
+                                <div className="text-sm sm:text-[15px] leading-relaxed text-zinc-200 font-normal space-y-3">
+                                    <p className="text-justify sm:text-left">
+                                        {activeLightboxPillar.description}
+                                    </p>
                                 </div>
                             </div>
                         </div>

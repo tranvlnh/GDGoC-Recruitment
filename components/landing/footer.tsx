@@ -71,7 +71,7 @@ export function Footer() {
                             <li className="flex items-start gap-2.5">
                                 <MapPinIcon className="w-4.5 h-4.5 text-[#EA4335] shrink-0 mt-0.5" />
                                 <a
-                                    href="https://share.google/KzFSSh2kk6J9UhS6y"
+                                    href="https://maps.app.goo.gl/iGjx3Lvba7XU4cJ28"
                                     target="_blank"
                                     rel="noreferrer"
                                     className="hover:text-white transition-colors"

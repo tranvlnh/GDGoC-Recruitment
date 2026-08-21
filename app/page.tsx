@@ -1,4 +1,5 @@
 import { departments, majors, questions, settings, getApplicationWindowStatus } from "@/lib/config";
+import { getMissionPillars } from "@/lib/missions";
 import { FloatingNavbar } from "@/components/landing/floating-navbar";
 import { HeroSection } from "@/components/landing/hero-section";
 import { AboutSection } from "@/components/landing/about-section";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default function Home() {
     const windowStatus = getApplicationWindowStatus();
+    const missionPillars = getMissionPillars();
 
     return (
         <div className="min-h-screen flex flex-col bg-[#00092B] text-zinc-100 selection:bg-blue-500 selection:text-white">
@@ -32,7 +34,7 @@ export default function Home() {
                 <AboutSection />
 
                 {/* 3. Mission Showcase */}
-                <MissionSection />
+                <MissionSection pillars={missionPillars} />
 
                 {/* 4. Departments (4 Google Colored Groups) */}
                 <DepartmentsSection departments={departments} />

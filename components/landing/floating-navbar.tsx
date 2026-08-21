@@ -14,23 +14,62 @@ export function FloatingNavbar() {
         { name: "Ban chuyên môn", href: "#departments", id: "departments" },
     ];
 
+    const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+        e.preventDefault();
+
+        if (!id || id === "#" || id === "top") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.history.pushState(null, "", window.location.pathname);
+            return;
+        }
+
+        const targetId = id.replace("#", "");
+        const elem = document.getElementById(targetId);
+        if (!elem) return;
+
+        const navbarOffset = 80;
+        const rect = elem.getBoundingClientRect();
+        const elemTop = rect.top + window.scrollY;
+        const elemHeight = elem.offsetHeight;
+        const viewportHeight = window.innerHeight;
+
+        let targetScroll: number;
+
+        if (targetId === "apply") {
+            // Form điền thông tin tuyển dụng: Luôn cuộn đến đầu section có trừ offset navbar
+            targetScroll = elemTop - navbarOffset;
+        } else {
+            // Các section nội dung (About, Mission, Departments):
+            // Căn giữa section vào màn hình nếu chiều cao vừa vặn để xem đầy đủ nhất
+            if (elemHeight < viewportHeight - navbarOffset) {
+                targetScroll = elemTop - (viewportHeight - elemHeight) / 2;
+            } else {
+                // Nếu section dài hơn chiều cao màn hình, cuộn tới đầu section
+                targetScroll = elemTop - navbarOffset;
+            }
+        }
+
+        window.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: "smooth",
+        });
+
+        window.history.pushState(null, "", `#${targetId}`);
+    };
+
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
 
             // If at the very top (Hero section), no section should be highlighted
-            const aboutElem = document.getElementById("about");
-            const threshold = Math.min(window.innerHeight * 0.35, 300);
-
-            if (aboutElem) {
-                const aboutRect = aboutElem.getBoundingClientRect();
-                if (aboutRect.top > threshold) {
-                    setActiveSection("");
-                    return;
-                }
+            const heroThreshold = Math.min(window.innerHeight * 0.35, 300);
+            if (window.scrollY < heroThreshold) {
+                setActiveSection("");
+                return;
             }
 
-            // Check sections from bottom to top so the lowest currently visible section wins
+            // Viewport center reference for section activation
+            const viewportCenter = window.innerHeight / 2;
             const sectionIds = ["departments", "mission", "about"];
             let current = "";
 
@@ -38,7 +77,7 @@ export function FloatingNavbar() {
                 const elem = document.getElementById(id);
                 if (elem) {
                     const rect = elem.getBoundingClientRect();
-                    if (rect.top <= threshold) {
+                    if (rect.top <= viewportCenter && rect.bottom >= viewportCenter * 0.4) {
                         current = id;
                         break;
                     }
@@ -70,27 +109,28 @@ export function FloatingNavbar() {
             {/* Mobile Menu Backdrop */}
             {mobileMenuOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-zinc-950/40 backdrop-blur-xs transition-opacity md:hidden"
+                    className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden"
                     onClick={() => setMobileMenuOpen(false)}
                     aria-hidden="true"
                 />
             )}
 
-            <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 lg:px-10 pointer-events-none">
+            <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 lg:px-10 pointer-events-none transition-all duration-300">
                 <nav
                     aria-label="Main Navigation"
-                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 max-w-[1840px] mx-auto ${scrolled
-                        ? "bg-white/90 backdrop-blur-lg border-zinc-200/90 shadow-lg shadow-zinc-900/5"
-                        : "bg-white/5 backdrop-blur-sm border-white/10 shadow-none"
+                    className={`pointer-events-auto transition-all duration-300 rounded-full border px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 max-w-[1840px] mx-auto relative overflow-hidden ${scrolled
+                        ? "bg-[#00092B]/85 backdrop-blur-xl border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.6),0_0_24px_rgba(66,133,244,0.12)]"
+                        : "bg-[#00092B]/40 backdrop-blur-md border-white/10 shadow-none"
                         }`}
                 >
                     {/* Logo: Small on Mobile (< md), Full on Desktop (>= md) */}
                     <a
                         href="#"
+                        onClick={(e) => scrollToSection(e, "top")}
                         aria-label="GDGoC PTIT - Trang chủ"
-                        className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg flex items-center shrink-0"
+                        className="min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#00092B] rounded-lg flex items-center shrink-0 group transition-transform duration-200 hover:scale-[1.02]"
                     >
-                        <div className="flex md:hidden items-center">
+                        <div className="flex md:hidden items-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                             <Image
                                 src="/logo_small.svg"
                                 alt="GDGoC PTIT"
@@ -100,7 +140,7 @@ export function FloatingNavbar() {
                                 className="h-6 sm:h-7 w-auto object-contain"
                             />
                         </div>
-                        <div className="hidden md:flex items-center">
+                        <div className="hidden md:flex items-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                             <Image
                                 src="/logo.svg"
                                 alt="Google Developer Groups on Campus - PTIT"
@@ -114,18 +154,17 @@ export function FloatingNavbar() {
 
                     {/* Right Group: Desktop Nav Links with ScrollSpy */}
                     <div className="hidden md:flex items-center gap-3 lg:gap-5">
-                        <div className="flex items-center gap-1 lg:gap-1.5">
+                        <div className="flex items-center gap-1 lg:gap-1.5 p-1 bg-white/5 border border-white/5 rounded-full backdrop-blur-sm">
                             {navLinks.map((link) => {
                                 const isActive = activeSection === link.id;
                                 return (
                                     <a
                                         key={link.id}
                                         href={link.href}
-                                        className={`px-3.5 py-1.5 text-sm font-semibold rounded-full transition-all duration-200 ${isActive
-                                            ? "text-[#4285F4] bg-blue-50/80 shadow-2xs font-bold"
-                                            : scrolled
-                                                ? "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/70"
-                                                : "text-white/90 hover:text-white hover:bg-white/10"
+                                        onClick={(e) => scrollToSection(e, link.id)}
+                                        className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-all duration-300 ${isActive
+                                            ? "text-white bg-[#4285F4]/25 border border-[#4285F4]/50 shadow-[0_0_12px_rgba(66,133,244,0.35)]"
+                                            : "text-zinc-300 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         {link.name}
@@ -137,17 +176,19 @@ export function FloatingNavbar() {
                         {/* Desktop CTA Button */}
                         <a
                             href="#apply"
-                            className="inline-flex items-center justify-center px-4.5 py-2 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-full shadow-sm hover:shadow-md hover:shadow-blue-500/25 transition-all active:scale-95 shrink-0"
+                            onClick={(e) => scrollToSection(e, "apply")}
+                            className="relative group inline-flex items-center justify-center px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] hover:from-[#3b78e7] hover:to-[#1765cc] rounded-full shadow-[0_0_18px_rgba(66,133,244,0.4)] hover:shadow-[0_0_24px_rgba(66,133,244,0.6)] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shrink-0 border border-blue-400/30"
                         >
                             <span>Đăng ký ngay</span>
                         </a>
                     </div>
 
                     {/* Mobile Right Group: Register Button & Hamburger Menu Button */}
-                    <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+                    <div className="flex md:hidden items-center gap-2">
                         <a
                             href="#apply"
-                            className="inline-flex items-center justify-center px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-full shadow-xs hover:shadow-sm active:scale-95 transition-all shrink-0"
+                            onClick={(e) => scrollToSection(e, "apply")}
+                            className="inline-flex items-center justify-center px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] rounded-full shadow-[0_0_12px_rgba(66,133,244,0.35)] active:scale-95 transition-all shrink-0 border border-blue-400/30"
                         >
                             <span>Đăng ký</span>
                         </a>
@@ -155,10 +196,7 @@ export function FloatingNavbar() {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className={`shrink-0 p-1.5 sm:p-2 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${scrolled
-                                ? "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
-                                : "text-white hover:bg-white/10"
-                                }`}
+                            className="shrink-0 p-1.5 sm:p-2 rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                             aria-label="Mở danh mục điều hướng"
                             aria-expanded={mobileMenuOpen}
                         >
@@ -175,30 +213,36 @@ export function FloatingNavbar() {
 
                 {/* Mobile Dropdown Menu */}
                 {mobileMenuOpen && (
-                    <div className="pointer-events-auto md:hidden mt-2 p-4 bg-white/95 backdrop-blur-xl border border-zinc-200/90 rounded-2xl shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="flex flex-col gap-1">
+                    <div className="pointer-events-auto md:hidden mt-2.5 p-3.5 bg-[#00092B]/95 backdrop-blur-2xl border border-white/15 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_25px_rgba(66,133,244,0.15)] animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="flex flex-col gap-1.5">
                             {navLinks.map((link) => {
                                 const isActive = activeSection === link.id;
                                 return (
                                     <a
                                         key={link.id}
                                         href={link.href}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors flex items-center justify-between ${isActive
-                                            ? "text-[#4285F4] bg-blue-50/80 font-bold"
-                                            : "text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100"
+                                        onClick={(e) => {
+                                            setMobileMenuOpen(false);
+                                            scrollToSection(e, link.id);
+                                        }}
+                                        className={`px-4 py-2.5 text-sm font-semibold rounded-xl transition-all flex items-center justify-between ${isActive
+                                            ? "text-white bg-[#4285F4]/20 border border-[#4285F4]/40 shadow-[0_0_12px_rgba(66,133,244,0.25)]"
+                                            : "text-zinc-300 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         <span>{link.name}</span>
-                                        {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />}
+                                        {isActive && <span className="w-2 h-2 rounded-full bg-[#4285F4] shadow-[0_0_8px_#4285F4]" />}
                                     </a>
                                 );
                             })}
-                            <div className="pt-2 mt-1 border-t border-zinc-100">
+                            <div className="pt-2.5 mt-1 border-t border-white/10">
                                 <a
                                     href="#apply"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-white bg-[#4285F4] hover:bg-[#3367D6] rounded-xl shadow-sm transition-all"
+                                    onClick={(e) => {
+                                        setMobileMenuOpen(false);
+                                        scrollToSection(e, "apply");
+                                    }}
+                                    className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] hover:from-[#3b78e7] hover:to-[#1765cc] rounded-xl shadow-[0_0_18px_rgba(66,133,244,0.4)] transition-all"
                                 >
                                     <span>Đăng ký thành viên</span>
                                 </a>
