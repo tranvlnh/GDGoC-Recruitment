@@ -8,7 +8,14 @@ export function FloatingNavbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("");
 
-    const navLinks = [
+    type NavLink = {
+        name: string;
+        href: string;
+        id: string;
+        isRoute?: boolean;
+    };
+
+    const navLinks: NavLink[] = [
         { name: "Về chúng tôi", href: "/#about", id: "about" },
         { name: "Sứ mệnh", href: "/#mission", id: "mission" },
         { name: "Ban chuyên môn", href: "/#departments", id: "departments" },
