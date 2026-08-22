@@ -12,6 +12,7 @@ import {
     FacebookIcon,
     MessengerIcon,
 } from "./google-icons";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 type RecruitmentFormProps = {
     departments: (Department | Option)[];
@@ -107,6 +108,10 @@ export function RecruitmentForm({
         applicationId?: string;
         message?: string;
     } | null>(null);
+
+    // Cloudflare Turnstile State & Ref
+    const turnstileRef = useRef<TurnstileInstance>(null);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     // When department or student year changes, reset non-applicable answers
     const prevDeptRef = useRef(form.department);
@@ -549,6 +554,8 @@ export function RecruitmentForm({
                 return { question_id: q.id, value };
             });
 
+            const currentToken = turnstileToken || turnstileRef.current?.getResponse();
+
             const payload = {
                 full_name: form.full_name.trim(),
                 email: form.email.trim().toLowerCase(),
@@ -562,6 +569,7 @@ export function RecruitmentForm({
                 gender: form.gender,
                 major: form.major,
                 answers: answersArray,
+                turnstile_token: currentToken || undefined,
             };
 
             const res = await fetch("/api/apply", {
@@ -573,6 +581,10 @@ export function RecruitmentForm({
             const data = await res.json();
 
             if (!res.ok) {
+                try {
+                    turnstileRef.current?.reset();
+                    setTurnstileToken(null);
+                } catch {}
                 if (data.details && Array.isArray(data.details)) {
                     const serverErrors: Record<string, string> = {};
                     data.details.forEach((issue: { path: (string | number)[]; message: string }) => {
@@ -1752,6 +1764,31 @@ export function RecruitmentForm({
                                 )}
                             </div>
                         )}
+
+                        {/* Cloudflare Turnstile Invisible Captcha Component */}
+                        <div className="hidden" aria-hidden="true">
+                            <Turnstile
+                                ref={turnstileRef}
+                                siteKey={
+                                    process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY ||
+                                    "1x00000000000000000000BB"
+                                }
+                                options={{
+                                    size: "invisible",
+                                    theme: "dark",
+                                    refreshExpired: "auto",
+                                }}
+                                onSuccess={(token) => {
+                                    setTurnstileToken(token);
+                                }}
+                                onError={() => {
+                                    setTurnstileToken(null);
+                                }}
+                                onExpire={() => {
+                                    setTurnstileToken(null);
+                                }}
+                            />
+                        </div>
 
                         {/* Submit Button */}
                         <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">

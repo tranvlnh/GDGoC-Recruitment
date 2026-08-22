@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { getApplicationWindowStatus } from "@/lib/config";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { validateApplicationSubmission } from "@/lib/validation";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: Request) {
   const window = getApplicationWindowStatus();
@@ -11,8 +12,30 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body: unknown = await request.json();
-    const application = validateApplicationSubmission(body);
+    const rawBody: unknown = await request.json();
+    const bodyRecord = rawBody && typeof rawBody === "object" ? (rawBody as Record<string, unknown>) : {};
+
+    // 1. Verify Cloudflare Turnstile token
+    const turnstileToken =
+      typeof bodyRecord.turnstile_token === "string"
+        ? bodyRecord.turnstile_token
+        : typeof bodyRecord["cf-turnstile-response"] === "string"
+          ? (bodyRecord["cf-turnstile-response"] as string)
+          : undefined;
+
+    const remoteIp =
+      request.headers.get("cf-connecting-ip") ||
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+    const turnstileCheck = await verifyTurnstileToken(turnstileToken, remoteIp);
+    if (!turnstileCheck.success) {
+      return NextResponse.json(
+        { error: turnstileCheck.error || "Xác thực bảo mật không thành công" },
+        { status: 400 },
+      );
+    }
+
+    const application = validateApplicationSubmission(rawBody);
     const supabase = createSupabaseAdminClient();
     const { data, error } = await supabase
       .from("applications")
