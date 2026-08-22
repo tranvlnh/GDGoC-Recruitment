@@ -109,14 +109,16 @@ export function HeroSection({ openAt, closeAt }: HeroSectionProps) {
                 <div className="w-full flex flex-col items-center my-6 sm:my-10 md:my-12">
                     <div className="inline-flex flex-col items-center transition-all">
                         {/* Compact Status Indicator */}
-                        <div className="flex items-center justify-center gap-2 mb-4 sm:mb-5 text-xs sm:text-sm font-bold text-white">
+                        <div className="flex flex-col items-center justify-center gap-2 mb-4 sm:mb-5 text-xs sm:text-sm font-bold text-white">
                             {timeLeft.status === "upcoming" ? (
                                 <>
-                                    <span className="text-blue-300">Sắp mở đơn sau</span>
+                                    <GoogleDots className="shrink-0 scale-90" />
+                                    <span className="text-blue-300 font-semibold tracking-wide">Sắp mở đơn sau</span>
                                 </>
                             ) : timeLeft.status === "open" ? (
                                 <>
                                     <GoogleDots className="shrink-0 scale-90" />
+                                    <span className="text-zinc-200 font-semibold tracking-wide">Kết thúc sau</span>
                                 </>
                             ) : (
                                 <span className="text-rose-400 uppercase tracking-wide">Đã hết hạn nhận đơn</span>
