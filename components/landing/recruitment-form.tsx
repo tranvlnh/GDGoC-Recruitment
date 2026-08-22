@@ -592,6 +592,16 @@ export function RecruitmentForm({
                         serverErrors[pathKey] = issue.message;
                     });
                     setErrors(serverErrors);
+                } else if (res.status === 409 || data.error?.toLowerCase().includes("email")) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        email: data.error || "Email này đã được sử dụng để nộp đơn ứng tuyển trước đó.",
+                    }));
+                    const emailElem = document.getElementById(`${formId}-email`);
+                    if (emailElem) {
+                        emailElem.scrollIntoView({ behavior: "smooth", block: "center" });
+                        emailElem.querySelector("input")?.focus();
+                    }
                 }
                 setSubmitResult({
                     success: false,

@@ -36,12 +36,36 @@ export async function POST(request: Request) {
     }
 
     const application = validateApplicationSubmission(rawBody);
+    const normalizedEmail = application.email.toLowerCase();
     const supabase = createSupabaseAdminClient();
+
+    // 2. Check if this email has already submitted an application
+    const { data: existingApp, error: checkError } = await supabase
+      .from("applications")
+      .select("id")
+      .ilike("email", normalizedEmail)
+      .limit(1)
+      .maybeSingle();
+
+    if (checkError) {
+      console.warn("Could not query existing application by email:", checkError);
+    }
+
+    if (existingApp) {
+      return NextResponse.json(
+        {
+          error:
+            "Email này đã được sử dụng để nộp đơn ứng tuyển trước đó. Mỗi ứng viên chỉ được gửi 1 đơn đăng ký.",
+        },
+        { status: 409 },
+      );
+    }
+
     const { data, error } = await supabase
       .from("applications")
       .insert({
         full_name: application.full_name,
-        email: application.email.toLowerCase(),
+        email: normalizedEmail,
         phone: application.phone,
         facebook_url: application.facebook_url,
         student_year: application.student_year,
@@ -57,6 +81,19 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
+      if (
+        error.code === "23505" ||
+        error.message?.toLowerCase().includes("unique") ||
+        error.message?.toLowerCase().includes("duplicate")
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Email này đã được sử dụng để nộp đơn ứng tuyển trước đó. Mỗi ứng viên chỉ được gửi 1 đơn đăng ký.",
+          },
+          { status: 409 },
+        );
+      }
       console.error("Failed to insert application", error);
       return NextResponse.json({ error: "Không thể lưu đơn đăng ký" }, { status: 500 });
     }
