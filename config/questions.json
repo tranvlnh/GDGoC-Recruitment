@@ -28,7 +28,7 @@
   {
     "id": "common_achievements",
     "type": "essay",
-    "label": "Bạn đã từng tham gia các cuộc thi nào hoặc đạt được thành tích, giải thưởng gì nổi bật chưa (ví dụ: HSG cấp Tỉnh/Thành phố/Quốc gia, cuộc thi học thuật, nghiên cứu khoa học, hackathon, thiết kế, truyền thông, phong trào,...)? Hãy chia sẻ ngắn gọn cùng GDGoC nhé! (Nếu chưa có, bạn có thể bỏ qua câu này)",
+    "label": "Bạn đã từng tham gia các cuộc thi nào hoặc đạt được thành tích, giải thưởng gì nổi bật chưa? Hãy chia sẻ ngắn gọn cùng GDGoC nhé! (Nếu chưa có, bạn có thể bỏ qua câu này)",
     "required": false,
     "minLength": 10,
     "maxLength": 1000,
